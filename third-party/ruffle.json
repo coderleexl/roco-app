@@ -1,0 +1,7 @@
+{
+  "version": "0.7.1",
+  "url": "https://github.com/ruffle-rs/ruffle/releases/download/v0.7.1/ruffle-0.7.1-web-extension-firefox-unsigned.xpi",
+  "sha256": "28441d64d8b92fa083f3664756e2bb5d69e176939a098042f84b081132b3ff11",
+  "source": "https://github.com/ruffle-rs/ruffle/tree/v0.7.1",
+  "license": "MIT OR Apache-2.0"
+}

@@ -1,0 +1,102 @@
+package io.github.coderleexl.rocoapp
+
+import java.io.Closeable
+import java.net.InetAddress
+import java.net.ServerSocket
+import java.net.Socket
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.util.concurrent.Executors
+
+/** Self-test fixtures only; no forwarding, arbitrary files or network proxy. Loopback only. */
+class LocalProbeServer : Closeable {
+    private val socket = ServerSocket(0, 4, InetAddress.getByName("127.0.0.1"))
+    private val workers = Executors.newFixedThreadPool(2)
+    val baseUrl = "http://127.0.0.1:${socket.localPort}"
+    @Volatile var sharedCookieSeen = false
+        private set
+
+    init {
+        Thread({
+            while (!socket.isClosed) {
+                try { val client = socket.accept(); workers.execute { try { respond(client) } catch (_: Exception) { client.close() } } }
+                catch (_: Exception) { if (!socket.isClosed) Thread.sleep(50) }
+            }
+        }, "roco-probe-loopback").apply { isDaemon = true; start() }
+    }
+
+    private fun respond(client: Socket) = client.use {
+        it.soTimeout = 3000
+        val input = it.getInputStream()
+        val header = StringBuilder()
+        while (header.length < 8192 && !header.endsWith("\r\n\r\n")) {
+            val b = input.read(); if (b < 0) return@use
+            header.append(b.toChar())
+        }
+        if (!header.endsWith("\r\n\r\n")) return@use
+        val route = header.lineSequence().first().split(' ')
+        val path = route.getOrNull(1)?.substringBefore('?') ?: "/"
+        if (route.firstOrNull() != "GET") return@use
+        val cookie = header.lineSequence().firstOrNull { s -> s.startsWith("Cookie:", true) }.orEmpty()
+        val hasCookie = cookie.contains("roco_probe=present")
+        if (path == "/popup.html" && hasCookie) sharedCookieSeen = true
+        val payload: ByteArray
+        val type: String
+        when (path) {
+            "/probe.swf" -> { payload = flashProbe(); type = "application/x-shockwave-flash" }
+            "/probe.html" -> { payload = page.toByteArray(); type = "text/html; charset=utf-8" }
+            "/popup.html" -> {
+                payload = """<!doctype html><title>popup</title><script>if(window.opener && ${hasCookie}) {opener.document.title='ROCO:popup-ok';} setTimeout(()=>window.close(),500);</script>""".toByteArray()
+                type = "text/html; charset=utf-8"
+            }
+            "/seed.html" -> { payload = "<!doctype html><title>ROCO:cookie-seeded</title>Fixture cookie set".toByteArray(); type = "text/html" }
+            "/check.html" -> { payload = "<!doctype html><title>ROCO:cookie-${if (hasCookie) "persisted" else "missing"}</title>Fixture cookie checked".toByteArray(); type = "text/html" }
+            else -> {
+                it.getOutputStream().write("HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".toByteArray())
+                return@use
+            }
+        }
+        val setCookie = if (path in setOf("/seed.html", "/probe.html")) "Set-Cookie: roco_probe=present; Max-Age=86400; Path=/; HttpOnly; SameSite=Lax\r\n" else ""
+        val response = "HTTP/1.1 200 OK\r\nContent-Type: $type\r\nContent-Length: ${payload.size}\r\nCache-Control: no-store\r\n${setCookie}Connection: close\r\n\r\n"
+        it.getOutputStream().apply { write(response.toByteArray()); write(payload); flush() }
+    }
+
+    override fun close() { socket.close(); workers.shutdownNow() }
+
+    companion object {
+        // Original tiny SWF: one frame executes fscommand("roco-probe", "executed").
+        private fun flashProbe(): ByteArray {
+            fun tag(code: Int, body: ByteArray): ByteArray = ByteBuffer.allocate(body.size + 2).order(ByteOrder.LITTLE_ENDIAN)
+                .putShort(((code shl 6) or body.size).toShort()).put(body).array()
+            val strings = "FSCommand:roco-probe\u0000executed\u0000".toByteArray()
+            val action = byteArrayOf(0x83.toByte(), strings.size.toByte(), 0) + strings + byteArrayOf(0)
+            val rectBits = "01110" + listOf(0, 6000, 0, 3000).joinToString("") { it.toString(2).padStart(14, '0') }
+            val padded = rectBits.padEnd((rectBits.length + 7) / 8 * 8, '0')
+            val rect = padded.chunked(8).map { it.toInt(2).toByte() }.toByteArray()
+            val body = rect + byteArrayOf(0, 12, 1, 0) + tag(12, action) + tag(1, byteArrayOf()) + tag(0, byteArrayOf())
+            return byteArrayOf(0x46, 0x57, 0x53, 7) + ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(body.size + 8).array() + body
+        }
+        private val page = """
+            <!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>ROCO:probe-loading</title>
+            <style>body{margin:0;background:#eef4ee}button{position:fixed;inset:0;width:100%;height:100%;z-index:5;background:transparent;border:0;color:#14532d;font:24px sans-serif}object{width:300px;height:150px}</style>
+            <script>window.RufflePlayer={config:{autoplay:'on',unmuteOverlay:'hidden',allowScriptAccess:true}};</script>
+            <object type="application/x-shockwave-flash" data="probe.swf"><param name="allowScriptAccess" value="always"></object>
+            <button onclick="window.open('popup.html','roco-login');">点此测试关联窗口（测试页，不是游戏）</button>
+            <script>
+            let hooked=false;
+            const watch=setInterval(()=>{
+              const player=document.querySelector('ruffle-object,ruffle-embed,ruffle-player');
+              if(player && typeof player.ruffle==='function' && !hooked){
+                hooked=true;
+                const api=player.ruffle();
+                api.addFSCommandHandler((command,args)=>{if(command==='roco-probe' && args==='executed')document.title='ROCO:flash-executed';});
+                api.load({url:new URL('probe.swf',location.href).href,autoplay:'on',allowScriptAccess:true}).catch(()=>document.title='ROCO:flash-failed');
+                clearInterval(watch);
+              }
+            },100);
+            setTimeout(()=>{if(!hooked)document.title='ROCO:ruffle-timeout';clearInterval(watch);},30000);
+            </script>
+        """.trimIndent()
+    }
+}
