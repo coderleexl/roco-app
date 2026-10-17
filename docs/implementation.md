@@ -23,6 +23,8 @@ Fourth run correctly gates on checkDebugAarMetadata (13 dependency compatibility
 
 Fifth run's full AAR report establishes exact requirements: GeckoView 158 and transitive AndroidX core 1.19 require API 37; AndroidX requires AGP >=9.1. Use official API-37-compatible AGP 9.2.0 + Gradle 9.4.1 + SDK37/Build Tools36; adopt AGP's built-in Kotlin (remove obsolete kotlin-android/kotlinOptions), retaining Java bytecode17, target35/min26. Confirmed against official AGP9.2 release notes and built-in Kotlin migration docs. Added real opener-focus regression to fixture smoke, in addition to pure window-selection tests.
 
+SDK37 packaging uses explicit minor levels: Google repository2-3.xml lists platforms;android-37.0, not android-37. Set compileSdk release(37) minorApiLevel=0 and exact sdkmanager package. No local SDK installation needed.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.

@@ -33,7 +33,7 @@ jobs:
         run: |
           # The hosted image already includes SDK tools. New sdkmanager builds
           # may need Java 21; Gradle continues to use the pinned Java 17 above.
-          JAVA_HOME="$JAVA_HOME_21_X64" "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-37' 'build-tools;36.0.0' 2>&1 | tee sdk-build.log
+          JAVA_HOME="$JAVA_HOME_21_X64" "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-37.0' 'build-tools;36.0.0' 2>&1 | tee sdk-build.log
       - name: Report SDK initialization errors
         if: failure()
         run: python tools/report_ci_failure.py sdk-build.log
