@@ -15,7 +15,7 @@ val prepareRuffle = tasks.register<PrepareRuffleTask>("prepareRuffle") {
 
 android {
     namespace = "io.github.coderleexl.rocoapp"
-    compileSdk { version = release(37) { minorApiLevel = 0 } }
+    compileSdk { version = release(37) { minorApiLevel = 2 } }
     defaultConfig {
         applicationId = "io.github.coderleexl.rocoapp"
         minSdk = 26

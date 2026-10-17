@@ -27,6 +27,8 @@ SDK37 packaging uses explicit minor levels: Google repository2-3.xml lists platf
 
 AGP9 rejects Provider values in legacy Android sourceSets. Migrated generated Ruffle assets to variant.sources.assets.addGeneratedSourceDirectory with typed task OutputDirectory, so asset generation carries its task dependency automatically.
 
+Full minor-level metadata check then established GeckoView158 needs API37.2 (not merely major37). Google stable repository contains android-37.2; pin compileSdk minorApiLevel=2 and that exact package. min/target SDK stay unchanged.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.

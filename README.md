@@ -15,7 +15,7 @@ Kotlin + GeckoView + 内置 Ruffle 的**验证工具**，不是腾讯官方客�
 
 ## 构建
 
-GitHub Actions 自动准备 JDK/SDK，你的电脑无需安装。开发者本地需要 JDK 17 和 SDK Platform 37 / Build Tools 36.0.0，在 `local.properties` 配置 SDK 路径：
+GitHub Actions 自动准备 JDK/SDK，你的电脑无需安装。开发者本地需要 JDK 17 和 SDK Platform 37.2 / Build Tools 36.0.0，在 `local.properties` 配置 SDK 路径：
 
 ```properties
 sdk.dir=D\:\\Android\\Sdk
