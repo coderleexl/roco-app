@@ -29,10 +29,11 @@ class MainActivity : ComponentActivity() {
     private lateinit var progress: ProgressBar
     lateinit var browser: GeckoView
         private set
-    private val windows = mutableListOf<GeckoSession>()
+    private val registry = WindowRegistry<GeckoSession>()
+    private val windows get() = registry.items
     private val history = mutableMapOf<GeckoSession, Boolean>()
     private val prompts = mutableListOf<AlertDialog>()
-    private val current get() = windows.last()
+    private val current get() = registry.current
     var popupOpened = 0
         private set
     var popupClosed = 0
@@ -66,7 +67,7 @@ class MainActivity : ComponentActivity() {
         action("官网") { current.loadUri(HOME) }
         action("返回") { goBack() }
         action("刷新") { current.reload() }
-        action("关闭子窗口") { if (windows.size > 1) closeWindow(current) }
+        action("关闭子窗口") { if (windows.size > 1) closeWindow(if (current != windows.first()) current else windows.last()) }
         action("桌面/手机") {
             desktop = !desktop
             windows.forEach { configureSettings(it.settings) }
@@ -84,7 +85,7 @@ class MainActivity : ComponentActivity() {
         setContentView(root)
 
         val main = newWindow()
-        windows.add(main)
+        registry.add(main)
         main.open(app.runtime)
         browser.setSession(main)
         main.setActive(true)
@@ -129,7 +130,7 @@ class MainActivity : ComponentActivity() {
             override fun onNewSession(session: GeckoSession, uri: String): GeckoResult<GeckoSession>? {
                 if (windows.size >= 5) { app.log.record("popup-limit"); return null }
                 val child = newWindow()
-                windows.add(child)
+                registry.add(child, session)
                 popupOpened++
                 app.log.record("popup-open", uri)
                 // Gecko itself opens this initially UNOPENED session and establishes its opener.
@@ -211,6 +212,7 @@ class MainActivity : ComponentActivity() {
         else handler.postDelayed({ showWhenOpened(session) }, 30)
     }
     private fun showWindow(session: GeckoSession) {
+        registry.focus(session)
         if (browser.session == session) return
         browser.session?.setActive(false)
         browser.releaseSession()
@@ -218,17 +220,17 @@ class MainActivity : ComponentActivity() {
         session.setActive(true)
     }
     private fun closeWindow(session: GeckoSession) {
-        if (!windows.remove(session)) return
+        if (!registry.remove(session)) return
         history.remove(session)
         if (browser.session == session) browser.releaseSession()
         session.close()
         popupClosed++
         app.log.record("popup-close")
-        windows.lastOrNull()?.let { showWindow(it) }
+        showWindow(current)
     }
     private fun goBack() {
         if (history[current] == true) current.goBack()
-        else if (windows.size > 1) closeWindow(current)
+        else if (current != windows.first()) closeWindow(current)
         else AlertDialog.Builder(this).setMessage("退出兼容性验证？")
             .setPositiveButton("退出") { _, _ -> finish() }.setNegativeButton("取消", null).show()
     }
@@ -250,7 +252,7 @@ class MainActivity : ComponentActivity() {
         handler.removeCallbacksAndMessages(null)
         prompts.forEach { if (it.isShowing) it.cancel() }
         browser.releaseSession()
-        windows.forEach { it.close() }; windows.clear()
+        windows.forEach { it.close() }; registry.clear()
         super.onDestroy()
     }
     companion object { const val HOME = "https://17roco.qq.com/" }

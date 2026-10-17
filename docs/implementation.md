@@ -11,6 +11,10 @@ Workspace: dedicated fresh clone at `D:\workspace\roco-app`; user explicitly req
 - [ ] Deterministic emulator tests including executed Flash, popup relationship, cookie persistence.
 - [ ] GitHub build/test results and artifacts; final review.
 
+First cloud run failed during setup-android, before compilation. Public job logs require GitHub login; annotations contain no SDK error. Replaced that action with explicit hosted SDK command plus build-failure annotations, using Java 21 only for sdkmanager and Java 17 for Gradle. Pinned ubuntu-24.04 to avoid upcoming ubuntu-latest migration.
+
+Fresh reviewer identified window focus/command-target mismatch. Added WindowRegistry plus regression tests: opener focus changes selected session without changing lifetime order; closing active popup returns to its opener. Node privacy RED (missing module) then GREEN 2/2 recorded locally; Kotlin tests will run in cloud (SDK unavailable locally).
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.
