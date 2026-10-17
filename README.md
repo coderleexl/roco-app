@@ -15,7 +15,7 @@ Kotlin + GeckoView + 内置 Ruffle 的**验证工具**，不是腾讯官方客�
 
 ## 构建
 
-GitHub Actions 自动准备 JDK/SDK，你的电脑无需安装。开发者本地需要 JDK 17 和 SDK Platform 35 / Build Tools 35.0.0，在 `local.properties` 配置 SDK 路径：
+GitHub Actions 自动准备 JDK/SDK，你的电脑无需安装。开发者本地需要 JDK 17 和 SDK Platform 36 / Build Tools 35.0.0，在 `local.properties` 配置 SDK 路径：
 
 ```properties
 sdk.dir=D\:\\Android\\Sdk
@@ -27,7 +27,7 @@ sdk.dir=D\:\\Android\\Sdk
 
 APK：`app/build/outputs/apk/debug/app-debug.apk`。云端同时生成 SHA256 校验文件。
 
-构建会按 [版本锁](third-party/ruffle.json) 下载并校验 Ruffle；GeckoView 158.0.20261007201254，Ruffle 0.7.1，AGP 8.9.2，Gradle 8.11.1，Kotlin 2.1.20。无需 NDK。
+构建会按 [版本锁](third-party/ruffle.json) 下载并校验 Ruffle；GeckoView 158.0.20261007201254，Ruffle 0.7.1，AGP 8.13.2，Gradle 8.13，Kotlin 2.1.20。无需 NDK。
 
 ## 安装与调试
 

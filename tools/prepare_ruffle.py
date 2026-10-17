@@ -34,8 +34,8 @@ def main():
     extension_id = manifest.get('browser_specific_settings', manifest.get('applications', {})).get('gecko', {}).get('id')
     # Firefox's manifest version may contain a fourth build component; it is
     # not the GitHub release tag. Exact upstream bytes are pinned by SHA256.
-    if not extension_id or not manifest.get('version'):
-        raise RuntimeError('Missing upstream extension identity/version')
+    if extension_id != lock['extension_id'] or manifest.get('version') != lock['manifest_version']:
+        raise RuntimeError('Unexpected pinned extension identity/version')
     (destination.parent / 'ruffle-build.json').write_text(json.dumps({
         'version': lock['version'], 'manifestVersion': manifest['version'],
         'id': extension_id, 'sha256': lock['sha256'],

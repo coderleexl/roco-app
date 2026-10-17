@@ -19,6 +19,8 @@ Second cloud run: SDK installation passes; prepareRuffle fails "Unexpected exten
 
 Third run reached APK checksum but APK absent. Found workflow shell default did not enforce pipefail around tee; explicitly select bash (GitHub uses -eo pipefail) so Gradle failures are gated and annotated before checksum. Emulator job uses Java 21 for its SDK tooling, independent from Gradle's Java 17.
 
+Fourth run correctly gates on checkDebugAarMetadata (13 dependency compatibility issues). Upgrade compile SDK to 36, AGP 8.13.2, Gradle 8.13, leaving target SDK 35/min SDK 26 unchanged. Record exact observed upstream manifest version 0.7.1.65535 and extension ID in lock, restoring strict identity validation separate from release version. Expand error excerpts to include AAR requirements, not just failure headings.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.

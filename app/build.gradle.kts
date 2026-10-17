@@ -12,7 +12,7 @@ val prepareRuffle by tasks.registering(Exec::class) {
 
 android {
     namespace = "io.github.coderleexl.rocoapp"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "io.github.coderleexl.rocoapp"
         minSdk = 26
