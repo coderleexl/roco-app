@@ -69,7 +69,7 @@ class LocalProbeServer : Closeable {
             fun tag(code: Int, body: ByteArray): ByteArray = ByteBuffer.allocate(body.size + 2).order(ByteOrder.LITTLE_ENDIAN)
                 .putShort(((code shl 6) or body.size).toShort()).put(body).array()
             val strings = "FSCommand:roco-probe\u0000executed\u0000".toByteArray()
-            val action = byteArrayOf(0x83.toByte(), strings.size.toByte(), 0) + strings + byteArrayOf(0)
+            val action = byteArrayOf(0x83.toByte(), strings.size.toByte(), 0) + strings + byteArrayOf(0x07, 0)
             val rectBits = "01110" + listOf(0, 6000, 0, 3000).joinToString("") { it.toString(2).padStart(14, '0') }
             val padded = rectBits.padEnd((rectBits.length + 7) / 8 * 8, '0')
             val rect = padded.chunked(8).map { it.toInt(2).toByte() }.toByteArray()

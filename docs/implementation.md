@@ -33,6 +33,8 @@ Kotlin compilation then found resolved stdlib2.4.20 metadata exceeds AGP9.2 defa
 
 With toolchain aligned, Kotlin compilation reported one nullable WebExtension result. Handle null for both bundled-extension registrations; never mark null installation results ready. API37.2/AGP9.2 recommended-version warning is retained (not suppressed); actual AAR validation now passes.
 
+GitHub truncates long individual build annotations; split error excerpts into <=3000-character chunks so final exceptions remain readable without authenticated log access. Stop the original fixture SWF after its FSCommand so repeated frame execution cannot overwrite popup callback markers.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.
