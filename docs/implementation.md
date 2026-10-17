@@ -44,3 +44,5 @@ Run39041784394: BUILD job success, APK artifact12104277928 (194521044 bytes); em
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.
 
 Ruling: use cloud JDK/SDK and test on API 35 x86_64; build includes arm64-v8a too. Native Rust/NDK and TCP bridge deferred pending evidence. Existing Firefox cases remain historical, not reproduced.
+
+Run39042167412: BUILD succeeds; emulator no longer reports the initial process crash, but first fixture times out with ruffle-install-failed. Preserve the exact built-in install error code and DEBUG-only fixed-extension exception in emulator failure reports before changing compatibility behavior. Extend instrumentation timeout to cover cumulative fixture waits and retain partial output on timeout.

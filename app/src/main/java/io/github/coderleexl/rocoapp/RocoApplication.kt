@@ -33,9 +33,10 @@ class RocoApplication : Application() {
                     ruffleReady = extension != null
                     ruffleState = if (ruffleReady) "Ruffle ${build.getString("version")} 已安装；游戏兼容性待验证" else "Ruffle 安装失败，请查看调试器"
                     log.record(if (ruffleReady) "ruffle-installed" else "ruffle-install-failed")
-                }, {
+                }, { error ->
                     ruffleState = "Ruffle 安装失败，请查看调试器"
-                    log.record("ruffle-install-failed")
+                    log.record("ruffle-install-failed", number = (error as? WebExtension.InstallException)?.code ?: 0)
+                    if (BuildConfig.DEBUG) android.util.Log.e("RocoExtension", "Bundled Ruffle installation failed", error)
                 })
         } catch (_: Exception) {
             ruffleState = "缺少或损坏的 Ruffle 资源"
