@@ -27,10 +27,10 @@ class RocoApplication : Application() {
         try {
             val build = JSONObject(assets.open("ruffle-build.json").bufferedReader().use { it.readText() })
             runtime.webExtensionController.ensureBuiltIn("resource://android/assets/ruffle/", build.getString("id"))
-                .accept({
-                    ruffleReady = true
-                    ruffleState = "Ruffle ${build.getString("version")} 已安装；游戏兼容性待验证"
-                    log.record("ruffle-installed")
+                .accept({ extension ->
+                    ruffleReady = extension != null
+                    ruffleState = if (ruffleReady) "Ruffle ${build.getString("version")} 已安装；游戏兼容性待验证" else "Ruffle 安装失败，请查看调试器"
+                    log.record(if (ruffleReady) "ruffle-installed" else "ruffle-install-failed")
                 }, {
                     ruffleState = "Ruffle 安装失败，请查看调试器"
                     log.record("ruffle-install-failed")
@@ -41,7 +41,7 @@ class RocoApplication : Application() {
         }
         runtime.webExtensionController.ensureBuiltIn("resource://android/assets/diagnostics/", "diagnostics@roco.local")
             .accept({ extension ->
-                extension.setMessageDelegate(object : WebExtension.MessageDelegate {
+                extension?.setMessageDelegate(object : WebExtension.MessageDelegate {
                     override fun onMessage(nativeApp: String, message: Any, sender: WebExtension.MessageSender): GeckoResult<Any>? {
                         if (sender.webExtension.id != "diagnostics@roco.local") return null
                         val data = message as? JSONObject ?: return null
@@ -52,8 +52,8 @@ class RocoApplication : Application() {
                         return null
                     }
                 }, "roco_diagnostics")
-                diagnosticReady = true
-                log.record("diagnostics-installed")
+                diagnosticReady = extension != null
+                log.record(if (diagnosticReady) "diagnostics-installed" else "diagnostics-install-failed")
             }, { log.record("diagnostics-install-failed") })
     }
 }

@@ -31,6 +31,8 @@ Full minor-level metadata check then established GeckoView158 needs API37.2 (not
 
 Kotlin compilation then found resolved stdlib2.4.20 metadata exceeds AGP9.2 default compiler2.2 reader. Following AGP's documented higher-KGP override, explicitly pin kotlin-gradle-plugin2.4.20 on buildscript classpath, without applying the incompatible kotlin-android module plugin.
 
+With toolchain aligned, Kotlin compilation reported one nullable WebExtension result. Handle null for both bundled-extension registrations; never mark null installation results ready. API37.2/AGP9.2 recommended-version warning is retained (not suppressed); actual AAR validation now passes.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.
