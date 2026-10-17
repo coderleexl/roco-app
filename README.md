@@ -27,7 +27,7 @@ sdk.dir=D\:\\Android\\Sdk
 
 APK：`app/build/outputs/apk/debug/app-debug.apk`。云端同时生成 SHA256 校验文件。
 
-构建会按 [版本锁](third-party/ruffle.json) 下载并校验 Ruffle；GeckoView 158.0.20261007201254，Ruffle 0.7.1，AGP 9.2.0（内置 Kotlin），Gradle 9.4.1。无需 NDK。
+构建会按 [版本锁](third-party/ruffle.json) 下载并校验 Ruffle；GeckoView 158.0.20261007201254，Ruffle 0.7.1，AGP 9.2.0（内置 Kotlin，编译器固定 2.4.20），Gradle 9.4.1。无需 NDK。
 
 ## 安装与调试
 

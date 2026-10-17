@@ -29,6 +29,8 @@ AGP9 rejects Provider values in legacy Android sourceSets. Migrated generated Ru
 
 Full minor-level metadata check then established GeckoView158 needs API37.2 (not merely major37). Google stable repository contains android-37.2; pin compileSdk minorApiLevel=2 and that exact package. min/target SDK stay unchanged.
 
+Kotlin compilation then found resolved stdlib2.4.20 metadata exceeds AGP9.2 default compiler2.2 reader. Following AGP's documented higher-KGP override, explicitly pin kotlin-gradle-plugin2.4.20 on buildscript classpath, without applying the incompatible kotlin-android module plugin.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.
