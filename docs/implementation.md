@@ -25,6 +25,8 @@ Fifth run's full AAR report establishes exact requirements: GeckoView 158 and tr
 
 SDK37 packaging uses explicit minor levels: Google repository2-3.xml lists platforms;android-37.0, not android-37. Set compileSdk release(37) minorApiLevel=0 and exact sdkmanager package. No local SDK installation needed.
 
+AGP9 rejects Provider values in legacy Android sourceSets. Migrated generated Ruffle assets to variant.sources.assets.addGeneratedSourceDirectory with typed task OutputDirectory, so asset generation carries its task dependency automatically.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.

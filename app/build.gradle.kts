@@ -2,11 +2,15 @@ plugins {
     id("com.android.application")
 }
 
-val prepareRuffle by tasks.registering(Exec::class) {
+abstract class PrepareRuffleTask : Exec() {
+    @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
+}
+
+val prepareRuffle = tasks.register<PrepareRuffleTask>("prepareRuffle") {
     workingDir(rootDir)
     commandLine("python", "tools/prepare_ruffle.py")
     inputs.files(rootProject.file("tools/prepare_ruffle.py"), rootProject.file("third-party/ruffle.json"))
-    outputs.dir(layout.buildDirectory.dir("generated/ruffleAssets"))
+    outputDirectory.set(layout.buildDirectory.dir("generated/ruffleAssets"))
 }
 
 android {
@@ -23,11 +27,14 @@ android {
     }
     buildFeatures { buildConfig = true }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
-    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/ruffleAssets"))
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
     lint { abortOnError = true }
 }
-tasks.named("preBuild").configure { dependsOn(prepareRuffle) }
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(prepareRuffle) { it.outputDirectory }
+    }
+}
 dependencies {
     implementation("org.mozilla.geckoview:geckoview:158.0.20261007201254")
     implementation("androidx.activity:activity-ktx:1.10.1")
