@@ -35,6 +35,8 @@ With toolchain aligned, Kotlin compilation reported one nullable WebExtension re
 
 GitHub truncates long individual build annotations; split error excerpts into <=3000-character chunks so final exceptions remain readable without authenticated log access. Stop the original fixture SWF after its FSCommand so repeated frame execution cannot overwrite popup callback markers.
 
+Run39041589848: Kotlin/Java compilation, JVM tests, assembleDebug and assembleDebugAndroidTest completed. Lint fails only on two missing includeSubdomains attributes for loopback domains. Explicit false narrows cleartext scope; no Lint baseline/suppression added.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.
