@@ -20,5 +20,7 @@ for method in ('flashExecutesAndPopupRetainsOpenerAndCookie', 'seedPersistentCoo
     (out / f'{method}.txt').write_text(text, encoding='utf-8')
     print(text)
     if result.returncode or 'OK (1 test)' not in text or 'FAILURES!!!' in text:
+        excerpt = text[-11000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        print(f'::error title=Smoke test {method}::{excerpt}', flush=True)
         raise RuntimeError(f'Instrumentation failed: {method}')
 print('All three separate-process smoke tests passed')

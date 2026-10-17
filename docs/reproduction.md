@@ -9,6 +9,10 @@
 
 No user account login, Firefox debug configuration change, screenshot or game interaction has been performed by the developer agent for this project.
 
+## Current public-entry observation (Windows, 2026-10-17)
+
+Unauthenticated Python HTTP checks: `/` 200 (374 ms), `/default.html` 200 (122 ms), `/iframe.html` 200 (127 ms), `/cgi-bin/login` 404 (177 ms). The iframe's script-based browser redirect is not executed by this HTTP check, so its current authentication target remains unknown. This confirms the old route's HTTP failure only; it does not reproduce independent-SWF login or identify its cause.
+
 ## Repeatable prototype check
 
 Open App → wait for Ruffle status → official home → use official login → record whether new window appears → user authenticates → record return to main window → select server.

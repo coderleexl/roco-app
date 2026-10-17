@@ -32,13 +32,16 @@ def main():
         archive.extractall(destination)
     manifest = json.loads((destination / 'manifest.json').read_text())
     extension_id = manifest.get('browser_specific_settings', manifest.get('applications', {})).get('gecko', {}).get('id')
-    if not extension_id or manifest['version'] != lock['version']:
-        raise RuntimeError('Unexpected extension identity/version')
+    # Firefox's manifest version may contain a fourth build component; it is
+    # not the GitHub release tag. Exact upstream bytes are pinned by SHA256.
+    if not extension_id or not manifest.get('version'):
+        raise RuntimeError('Missing upstream extension identity/version')
     (destination.parent / 'ruffle-build.json').write_text(json.dumps({
-        'version': lock['version'], 'id': extension_id, 'sha256': lock['sha256'],
+        'version': lock['version'], 'manifestVersion': manifest['version'],
+        'id': extension_id, 'sha256': lock['sha256'],
         'permissions': manifest.get('permissions', [])
     }), encoding='utf-8')
-    print(f"Verified Ruffle {lock['version']} ({extension_id})")
+    print(f"Verified Ruffle {lock['version']}, extension {manifest['version']} ({extension_id})")
 
 if __name__ == '__main__':
     main()
