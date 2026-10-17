@@ -37,6 +37,8 @@ GitHub truncates long individual build annotations; split error excerpts into <=
 
 Run39041589848: Kotlin/Java compilation, JVM tests, assembleDebug and assembleDebugAndroidTest completed. Lint fails only on two missing includeSubdomains attributes for loopback domains. Explicit false narrows cleartext scope; no Lint baseline/suppression added.
 
+Run39041784394: BUILD job success, APK artifact12104277928 (194521044 bytes); emulator first instrumentation reports "Process crashed" (not a pass). Added clean-emulator AndroidRuntime crash capture/chunked annotations. Static lifecycle check found parent runtime initialization in Application.onCreate would also run in Gecko child services; move initialization to an idempotent method invoked only by MainActivity. Preserve an existing RufflePlayer object in fixture config instead of replacing extension-injected API.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.

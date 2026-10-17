@@ -19,8 +19,10 @@ class RocoApplication : Application() {
         private set
     val probe by lazy { LocalProbeServer() }
 
-    override fun onCreate() {
-        super.onCreate()
+    // Application.onCreate also runs in Gecko's child service processes.
+    // Start the parent runtime only when our main Activity asks for it.
+    fun startBrowser() {
+        if (::runtime.isInitialized) return
         runtime = GeckoRuntime.create(this, GeckoRuntimeSettings.Builder()
             .remoteDebuggingEnabled(BuildConfig.DEBUG)
             .consoleOutput(false).debugLogging(false).build())

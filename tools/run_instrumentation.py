@@ -20,7 +20,16 @@ for method in ('flashExecutesAndPopupRetainsOpenerAndCookie', 'seedPersistentCoo
     (out / f'{method}.txt').write_text(text, encoding='utf-8')
     print(text)
     if result.returncode or 'OK (1 test)' not in text or 'FAILURES!!!' in text:
-        excerpt = text[-11000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-        print(f'::error title=Smoke test {method}::{excerpt}', flush=True)
+        excerpt = text[-18000:]
+        for offset in range(0, len(excerpt), 3000):
+            chunk = excerpt[offset:offset+3000].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+            print(f'::error title=Smoke test {method} part {offset // 3000 + 1}::{chunk}', flush=True)
+        crash = subprocess.run(['adb', 'logcat', '-d', '-s', 'AndroidRuntime:E', '*:S'], capture_output=True, text=True, timeout=10).stdout[-9000:]
+        # This runner is a fresh, unauthenticated emulator with only fixed
+        # test fixtures, never a user's phone or official login session.
+        (out / f'{method}-crash.txt').write_text(crash, encoding='utf-8')
+        for offset in range(0, len(crash), 3000):
+            chunk = crash[offset:offset+3000].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+            print(f'::error title=Emulator runtime error part {offset // 3000 + 1}::{chunk}', flush=True)
         raise RuntimeError(f'Instrumentation failed: {method}')
 print('All three separate-process smoke tests passed')

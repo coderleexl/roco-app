@@ -80,7 +80,7 @@ class LocalProbeServer : Closeable {
             <!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
             <title>ROCO:probe-loading</title>
             <style>body{margin:0;background:#eef4ee}button{position:fixed;inset:0;width:100%;height:100%;z-index:5;background:transparent;border:0;color:#14532d;font:24px sans-serif}object{width:300px;height:150px}</style>
-            <script>window.RufflePlayer={config:{autoplay:'on',unmuteOverlay:'hidden',allowScriptAccess:true}};</script>
+            <script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config={autoplay:'on',unmuteOverlay:'hidden',allowScriptAccess:true};</script>
             <object type="application/x-shockwave-flash" data="probe.swf"><param name="allowScriptAccess" value="always"></object>
             <button onclick="window.open('popup.html','roco-login');">点此测试关联窗口（测试页，不是游戏）</button>
             <script>
