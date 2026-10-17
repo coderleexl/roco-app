@@ -1,6 +1,5 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
 val prepareRuffle by tasks.registering(Exec::class) {
@@ -12,7 +11,7 @@ val prepareRuffle by tasks.registering(Exec::class) {
 
 android {
     namespace = "io.github.coderleexl.rocoapp"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "io.github.coderleexl.rocoapp"
         minSdk = 26
@@ -24,7 +23,6 @@ android {
     }
     buildFeatures { buildConfig = true }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
-    kotlinOptions { jvmTarget = "17" }
     sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/ruffleAssets"))
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
     lint { abortOnError = true }

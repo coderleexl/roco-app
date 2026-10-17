@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
     var pageSucceeded = false
         private set
     val windowCount get() = windows.size
+    val mainWindowSelected get() = windows.isNotEmpty() && current == windows.first()
     private var desktop = true
     private var lastError = ""
 

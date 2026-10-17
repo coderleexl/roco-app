@@ -46,7 +46,7 @@ class LocalProbeServer : Closeable {
             "/probe.swf" -> { payload = flashProbe(); type = "application/x-shockwave-flash" }
             "/probe.html" -> { payload = page.toByteArray(); type = "text/html; charset=utf-8" }
             "/popup.html" -> {
-                payload = """<!doctype html><title>popup</title><script>if(window.opener && ${hasCookie}) {opener.document.title='ROCO:popup-ok';} setTimeout(()=>window.close(),500);</script>""".toByteArray()
+                payload = """<!doctype html><title>popup</title><script>if(window.opener && ${hasCookie}) {opener.focus(); opener.document.title='ROCO:popup-focused'; setTimeout(()=>{opener.document.title='ROCO:popup-ok';window.close();},1500);}else{setTimeout(()=>window.close(),500);}</script>""".toByteArray()
                 type = "text/html; charset=utf-8"
             }
             "/seed.html" -> { payload = "<!doctype html><title>ROCO:cookie-seeded</title>Fixture cookie set".toByteArray(); type = "text/html" }

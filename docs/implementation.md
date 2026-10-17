@@ -21,6 +21,8 @@ Third run reached APK checksum but APK absent. Found workflow shell default did 
 
 Fourth run correctly gates on checkDebugAarMetadata (13 dependency compatibility issues). Upgrade compile SDK to 36, AGP 8.13.2, Gradle 8.13, leaving target SDK 35/min SDK 26 unchanged. Record exact observed upstream manifest version 0.7.1.65535 and extension ID in lock, restoring strict identity validation separate from release version. Expand error excerpts to include AAR requirements, not just failure headings.
 
+Fifth run's full AAR report establishes exact requirements: GeckoView 158 and transitive AndroidX core 1.19 require API 37; AndroidX requires AGP >=9.1. Use official API-37-compatible AGP 9.2.0 + Gradle 9.4.1 + SDK37/Build Tools36; adopt AGP's built-in Kotlin (remove obsolete kotlin-android/kotlinOptions), retaining Java bytecode17, target35/min26. Confirmed against official AGP9.2 release notes and built-in Kotlin migration docs. Added real opener-focus regression to fixture smoke, in addition to pure window-selection tests.
+
 ## Baseline
 
 Repository empty; no AGENTS.md in checkout or D:\workspace / D:\. Windows PATH Java 8, default SDK absent. Authorized Meizu 21 is Android 15 / arm64, Firefox 158.0. No phone writes or login interactions performed for this project.

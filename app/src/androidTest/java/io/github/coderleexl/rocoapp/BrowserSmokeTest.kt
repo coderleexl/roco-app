@@ -43,6 +43,9 @@ class BrowserSmokeTest {
             val time = SystemClock.uptimeMillis()
             MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, point[0].toFloat(), point[1].toFloat(), 0).also { instrumentation.sendPointerSync(it); it.recycle() }
             MotionEvent.obtain(time, time + 80, MotionEvent.ACTION_UP, point[0].toFloat(), point[1].toFloat(), 0).also { instrumentation.sendPointerSync(it); it.recycle() }
+            await(scenario, "opener focus selects the visible main while child remains alive") {
+                it.windowCount == 2 && it.mainWindowSelected && it.probeTitle == "ROCO:popup-focused"
+            }
             await(scenario, "associated popup closes and returns callback") {
                 it.popupOpened == 1 && it.popupClosed == 1 && it.windowCount == 1 && it.probeTitle == "ROCO:popup-ok"
             }
