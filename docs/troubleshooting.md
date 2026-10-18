@@ -1,5 +1,13 @@
 # Troubleshooting
 
+0.1.12 Debug日志自动保存于应用私有 `files/diagnostics/events.jsonl` 及 `events.previous.jsonl`，各最多128KiB。无需打开诊断弹窗或截图，使用：
+
+```powershell
+python tools/read_device_diagnostics.py --adb 'D:\workspace\platform-tools-latest-windows\platform-tools\adb.exe' --serial 461QYGDN225SM
+```
+
+输出仅at/kind/number。先确认app-version13，再看phase-login/phase-dir-requests、dir-ws-attempt/open/error、socket-open/connect-start/连接结果/first-send/first-receive。文件尚未产生或轮换前一份不存在会显示available:false；高频队列可能丢日志，缺一条不能单独证明某阶段从未执行。保留原文件以跨覆盖升级核对版本；不要收集原始HAR、全量logcat、网页trace或Cookie。用户0.1.11已确认浏览器/Flash两种试听可听，选服排障不要求重复试听。
+
 - **0.1.10 startup stays at preparing connection**: inspect fixed socket-config-request/socket-init-failed/socket-bridge-ready categories. Native configuration uses JSON text rather than a nested JSONObject response, which failed on the local Gecko158 run. Background request timeouts/retries are bounded. Never dump the capability/proxyUrl or fall back to an unconfigured official game silently.
 - **0.1.10 unmute still silent**: after the user's real tap, validate only numeric fields of __timeCasketAudioState (created/running/suspended/closed/attempts/rejected). Do not dump contexts or change system audio routing. WebAudio and native HTML-media autoplay decisions are separate; running state still does not prove audible physical output.
 - **0.1.10 directory connection still fails**: game loadedConfig should have2 proxy entries; do not output proxyUrl. Read bounded engine classifications and fixed native socket-connected/socket-connect-failed/socket-read-failed/socket-write-failed categories. Endpoint index0=dir,1=stat. Browser loopback policy, DNS/TCP failure, invalid official login, missing numbered-zone mappings and later game logic are separate possibilities. Only dir/stat443 are implemented; extend a zone only after verifying actual official host/port. Preserve existing user proxy/VPN/TUN settings.

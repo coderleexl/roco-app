@@ -138,6 +138,7 @@ class MainActivity : ComponentActivity() {
                 session: GeckoSession,
                 perm: GeckoSession.PermissionDelegate.ContentPermission
             ): GeckoResult<Int>? {
+                app.log.record("content-permission", number = perm.permission)
                 if (perm.permission != GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_AUDIBLE &&
                     perm.permission != GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_INAUDIBLE) return null
                 val allowed = PlaybackPolicy.allowsAutoplay(perm.uri, perm.permission)

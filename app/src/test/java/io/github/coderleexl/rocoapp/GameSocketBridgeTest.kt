@@ -40,7 +40,12 @@ class GameSocketBridgeTest {
             }
         }.apply { isDaemon = true; start() }
         val connects = AtomicInteger()
-        GameSocketBridge(connect = { host ->
+        val events = java.util.Collections.synchronizedList(mutableListOf<Pair<String, Int>>())
+        val totals = CountDownLatch(2)
+        GameSocketBridge(record = { kind, value ->
+            events.add(kind to value)
+            if (kind in setOf("socket-dir-sent", "socket-dir-received")) totals.countDown()
+        }, connect = { host ->
             assertEquals("dir.17roco.qq.com", host)
             connects.incrementAndGet()
             Socket("127.0.0.1", echo.localPort)
@@ -71,6 +76,11 @@ class GameSocketBridgeTest {
             assertTrue(received.await(5, TimeUnit.SECONDS))
             good.closeBlocking()
             assertEquals(1, connects.get())
+            assertTrue(totals.await(3, TimeUnit.SECONDS))
+            assertTrue(events.contains("socket-first-send" to 0))
+            assertTrue(events.contains("socket-first-receive" to 0))
+            assertTrue(events.contains("socket-dir-sent" to payload.size))
+            assertTrue(events.contains("socket-dir-received" to payload.size))
         }
         echo.close(); echoThread.join(2000)
     }

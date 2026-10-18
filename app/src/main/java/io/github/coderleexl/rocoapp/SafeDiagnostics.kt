@@ -17,12 +17,14 @@ object SafeDiagnostics {
 }
 
 /** Metadata only. No raw console text, titles, headers, bodies, cookies or query strings. */
-class DiagnosticLog {
+class DiagnosticLog(private val signal: (String, Int?) -> Unit = { _, _ -> }) {
     private val events = ArrayDeque<String>()
     @Synchronized fun record(kind: String, url: String? = null, number: Int? = null) {
         val label = kind.takeIf { it.matches(Regex("[a-z_-]{1,40}")) } ?: "event"
         events.addLast("${System.currentTimeMillis()} $label ${url?.let(SafeDiagnostics::url) ?: ""} ${number ?: ""}")
         while (events.size > 300) events.removeFirst()
+        // Observer receives only the validated category and a number, never URLs.
+        try { signal(label, number) } catch (_: Exception) { /* Diagnostics never interrupt the browser. */ }
     }
     @Synchronized fun text(): String = events.joinToString("\n")
 }

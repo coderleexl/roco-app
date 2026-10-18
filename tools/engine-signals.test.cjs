@@ -2,10 +2,10 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
-function install(url) {
+function install(url,WebSocket) {
   const calls=[];
   const events={};
-  const window={location:{href:url},document:{baseURI:url,addEventListener:(name,fn)=>events[name]=fn},console:Object.fromEntries(['log','warn','error'].map(level=>[level,(...args)=>calls.push([level,...args])]))};
+  const window={WebSocket,location:{href:url},document:{baseURI:url,addEventListener:(name,fn)=>events[name]=fn},console:Object.fromEntries(['log','warn','error'].map(level=>[level,(...args)=>calls.push([level,...args])]))};
   const source=fs.readFileSync(require.resolve('../app/src/main/assets/compatibility/engine-signals.js'),'utf8');
   vm.runInNewContext(source,{window,URL});
   return {window,calls,events};
@@ -27,6 +27,17 @@ test('engine signal snapshot classifies failures without retaining raw messages 
   assert(!JSON.stringify(state).includes('SECRET'));
   for(let i=0;i<1100;i++)window.console.warn('Socket failed');
   assert.equal(state.socketMentions,1000);
+});
+test('WebSocket diagnostics observe only exact bridge destinations without retaining capabilities',()=>{
+  class Socket {constructor(url){this.url=url;this.events={};}addEventListener(k,fn){this.events[k]=fn;}}
+  const {window}=install('https://web2.17roco.qq.com/game',Socket);
+  const capability='a'.repeat(48),address='ws://127.0.0.1:12345/'+capability+'/dir.17roco.qq.com';
+  const socket=new window.WebSocket(address);assert(socket instanceof Socket);
+  socket.events.open();socket.events.error();socket.events.close();
+  const state=window.__timeCasketEngineSignals;
+  assert.equal(state.dirWsAttempt,1);assert.equal(state.dirWsOpen,1);assert.equal(state.dirWsError,1);assert.equal(state.dirWsClose,1);
+  new window.WebSocket('wss://other.example/SECRET');
+  assert.equal(state.dirWsAttempt,1);assert(!JSON.stringify(state).includes(capability));assert(!JSON.stringify(state).includes('SECRET'));
 });
 test('movie traces retain fixed milestones only and ignore other movies',()=>{
   const {window,events}=install('https://web2.17roco.qq.com/game');

@@ -29,29 +29,14 @@ object AudioProbeFixture {
             tag(12, byteArrayOf(7, 0)) + tag(1, byteArrayOf()) + tag(0, byteArrayOf())
         return byteArrayOf(0x46, 0x57, 0x53, 7) + ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(body.size + 8).array() + body
     }
+    val events = setOf("audio-page-ready", "audio-web-running", "audio-web-failed", "audio-flash-request", "audio-source-wait",
+        "audio-flash-created", "audio-flash-loading", "audio-flash-ready", "audio-flash-started", "audio-flash-failed", "audio-flash-timeout",
+        "audio-context-created", "audio-context-running", "audio-context-suspended", "audio-resume-failed", "audio-buffer-started", "audio-buffer-nonzero", "audio-script-error")
     val page = """
         <!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>ROCO:audio-ready</title><style>body{font:18px sans-serif;padding:20px;line-height:1.6}button{position:fixed;left:5%;width:90%;height:20%;font:inherit}#web{top:28%}#flash{top:52%}#status{position:fixed;top:74%;left:5%;right:5%}#movie{position:fixed;bottom:0}ruffle-player{width:120px;height:40px}</style>
+        <title>ROCO:audio-loading</title><style>body{font:18px sans-serif;padding:20px;line-height:1.6}button{position:fixed;left:5%;width:90%;height:20%;font:inherit}#web{top:28%}#flash{top:52%}#status{position:fixed;top:74%;left:5%;right:5%}#movie{position:fixed;bottom:0}ruffle-player{width:120px;height:40px}</style>
         <p>点击后各播放一次短提示音。请记住哪一种能听见，测试后点“关闭子窗口”返回游戏。</p>
         <button id="web">试听浏览器声音</button><button id="flash">试听 Flash 声音</button><p id="status" role="status">等待试听</p><div id="movie"></div>
-        <script>
-        const status=document.getElementById('status');let context,player,busy=false;
-        document.getElementById('web').onclick=async()=>{
-          try{context=context||new AudioContext();await context.resume();const tone=context.createOscillator(),gain=context.createGain();
-            tone.frequency.value=660;gain.gain.setValueAtTime(0,context.currentTime);gain.gain.linearRampToValueAtTime(.18,context.currentTime+.02);gain.gain.linearRampToValueAtTime(0,context.currentTime+.5);
-            tone.connect(gain).connect(context.destination);tone.start();tone.stop(context.currentTime+.5);tone.onended=()=>{tone.disconnect();gain.disconnect();};
-            document.title=context.state==='running'?'ROCO:audio-web-running':'ROCO:audio-web-blocked';status.textContent='浏览器提示音已请求播放，请以实际听到为准';
-          }catch(_){status.textContent='浏览器声音启动失败';}
-        };
-        document.getElementById('flash').onclick=async()=>{
-          if(busy)return;const ruffle=window.RufflePlayer?.newest?.();if(!ruffle){status.textContent='Flash 播放器尚未就绪，请稍后重试';return;}busy=true;
-          try{if(!player){player=ruffle.createPlayer();document.getElementById('movie').appendChild(player);}
-            await player.ruffle().load({url:new URL('audio.swf',location.href).href,autoplay:'on',allowScriptAccess:false,preferredRenderer:'webgl'});
-            status.textContent='Flash 提示音已请求播放，请以实际听到为准';
-            let tries=0;const watch=setInterval(()=>{if(player.ruffle().readyState===2){document.title='ROCO:audio-flash-ready';clearInterval(watch);}else if(++tries>=100)clearInterval(watch);},100);
-          }catch(_){status.textContent='Flash 声音启动失败';}finally{busy=false;}
-        };
-        window.addEventListener('pagehide',()=>context?.close(),{once:true});
-        </script></html>
+        <script src="audio.js"></script></html>
     """.trimIndent()
 }

@@ -4,7 +4,17 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
-## 最新0.1.11：游戏层刷新、声音分层试听与加载阶段诊断（2026-10-18）
+## 最新0.1.12：私有文件日志与选服连接分层诊断（2026-10-18）
+
+- 用户0.1.11先报告浏览器试听有声/Flash未加载，随后再次点击确认Flash也有声音。只读本地样例readyState2/metadata/playing、无panic。因此基础浏览器/Flash声音已有人耳证据；**官网音乐、服务器列表/地图仍未通过**，不再一概按全局静音处理。用户要求继续加日志，并明确希望自动写目录，避免反复读弹窗。
+- 主游戏只读阶段：traceAttached1/traceMessages16/configsLoaded1/loginInitialized1/directoryRequests3/traceErrors0；资源与主播放器继续正常。用户手动打开诊断后用UI文字树读取固定原生类别（无截图/无文件保存原始UI），有socket-bridge-ready、compatibility-installed、game-frame-ready1，保留日志未见TCP成功/失败。首次无PTY读取未取得XML，改强制PTY后成功；后续改私有日志，不要求用户再打开弹窗。不能据GUI请求计数认定已发出TCP数据。
+- 0.1.12/code13、兼容扩展1.3.2：Debug自动写files/diagnostics/events.jsonl，单份128KiB+前一份128KiB，异步512队列，满时丢弃。字段仅at/kind/number；不含URL/票据/错误正文/数据包，原有浏览器数据不清理。新增tools/read_device_diagnostics.py，通过adb run-as读取并再次验证结构，不导出原始logcat或UI。
+- 浏览器仅观察两个既有精确回环能力路径的WebSocket attempt/open/error/close；加载阶段与WS计数经原有受限content port落到原生日志。TCP桥新增open/connect-start、DNS/地址拒绝/超时/拒绝连接分类、首次发送/接收和结束总字节。content-permission仅记编号，未增加权限授权，未修改任何VPS/代理/TUN/系统网络/目标策略。
+- 本地声音测试新增audio.js和固定枚举日志端点，等待播放器冷启动且有超时/重试；检测原创PCM的非零混音缓冲后才显示已启动，不把metadata或静音循环缓冲当声音证明。仅本地样例检查短暂样本，不导出波形，只记录首个非零标志；官网音频不改。User已确认0.1.11两种可听，无需为本轮选服重复试听。
+- 已验证：Node35/JVM11/lint/主包及测试包，最后构建39s；签名及完整官方Ruffle资源校验通过。APK SHA256 `ec81e37aebcad37320e2b1747474d692bc58449405c06810fd086042f4f67a3c`。隔离模拟器四项均OK(1test)：强化声音6.71s、Flash/关联窗口6.815s、seed7.016s、重启Cookie3.865s。原生私有文件读回含audio-buffer-nonzero1和audio-flash-started，无URL/自由文本。已adb install -r覆盖安装Success，包查询确认0.1.12/code13，保留数据；选服新日志待用户进入后读取。
+- 下一步：覆盖升级后由用户进入原来不能选服的位置，直接读取私有日志，按dir-ws-attempt→socket-open→connect结果→首次收发分层定位，不再要求打开诊断或截图。真实列表/区服/地图与官方音乐仍待验收，禁止仅凭构建或连接成立宣告兼容完成。
+
+## 历史0.1.11：游戏层刷新、声音分层试听与加载阶段诊断（2026-10-18）
 
 - 用户最新反馈：0.1.10进入后连接弹窗消失，但不能选服务器；声音仍不确定是否是首页本身没有背景音乐；要求刷新停留游戏/选服层。**服务器列表、真实声音、地图均未验收通过**。
 - 刷新后的只读证据：main就绪、音量1、socketProxy数量2、无panic/AVM2错误分类；AutoExec和Login插件也HTTP200。首页3个和主游戏1个AudioContext均running、无可见unmute遮罩；系统媒体流未静音且走speaker。这只能排除本次快照的挂起/零音量，不能证明音频样本实际播放或可听。旧audio-policy警告是缓存累计，不当成当前仍被阻止的证明。

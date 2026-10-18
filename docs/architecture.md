@@ -1,5 +1,11 @@
 # Architecture
 
+## 0.1.12私有日志与连接观测
+
+Debug下DiagnosticLog的独立观察器只收到校验后的类别和数字，不接收URL。DiagnosticFileStore异步单线程写入私有files/diagnostics/events.jsonl，单文件128KiB，轮换events.previous.jsonl，队列512、繁忙时可丢弃；写入失败不阻断游戏。每条只有at/kind/number，覆盖安装保留文件。原内存诊断仍保留既有脱敏URL，但这些URL不会进入新文件或固定TimeCasket logcat标签。读取工具再次验证字段类型，不输出未通过校验的行。
+
+MAIN只观察精确ws://127.0.0.1能力路径的dir/stat WebSocket生命周期并保留计数，不改变请求或任何其他WebSocket；native port按既有来源/session校验接收固定整数。原生桥只增加连接/错误/首次字节/结束总量，不采集载荷。声音测试脚本迁到固定本地audio.js；冷启动有界等待、仅真实点击恢复挂起上下文，原创PCM样例产生非零混音缓冲后才报告started。样例波形只在本地短暂检查，不导出数据；只记录首个非零标志，避免持续混音日志刷屏。官网音频/网络策略与上游Ruffle字节保持原样。
+
 ## 0.1.11游戏刷新与声音诊断
 
 GameFrameController按GeckoSession保存兼容扩展content port；消息来源必须为固定扩展、同一session、content环境与精确HTTPS web2来源，最多8个port。内置扩展新增nativeMessagingFromContent，仅ISOLATED game-control脚本连此通道；MAIN脚本不接收native端口。Firefox Xray waiver只用于调用页面自己的无参Ruffle API；核实就绪且loadedConfig.url为官方/main.swf后，顶栏刷新仅调用reload()，不复制parameters或URL、不导航父页面。重复加载期间不重复发请求，关闭窗口/Activity断开端口。Ruffle保留现有配置不等于官方登录一定仍有效。

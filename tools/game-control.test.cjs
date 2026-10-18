@@ -14,7 +14,7 @@ function install({origin='https://web2.17roco.qq.com',movie='https://res.17roco.
   const document={baseURI:origin+'/',querySelectorAll:()=>[player]};
   const browser={runtime:{connectNative(name){assert.equal(name,'time_casket_game_control');connections++;return port;}}};
   vm.runInNewContext(source,{window,document,browser,URL,Promise});
-  return {sent,api,request:()=>receiver({kind:'reload'}),events,tick:()=>interval(),disconnect:()=>disconnect(),get calls(){return calls;},get connections(){return connections;},get cleared(){return cleared;},get closed(){return closed;}};
+  return {window,sent,api,request:()=>receiver({kind:'reload'}),events,tick:()=>interval(),disconnect:()=>disconnect(),get calls(){return calls;},get connections(){return connections;},get cleared(){return cleared;},get closed(){return closed;}};
 }
 test('refresh invokes only ready main Ruffle API without exporting parameters or navigating',async()=>{
   const env=install();assert.equal(env.sent[0].ready,true);
@@ -22,6 +22,13 @@ test('refresh invokes only ready main Ruffle API without exporting parameters or
   assert.equal(env.calls,1);assert.equal(env.sent.at(-1).kind,'reloaded');
   assert(!JSON.stringify(env.sent).includes('url'));
   env.events.pagehide();assert.equal(env.closed,1);assert.equal(env.cleared,1);
+});
+test('native phase telemetry sends validated counters once and never arbitrary fields',()=>{
+  const env=install();env.window.__timeCasketEngineSignals={traceAttached:1,configsLoaded:2,loginInitialized:'SECRET',directoryRequests:1001,traceErrors:0,missingSocketProxy:0,cookie:'SECRET'};
+  env.tick();const signal=env.sent.at(-1);assert.equal(signal.kind,'signals');
+  assert.deepEqual(Object.keys(signal.values).sort(),['configsLoaded','missingSocketProxy','traceAttached','traceErrors']);
+  assert(!JSON.stringify(signal).includes('SECRET'));
+  const before=env.sent.length;env.tick();assert.equal(env.sent.length,before);
 });
 test('other origins, movies and unready players cannot become refresh targets',()=>{
   const foreign=install({origin:'https://evil.example'});assert.equal(foreign.connections,0);

@@ -9,9 +9,15 @@ import org.mozilla.geckoview.GeckoResult
 import org.mozilla.geckoview.WebExtension
 
 class RocoApplication : Application() {
+    private val diagnosticFiles by lazy { DiagnosticFileStore(java.io.File(filesDir, "diagnostics")) }
     lateinit var runtime: GeckoRuntime
         private set
-    val log = DiagnosticLog()
+    val log = DiagnosticLog { category, number ->
+        if (BuildConfig.DEBUG) {
+            android.util.Log.i("TimeCasket", "$category ${number ?: -1}")
+            diagnosticFiles.record(category, number)
+        }
+    }
     val gameFrames = GameFrameController(log)
     var ruffleState = "正在安装 Ruffle"
         private set
@@ -23,13 +29,17 @@ class RocoApplication : Application() {
         private set
     var diagnosticReady = false
         private set
-    val probe by lazy { LocalProbeServer() }
+    val probe by lazy { LocalProbeServer(
+        audioScript = { assets.open("probe/audio.js").use { it.readBytes() } },
+        record = { category, value -> log.record(category, number = value) }
+    ) }
     private val socketBridge by lazy { GameSocketBridge({ kind, endpoint -> log.record(kind, number = endpoint) }) }
 
     // Application.onCreate also runs in Gecko's child service processes.
     // Start the parent runtime only when our main Activity asks for it.
     fun startBrowser(probeMode: Boolean = false) {
         if (::runtime.isInitialized) return
+        log.record("app-version", number = BuildConfig.VERSION_CODE)
         runtime = GeckoRuntime.create(this, GeckoRuntimeSettings.Builder()
             .remoteDebuggingEnabled(BuildConfig.DEBUG)
             .consoleOutput(BuildConfig.DEBUG && probeMode).debugLogging(false).build())

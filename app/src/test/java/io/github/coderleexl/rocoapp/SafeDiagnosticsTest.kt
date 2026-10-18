@@ -17,4 +17,12 @@ class SafeDiagnosticsTest {
         log.record("raw SECRET with spaces")
         assertFalse(log.text().contains("SECRET"))
     }
+    @Test fun debugObserverReceivesNoUrlsAndCannotInterruptLogging() {
+        val observed = mutableListOf<Pair<String, Int?>>()
+        val log = DiagnosticLog { label, value -> observed.add(label to value); throw IllegalStateException("observer failed") }
+        log.record("socket-first-send", "https://user:SECRET@example.com/?ticket=SECRET", 0)
+        assertEquals(listOf("socket-first-send" to 0), observed)
+        assertFalse(observed.toString().contains("SECRET"))
+        assertTrue(log.text().contains("socket-first-send"))
+    }
 }

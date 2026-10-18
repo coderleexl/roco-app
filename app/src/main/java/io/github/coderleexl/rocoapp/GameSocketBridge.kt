@@ -14,6 +14,7 @@ import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 import org.java_websocket.WebSocket
 import org.java_websocket.WebSocketImpl
 import org.java_websocket.drafts.Draft
@@ -39,6 +40,8 @@ class GameSocketBridge internal constructor(
         val queue = ArrayBlockingQueue<ByteArray>(64)
         val pending = AtomicInteger()
         val connected = CountDownLatch(1)
+        val sent = AtomicLong()
+        val received = AtomicLong()
         @Volatile var socket: Socket? = null
         @Volatile var closed = false
     }
@@ -62,11 +65,13 @@ class GameSocketBridge internal constructor(
         }
         override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
             val pipe = pipes[conn] ?: return conn.close(1008)
+            record("socket-open", GameSocketPolicy.hosts.indexOf(pipe.host))
             try {
             workers.execute {
                 var upstreamReady = false
                 try {
                     if (pipe.closed) return@execute
+                    record("socket-connect-start", GameSocketPolicy.hosts.indexOf(pipe.host))
                     val upstream = connect(pipe.host)
                     synchronized(pipe) {
                         if (pipe.closed) { upstream.close(); return@execute }
@@ -79,14 +84,22 @@ class GameSocketBridge internal constructor(
                     val input = upstream.getInputStream()
                     while (!pipe.closed) {
                         val size = input.read(buffer)
-                        if (size < 0) break
+                        if (size < 0) { record("socket-eof", GameSocketPolicy.hosts.indexOf(pipe.host)); break }
+                        if (pipe.received.getAndAdd(size.toLong()) == 0L) record("socket-first-receive", GameSocketPolicy.hosts.indexOf(pipe.host))
                         val queued = (conn as WebSocketImpl).outQueue.sumOf { it.remaining().toLong() }
                         if (queued > MAX_PENDING) throw IllegalStateException("Backpressure")
                         conn.send(buffer.copyOf(size))
                     }
                     conn.close(1000)
-                } catch (_: Exception) {
-                    if (!pipe.closed) { record(if (upstreamReady) "socket-read-failed" else "socket-connect-failed", GameSocketPolicy.hosts.indexOf(pipe.host)); conn.close(1011) }
+                } catch (error: Exception) {
+                    val category = if (upstreamReady) "socket-read-failed" else when (error) {
+                        is java.net.UnknownHostException -> "socket-dns-failed"
+                        is IllegalArgumentException -> "socket-address-rejected"
+                        is java.net.SocketTimeoutException -> "socket-connect-timeout"
+                        is java.net.ConnectException -> "socket-connect-refused"
+                        else -> "socket-connect-failed"
+                    }
+                    if (!pipe.closed) { record(category, GameSocketPolicy.hosts.indexOf(pipe.host)); conn.close(1011) }
                 } finally { end(conn) }
             }
             workers.execute {
@@ -96,6 +109,7 @@ class GameSocketBridge internal constructor(
                     while (!pipe.closed) {
                         val bytes = pipe.queue.poll(1, TimeUnit.SECONDS) ?: continue
                         output.write(bytes)
+                        if (pipe.sent.getAndAdd(bytes.size.toLong()) == 0L) record("socket-first-send", GameSocketPolicy.hosts.indexOf(pipe.host))
                         pipe.pending.addAndGet(-bytes.size)
                     }
                 } catch (_: Exception) {
@@ -137,6 +151,10 @@ class GameSocketBridge internal constructor(
         synchronized(pipe) { pipe.closed = true; try { pipe.socket?.close() } catch (_: Exception) {} }
         pipe.connected.countDown()
         pipe.queue.clear()
+        val endpoint = if (pipe.host == GameSocketPolicy.hosts[0]) "dir" else "stat"
+        record("socket-$endpoint-sent", pipe.sent.get().coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
+        record("socket-$endpoint-received", pipe.received.get().coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
+        record("socket-ended", GameSocketPolicy.hosts.indexOf(pipe.host))
         slots.release()
     }
     override fun close() {
@@ -151,6 +169,7 @@ class GameSocketBridge internal constructor(
             val addresses = InetAddress.getAllByName(host).toList()
             require(addresses.isNotEmpty() && addresses.all(GameSocketPolicy::isPublic))
             val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(8)
+            var lastFailure: Exception? = null
             for (address in addresses.take(4)) {
                 val timeout = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime()).coerceAtMost(4000).toInt()
                 if (timeout <= 0) break
@@ -160,9 +179,9 @@ class GameSocketBridge internal constructor(
                     // Connect to this already-validated IP, without another DNS resolution.
                     socket.connect(InetSocketAddress(address, 443), timeout)
                     return socket
-                } catch (_: Exception) { socket.close() }
+                } catch (error: Exception) { lastFailure = error; socket.close() }
             }
-            throw java.io.IOException("Official endpoint unavailable")
+            throw lastFailure ?: java.io.IOException("Official endpoint unavailable")
         }
     }
 }

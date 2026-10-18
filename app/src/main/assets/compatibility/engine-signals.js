@@ -4,9 +4,31 @@
   const page = new URL(window.location.href);
   if (page.origin !== 'https://web2.17roco.qq.com' || page.username || page.password || window.__timeCasketEngineSignals) return;
   const state = {socketMentions: 0, missingSocketProxy: 0, scriptErrors: 0, unsupportedFeatures: 0, socketHosts: [], errorCodes: [],
-    traceAttached: 0, traceMessages: 0, configsLoaded: 0, loginInitialized: 0, directoryRequests: 0, traceErrors: 0};
+    traceAttached: 0, traceMessages: 0, configsLoaded: 0, loginInitialized: 0, directoryRequests: 0, traceErrors: 0,
+    dirWsAttempt: 0, dirWsOpen: 0, dirWsError: 0, dirWsClose: 0, statWsAttempt: 0, statWsOpen: 0, statWsError: 0, statWsClose: 0};
   window.__timeCasketEngineSignals = state;
   function bump(key) { state[key] = Math.min(1000, state[key] + 1); }
+  const OriginalWebSocket = window.WebSocket;
+  if (typeof OriginalWebSocket === 'function') window.WebSocket = new Proxy(OriginalWebSocket, {
+    construct(target, args, newTarget) {
+      let endpoint;
+      try {
+        if (typeof args[0] === 'string') {
+          const url = new URL(args[0]);
+          const match = /^\/[0-9a-f]{48}\/(dir|stat)\.17roco\.qq\.com$/.exec(url.pathname);
+          if (url.protocol === 'ws:' && url.hostname === '127.0.0.1' && !url.username && !url.password && !url.search && !url.hash && match) endpoint = match[1];
+        }
+      } catch (_) {}
+      if (endpoint) bump(endpoint + 'WsAttempt');
+      let socket;
+      try { socket = Reflect.construct(target, args, newTarget); }
+      catch (error) { if (endpoint) bump(endpoint + 'WsError'); throw error; }
+      if (endpoint) for (const [event, suffix] of [['open', 'Open'], ['error', 'Error'], ['close', 'Close']]) {
+        socket.addEventListener(event, () => bump(endpoint + 'Ws' + suffix));
+      }
+      return socket;
+    }
+  });
   // Observe only fixed bootstrap milestones. Keep warn logging: full movie traces
   // may contain login parameters and must never be copied into diagnostics.
   window.document?.addEventListener('loadedmetadata', event => {

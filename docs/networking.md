@@ -1,5 +1,11 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.12分层连接日志
+
+0.1.11实测已经到Login.initialize，推荐/列表trace计数3；当前内存诊断有bridge-ready/game-frame-ready，但没有TCP连接结果记录，不能认定已连目录服。0.1.12只观察精确回环能力路径的dir/stat WebSocket构造及open/error/close计数，不输出URL、能力路径或异常正文。计数经已验证content port传给原生诊断。桥新增open/connect-start、DNS失败/非公网地址拒绝/超时/拒绝连接、首次发送/接收及结束总字节数；字节数不含数据内容。
+
+`dir-ws-attempt`有增量但无`socket-open`：检查浏览器至回环桥（含内容权限/握手），还不能归责远端。`socket-open`后连接错误：看固定错误类别。`socket-connected`/`socket-first-send`有而无receive：只证明TCP/写入，未证明目录回复/有效认证。收到字节但无列表再查Flash处理/官方拒绝界面，不解析或持久化认证包。新增content-permission只记录权限编号，未增加自动授权，也未放开目标/端口/内网地址或修改代理设置。
+
 ## 0.1.10刷新后只读证据 / 0.1.11下一步
 
 用户反馈连接弹窗消失但仍无服务器。主游戏配置有2个Socket桥，AutoExec/Login插件也HTTP200；没有AVM2错误分类或panic。唯一缺桥告警目标是非公网IPv4:9000；公开main.swf的SocketLogger含对应静态目标及stat:9000握手字符串，故该条更可能是日志连接，不能据此认定dir:443阻塞，不新增内网9000目标。0.1.11按公开主SWF/Login插件的固定trace文本记录配置完成、登录插件initialize、推荐/列表请求及错误类别计数；不记录trace原文、账号、请求参数或票据，也不将logLevel升到info。下一次用户加载后据阶段增量确认是否真正到达目录连接；未知区服仍未开放，不能归咎用户代理。

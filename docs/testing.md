@@ -1,8 +1,12 @@
 # Test plan
 
+0.1.12本地四项模拟器用例均OK(1test)：声音非零混音6.71s、Flash/关联窗口6.815s、seed7.016s、重启Cookie3.865s；应用私有日志已直接读回验证。
+
+0.1.12: Node命令再增加 `tools/audio-probe.test.cjs`（当前35项），覆盖冷启动等待、只有metadata或静音混音缓冲不算提示音、错误日志不保存原文；WebSocket与native计数保留固定字段。JVM11项含私有日志轮换/无自由文本、观察器隔离及二进制桥首次收发/总字节核对。强化音频模拟器用例必须实际产生非零混音缓冲；这仍不代替手机听音。
+
 0.1.11本地验证：Node29/JVM9/lint/主包及测试包通过；签名和完整Ruffle资源校验通过。隔离API37/x86_64 AVD四项均OK(1test)：声音手势/PCM加载6.525s、Flash/关联窗口8.756s、seed8.391s、重启Cookie4.924s。不截图，不自动操作官网；新刷新端口/真机声音/服务器列表和阶段诊断仍需用户操作验收。
 
-Current Node command: `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs tools/engine-signals.test.cjs tools/audio-unlock.test.cjs tools/socket-config.test.cjs tools/game-control.test.cjs`.0.1.10 passes25 Node tests, including trusted-vs-synthetic gesture handling, resume retry/late context creation, bounded diagnostics, exact bridge configuration and native-startup retry with JSON-text responses. JVM8 tests include actual local binary forwarding (100000bytes), handshake rejection and destination/address policy. These do not establish real sound, website login or server/map compatibility. User performs actual game verification without repeated authentication requests.
+Current Node command: `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs tools/engine-signals.test.cjs tools/audio-unlock.test.cjs tools/socket-config.test.cjs tools/game-control.test.cjs tools/audio-probe.test.cjs`.0.1.10 passes25 Node tests, including trusted-vs-synthetic gesture handling, resume retry/late context creation, bounded diagnostics, exact bridge configuration and native-startup retry with JSON-text responses. JVM8 tests include actual local binary forwarding (100000bytes), handshake rejection and destination/address policy. These do not establish real sound, website login or server/map compatibility. User performs actual game verification without repeated authentication requests.
 
 2026-10-18 local0.1.10: lint/app+test APK builds, signature and full upstream Ruffle asset verification pass. Three separate-process fixed-fixture instrumentation methods on an isolated API37.0/x86_64 AVD returnOK(1test):7.058s/6.751s/3.728s. This also verifies compatibility background/native startup registration. Two earlier smoke attempts timed out before navigation because direct JSONObject native replies did not complete; JSON-text replies plus bounded retry pass the final run. The user's existing AVD was not modified; its insufficient C-disk space was avoided with a workspace-cache fixture AVD. No screenshot or official-game automation occurred.
 

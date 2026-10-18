@@ -7,6 +7,7 @@
   catch (_) { return; }
   let busy = false;
   let lastReady;
+  let lastSignals;
   function game() {
     for (const element of [...document.querySelectorAll('ruffle-object,ruffle-embed,ruffle-player')].slice(0, 4)) {
       try {
@@ -26,6 +27,20 @@
   function publish() {
     const ready = !!game();
     if (ready !== lastReady) { lastReady = ready; send({kind: 'ready', ready}); }
+    if (ready) {
+      try {
+        const raw = (window.wrappedJSObject || window).__timeCasketEngineSignals;
+        if (!raw) return;
+        const values = {};
+        for (const key of ['traceAttached', 'configsLoaded', 'loginInitialized', 'directoryRequests', 'traceErrors', 'missingSocketProxy',
+          'dirWsAttempt', 'dirWsOpen', 'dirWsError', 'dirWsClose', 'statWsAttempt', 'statWsOpen', 'statWsError', 'statWsClose']) {
+          const value = raw[key];
+          if (Number.isInteger(value) && value >= 0 && value <= 1000) values[key] = value;
+        }
+        const signature = JSON.stringify(values);
+        if (signature !== lastSignals) { lastSignals = signature; send({kind: 'signals', values}); }
+      } catch (_) { /* Only validated counters cross into native diagnostics. */ }
+    }
   }
   port.onMessage.addListener(message => {
     if (message?.kind !== 'reload' || busy) return;

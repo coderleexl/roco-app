@@ -80,7 +80,7 @@ class BrowserSmokeTest {
             tap(.38f)
             await(scenario, "WebAudio context running after real fixture touch") { it.probeTitle == "ROCO:audio-web-running" }
             tap(.62f)
-            await(scenario, "Ruffle accepts original PCM sound fixture") { it.probeTitle == "ROCO:audio-flash-ready" }
+            await(scenario, "Ruffle starts a PCM AudioBufferSource") { it.probeTitle == "ROCO:audio-flash-started" }
         }
     }
     @Test fun cookieSurvivesProcessRestart() {

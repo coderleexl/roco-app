@@ -9,7 +9,10 @@ import java.nio.ByteOrder
 import java.util.concurrent.Executors
 
 /** Self-test fixtures only; no forwarding, arbitrary files or network proxy. Loopback only. */
-class LocalProbeServer : Closeable {
+class LocalProbeServer(
+    private val audioScript: () -> ByteArray = { byteArrayOf() },
+    private val record: (String, Int) -> Unit = { _, _ -> }
+) : Closeable {
     private val socket = ServerSocket(0, 4, InetAddress.getByName("127.0.0.1"))
     private val workers = Executors.newFixedThreadPool(2)
     val baseUrl = "http://127.0.0.1:${socket.localPort}"
@@ -45,6 +48,15 @@ class LocalProbeServer : Closeable {
         val payload: ByteArray
         val type: String
         when (path) {
+            "/audio.js" -> { payload = audioScript(); type = "application/javascript; charset=utf-8" }
+            "/audio-event" -> {
+                val uri = android.net.Uri.parse("http://127.0.0.1" + route[1])
+                val event = uri.getQueryParameter("event")
+                if (event in AudioProbeFixture.events) {
+                    record(event!!, uri.getQueryParameter("value")?.toIntOrNull()?.coerceIn(0, 1000) ?: 0)
+                }
+                payload = byteArrayOf(); type = "text/plain"
+            }
             "/audio.html" -> { payload = AudioProbeFixture.page.toByteArray(); type = "text/html; charset=utf-8" }
             "/audio.swf" -> { payload = AudioProbeFixture.movie(); type = "application/x-shockwave-flash" }
             "/fixture-error" -> {
