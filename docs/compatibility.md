@@ -16,7 +16,7 @@ Build and fixture results must come from the matching GitHub commit/run, not fro
 | 15-minute stability | Not verified |
 | Official session recovery / re-login after restart | Not verified; fixture cookies do not prove game authentication |
 
-Version0.1.1 introduces compatibility/public-swf.js, restricted to the evidenced public root SWF response. Real-device retest pending. Ruffle's complete upstream Firefox extension is used; packaged APIs and runtime behavior are validated by installation and Flash smoke tests, not assumed from Firefox support.
+Version0.1.1 introduces compatibility/public-swf.js, restricted to the evidenced public root SWF response. Local build/tests and package checks passed; authorized in-place installation on Meizu21 returned Success and package inspection confirmed version0.1.1/code2. Website retest awaits user opening/refreshing the app. Per user instruction, cloud checks are no longer an installation prerequisite during local debugging. Ruffle's complete upstream Firefox extension is used; packaged APIs and runtime behavior are validated by installation and Flash smoke tests, not assumed from Firefox support.
 
 ## Emulator default-renderer failure
 
