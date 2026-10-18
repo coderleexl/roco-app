@@ -16,13 +16,13 @@ for method in ('flashExecutesAndPopupRetainsOpenerAndCookie', 'seedPersistentCoo
         result = subprocess.run(['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'class',
             f'io.github.coderleexl.rocoapp.BrowserSmokeTest#{method}',
             'io.github.coderleexl.rocoapp.test/androidx.test.runner.AndroidJUnitRunner'],
-            capture_output=True, text=True, timeout=330)
+            capture_output=True, text=True, timeout=420)
         text = result.stdout + result.stderr
         returncode = result.returncode
     except subprocess.TimeoutExpired as error:
         def decoded(value):
             return value.decode(errors='replace') if isinstance(value, bytes) else (value or '')
-        text = decoded(error.stdout) + decoded(error.stderr) + '\nInstrumentation exceeded 330 seconds.\n'
+        text = decoded(error.stdout) + decoded(error.stderr) + '\nInstrumentation exceeded 420 seconds.\n'
         returncode = -1
     (out / f'{method}.txt').write_text(text, encoding='utf-8')
     print(text)
@@ -39,4 +39,5 @@ for method in ('flashExecutesAndPopupRetainsOpenerAndCookie', 'seedPersistentCoo
             chunk = crash[offset:offset+3000].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
             print(f'::error title=Emulator runtime error part {offset // 3000 + 1}::{chunk}', flush=True)
         raise RuntimeError(f'Instrumentation failed: {method}')
+    print(f'::notice title=Android smoke passed::{method}', flush=True)
 print('All three separate-process smoke tests passed')

@@ -33,16 +33,21 @@ class BrowserSmokeTest {
         launch().use { scenario ->
             await(scenario, "Ruffle executes ActionScript FSCommand") { it.probeTitle == "ROCO:flash-executed" }
             scenario.onActivity { assertTrue((it.application as RocoApplication).ruffleReady) }
+            val instrumentation = InstrumentationRegistry.getInstrumentation()
+            await(scenario, "app window focused before real touch") {
+                it.hasWindowFocus() && it.browser.hasWindowFocus() && it.browser.isShown && it.browser.width > 0 && it.browser.height > 0
+            }
+            instrumentation.waitForIdleSync()
             val point = IntArray(2)
             scenario.onActivity {
                 it.browser.getLocationOnScreen(point)
                 point[0] += it.browser.width / 2
                 point[1] += it.browser.height / 2
             }
-            val instrumentation = InstrumentationRegistry.getInstrumentation()
             val time = SystemClock.uptimeMillis()
             MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, point[0].toFloat(), point[1].toFloat(), 0).also { instrumentation.sendPointerSync(it); it.recycle() }
-            MotionEvent.obtain(time, time + 80, MotionEvent.ACTION_UP, point[0].toFloat(), point[1].toFloat(), 0).also { instrumentation.sendPointerSync(it); it.recycle() }
+            SystemClock.sleep(80)
+            MotionEvent.obtain(time, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, point[0].toFloat(), point[1].toFloat(), 0).also { instrumentation.sendPointerSync(it); it.recycle() }
             await(scenario, "opener focus selects the visible main while child remains alive") {
                 it.windowCount == 2 && it.mainWindowSelected && it.probeTitle == "ROCO:popup-focused"
             }
