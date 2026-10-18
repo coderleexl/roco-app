@@ -1,5 +1,13 @@
 # Architecture
 
+## 0.1.27：取消图片加载后的旧回调
+
+用户纠正PP现象：战斗里实际有药，**图标变成生命药水**。公共HP/PP PNG均200、60×60且SHA256不同；不是已证实服务器返回同图。公开CombatImage/AImage复用任务，ResVIPChannel复用NormalLoader；其NewLoader使用URLStream及同一ByteArray调用Loader.loadBytes，取消时unload，再把COMPLETE交给当前任务。晚到旧图片可能被当成新任务结果。这是公开实现与本地复现的联系，尚无用户游戏内对应回调证据。
+
+原创红蓝fixture复用Loader/ByteArray，正常红→蓝正确，随后`load(red); unload(); load(blue)`，原版0.7.1交回红图。[上游图片完成回调](https://github.com/ruffle-rs/ruffle/blob/v0.7.1/core/src/loader.rs)延迟两帧，卸载/换图后仍调用movie_loader_complete。补丁在此核对LoaderInfo当前DisplayObject与捕获图片是否同一对象；失效时仅移除旧load handle并退出，阻止串图和旧COMPLETE。顺序加载、SWF载入、游戏代码、网络、库存和PP均不修改。
+
+0.1.27首次源码重建Ruffle核心。继续校验完整原版包，新增源码/补丁锁；仅页面runtime/chunks/两种Wasm替换，其余文件逐字节保留。manifest只增加版本至0.7.2.1，ID/权限不变。来源清单进入包内，Gradle输入包含修复包，APK校验完整文件集合和字节。CI先验证原版准确失败序列、补丁正确序列，再构建APK、跑原有8项Gecko样例。云端与真机结果见handoff；本地复现不证明实际PP图标或恢复已修好。官网自动渲染器保留。
+
 ## 0.1.24：撤回传统WebGL默认选择
 
 用户0.1.23实际验收失败：选择服务器后一直加载。真机main ready2、实际renderer=webgl，目录endpoint0与区服endpoint7均connected/first-send/first-receive，目录最终139/216B；不是没有连上区服。cache一条AVM2脚本错误，通过固定字面匹配确认RustError中的`Render backend does not support BitmapData.draw`，与[Ruffle0.7.1 BitmapData.draw错误分支](https://github.com/ruffle-rs/ruffle/blob/v0.7.1/core/src/avm2/globals/flash/display/bitmap_data.rs)一致；不保存原文/堆栈/查询。不能用本地文字样例成功来覆盖真实游戏依赖的位图绘制能力。

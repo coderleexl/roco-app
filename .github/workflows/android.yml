@@ -13,11 +13,80 @@ concurrency:
   group: android-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  engine:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Test engine archive boundaries
+        run: python -m unittest discover -s tools -p test_ruffle_archive.py -v
+      - uses: actions/cache@v4
+        id: engine-cache
+        with:
+          path: .cache/ruffle-patched.xpi
+          key: ruffle-loader-v1-${{ hashFiles('third-party/ruffle*.json', 'third-party/patches/*.patch', 'tools/build_ruffle_engine.py', 'tools/ruffle_archive.py') }}
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.engine-cache.outputs.cache-hit != 'true'
+        with:
+          toolchain: '1.99.1'
+          targets: wasm32-unknown-unknown
+          components: rust-src
+      - name: Install JPEG XR build dependencies
+        if: steps.engine-cache.outputs.cache-hit != 'true'
+        run: sudo apt-get update && sudo apt-get install -y clang-18 libclang-18-dev
+      - name: Install pinned wasm-bindgen
+        if: steps.engine-cache.outputs.cache-hit != 'true'
+        run: cargo install --locked wasm-bindgen-cli --version 0.2.127
+      - name: Install upstream-matched wasm-opt
+        if: steps.engine-cache.outputs.cache-hit != 'true'
+        uses: sigoden/install-binary@v1
+        with:
+          repo: WebAssembly/binaryen
+          tag: version_129
+          name: wasm-opt
+      - name: Build source-patched standard and MVP engines
+        if: steps.engine-cache.outputs.cache-hit != 'true'
+        env:
+          CC_wasm32_unknown_unknown: clang-18
+          LIBCLANG_PATH: /usr/lib/llvm-18/lib
+        run: python tools/build_ruffle_engine.py 2>&1 | tee ruffle-build.log
+      - name: Reproduce upstream cancelled-image bug
+        run: python tools/test_loader_images.py --expect baseline-bug --report test-results/loader-baseline.json
+      - name: Verify cancelled-image fix in the rebuilt engine
+        run: python tools/test_loader_images.py --archive .cache/ruffle-patched.xpi --expect fixed --report test-results/loader-fixed.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ruffle-engine-${{ github.sha }}
+          path: .cache/ruffle-patched.xpi
+          include-hidden-files: true
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: engine-reports
+          path: |
+            ruffle-build.log
+            test-results/loader-*.json
   build:
+    needs: engine
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: ruffle-engine-${{ github.sha }}
+          path: .cache
       - uses: actions/setup-java@v5
         with:
           distribution: temurin

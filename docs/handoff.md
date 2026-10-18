@@ -1,5 +1,15 @@
 # 开发交接（2026-10-18）
 
+## 0.1.27准备：战斗PP图标与浏览器声明
+
+- 用户最终纠正：战斗有PP药，**图标变成生命药水**。不要继续按缺库存/没翻页要求找药或重复吃药。用户“差不多能玩了”是总体主观评价；选服/进入/战斗可达、人物背包打开及生命药恢复已有确认；PP实际恢复数值、技能文字、官网音乐、活动错误和长时间稳定性仍未完整验收。
+- 公共HP/PP PNG均200、60×60且不同SHA256；公开CombatImage/AImage/ResVIPChannel/NormalLoader链复用Loader、ByteArray并会取消图片任务。原创红蓝fixture在原版完整0.7.1稳定复现：正常红→蓝，取消红改载蓝却交回红。独立临时Chrome profile/loopback，无官网/截图/认证；固定phase0红、phase1蓝、phase2红，最终COMPLETE1/ok0，无fixture错误。该证据支持Loader串图，不等于已抓到用户游戏回调。
+- 0.1.27/code28准备补丁：延迟两帧图片完成前核对LoaderInfo当前DisplayObject身份；已卸载/替换则移除旧handle，不交旧图/COMPLETE。保持SWF/游戏资源/Socket/物品/PP/登录与自动渲染器。首次源码编译Ruffle0.7.1，扩展包版本0.7.2.1仅用于覆盖更新，不能称上游0.7.2。标准/MVP和JPEG XR均保留；原版SHA＋源码/补丁SHA＋包内runtime清单/完整APK字节校验，其他集成/manifest权限不变。
+- CI新增engine：Rust1.99.1/Node24/Java17/wasm-bindgen0.2.127/Binaryen129/Clang18，先编译并跑原版错误与补丁正确序列，才交APK任务及原8项Gecko样例。引擎artifact可供本地构建；缺失时明确失败，不偷偷打原版。未修改本地Gradle/IDE配置、未读/运行辅助EXE。
+- 本地已验证Node72、Python包边界6项及Python语法；原版图片错误复现通过。**新引擎编译、补丁正向回归、0.1.27 APK/JVM/lint/Gecko、真机均未验证**，待本次推送GitHub构建。当前手机仍0.1.26，不称已安装/修好PP。
+- 按用户要求README补充腾讯及相关权利人版权归属、独立第三方浏览器定位（非腾讯官方游戏App/无官方合作授权背书）、仅供个人学习研究交流、不分发游戏资源、使用与反馈说明；未把学习用途当成自动获得版权授权，项目自身许可/发布准备仍未完成。
+- 下一步推送main并跟踪engine/Android/8项Gecko结果；如失败记录具体阶段后修复。通过后再交用户确认战斗图标与实际PP恢复，不请求再次找药或重复消耗。音乐/活动错误/高GPU内存和QQ官方授权需求仍保留。
+
 ## 最新0.1.26：同类游戏CGI按服务器声明自动识别（2026-10-18）
 
 - 用户确认0.1.25人物背包可以打开，但出现新错误弹窗，并质疑是否只能逐接口修复。背包开窗已通过，不等于内部所有面板/PP通过。当前缓存无AVM2错误编号，新CORS有angel_info_tools；公开UserInfo.CurrentUserDetailPanel发此接口，匿名HEAD与前几项同为200/text-xml、ACAO=res、ACAC=true。consumption_gift/seven_luminaries_fight/warrior_fight_place同类，控制用不存在路径404。弹窗的精确编号/来源尚未取得，不以CORS存在认定所有弹窗都同因。

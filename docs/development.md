@@ -12,7 +12,11 @@ sdk.dir=D\:\\Android\\Sdk
 
 APK：`app/build/outputs/apk/debug/app-debug.apk`。云端同时生成 SHA256 校验文件。
 
-构建会按 [版本锁](../third-party/ruffle.json) 下载并校验 Ruffle；GeckoView 158.0.20261007201254，Ruffle 0.7.1，AGP 9.2.0（内置 Kotlin，编译器固定 2.4.20），Gradle 9.4.1。无需 NDK。
+0.1.27起先准备带Loader图片取消修复的Ruffle，再运行上述Gradle命令。GitHub Actions的engine任务按[原版锁](../third-party/ruffle.json)和[补丁锁](../third-party/ruffle-loader-fix.json)校验并编译0.7.1源码，运行原创红蓝图片回归；通过后才把`ruffle-engine-<commit>`交给APK任务。本地可从对应成功运行下载该artifact，将`ruffle-patched.xpi`放入`.cache/`；缺失时明确失败，不悄悄使用未修复原版。
+
+自行编译引擎需要Rust 1.99.1、wasm32-unknown-unknown目标与rust-src、Node 24、Java 17、wasm-bindgen-cli 0.2.127、Binaryen 129、Clang 18/libclang（JPEG XR）。在干净的`.cache/ruffle-engine-build`目录运行`python tools/build_ruffle_engine.py`。标准与MVP两种Wasm都构建；脚本不签名/发布扩展。只替换页面引擎及配套块，其余文件逐字节保留。原创样例及命令见[fixture说明](../tools/fixtures/loader-image-cancel/README.md)。
+
+GeckoView 158.0.20261007201254，Ruffle基础0.7.1 + loader-image-cancel-1，扩展包版本0.7.2.1（非上游0.7.2），AGP 9.2.0（内置 Kotlin，编译器固定 2.4.20），Gradle 9.4.1。Android构建本身无需NDK。来源清单与APK校验不能代替游戏验收。
 
 ## 安装与调试
 

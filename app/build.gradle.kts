@@ -9,7 +9,10 @@ abstract class PrepareRuffleTask : Exec() {
 val prepareRuffle = tasks.register<PrepareRuffleTask>("prepareRuffle") {
     workingDir(rootDir)
     commandLine("python", "tools/prepare_ruffle.py")
-    inputs.files(rootProject.file("tools/prepare_ruffle.py"), rootProject.file("third-party/ruffle.json"))
+    inputs.files(rootProject.file("tools/prepare_ruffle.py"), rootProject.file("tools/ruffle_archive.py"),
+        rootProject.file("third-party/ruffle.json"), rootProject.file("third-party/ruffle-loader-fix.json"),
+        rootProject.file("third-party/patches/ruffle-loader-image-cancel.patch"))
+    inputs.file(rootProject.file(".cache/ruffle-patched.xpi"))
     outputDirectory.set(layout.buildDirectory.dir("generated/ruffleAssets"))
 }
 
@@ -20,8 +23,8 @@ android {
         applicationId = "io.github.coderleexl.rocoapp"
         minSdk = 26
         targetSdk = 35
-        versionCode = 27
-        versionName = "0.1.26"
+        versionCode = 28
+        versionName = "0.1.27"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
     }

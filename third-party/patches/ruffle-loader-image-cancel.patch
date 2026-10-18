@@ -1,0 +1,31 @@
+--- a/core/src/loader.rs
++++ b/core/src/loader.rs
+@@ -1923,6 +1923,28 @@
+                         callback: Box::new(move |uc, bitmap_obj| {
+                             uc.post_frame_callbacks.push(PostFrameCallback {
+                                 callback: Box::new(move |uc, bitmap_obj| {
++                                    // unload/loadBytes can replace this image during the two-frame delay.
++                                    // A stale completion must not install its bitmap into the reused Loader.
++                                    let still_current = match uc
++                                        .load_manager
++                                        .get_loader(handle)
++                                        .map(|loader| loader.vm_data)
++                                    {
++                                        Some(MovieLoaderVMData::Avm2 { loader_info, .. }) => {
++                                            match &*loader_info.loader_stream() {
++                                                LoaderStream::NotYetLoaded(_, Some(current), _)
++                                                | LoaderStream::Swf(_, current) => {
++                                                    DisplayObject::ptr_eq(*current, bitmap_obj)
++                                                }
++                                                _ => false,
++                                            }
++                                        }
++                                        _ => false,
++                                    };
++                                    if !still_current {
++                                        uc.load_manager.remove_loader(handle);
++                                        return;
++                                    }
+                                     if let Err(e) = MovieLoader::movie_loader_complete(
+                                         handle,
+                                         uc,

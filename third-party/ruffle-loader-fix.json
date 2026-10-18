@@ -1,0 +1,10 @@
+{
+  "id": "loader-image-cancel-1",
+  "base_version": "0.7.1",
+  "source_url": "https://codeload.github.com/ruffle-rs/ruffle/tar.gz/refs/tags/v0.7.1",
+  "source_sha256": "1acb4a39babd61306b0bec21c8e51660b1dde511f301c9b7a802a53ab9950b53",
+  "patch": "third-party/patches/ruffle-loader-image-cancel.patch",
+  "patch_sha256": "8e3570d8dde076b3ba337f084034639b5e6697b8a64df06b9aa02f18e6eb21d6",
+  "manifest_version": "0.7.2.1",
+  "wasm_bindgen_version": "0.2.127"
+}

@@ -1,0 +1,6 @@
+third-party/patches/*.patch text eol=lf
+third-party/ruffle-loader-fix.json text eol=lf
+tools/fixtures/loader-image-cancel/*.as text eol=lf
+tools/fixtures/loader-image-cancel/*.html text eol=lf
+tools/fixtures/loader-image-cancel/*.json text eol=lf
+tools/fixtures/loader-image-cancel/*.swf binary
