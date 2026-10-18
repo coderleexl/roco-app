@@ -38,7 +38,7 @@ jobs:
         if: failure()
         run: python tools/report_ci_failure.py sdk-build.log
       - name: Test diagnostic privacy
-        run: node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs
+        run: node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs
       - name: Build and verify
         run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug assembleDebugAndroidTest 2>&1 | tee gradle-build.log
       - name: Report compilation errors

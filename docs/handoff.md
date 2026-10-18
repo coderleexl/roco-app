@@ -4,7 +4,14 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
-## 最新0.1.7：版本清单补齐静态目录
+## 最新0.1.8：省去Ruffle启动遮罩（待用户验证）
+
+- 用户明确额外播放按钮为Ruffle自带遮罩。新增compatibility/player-options.js，manifest1.2.0以MAIN世界/document_start/all_frames仅注入官网HTTPS范围；在具体页面范围检查后仅设置RufflePlayer.config.autoplay=on，保留已有渲染器/参数/脚本交互/声音遮罩，不模拟点击、不接触认证信息。上游Ruffle保持原版。
+- Node新增3项配置保留/来源边界/manifest测试先RED再GREEN，合计15项通过；JVM4项、lint、主包/测试包本地构建通过43s；签名和官方Ruffle逐文件校验通过。APK SHA256 `780e80c7a2a6465c60324c31bd3b0c0a20a275c40d07e798af7ab47dd9e8f2ef`，输出app/build/outputs/apk/debug/app-debug.apk。覆盖安装Success，包查询确认0.1.8/code9。没有自动打开/刷新/登录或截图；用户验证自动启动、插件加载和选服。
+- 刷新退回登录：工具栏当前reload整页；公开官网代码重建iframe入口并在部分状态调用LogoutPage，其公开实现执行退出处理。有网页代码依据，不能据此认定Cookie丢失。**本次未修改整页刷新逻辑，真正官方会话恢复和避免退登的游戏级重载仍未完成**，不存认证URL、不重放票据，不反复要求用户扫码。
+- 用户提供roco-autobank供未来辅助参考，最终要求仅文档记录、无需继续拉取。见docs/references.md：当前不移植、不执行、不接入。初步检查时已临时克隆进忽略的.cache，未提交源码；后续不默认克隆/安装。不要把它的Python协议客户端当成我们的Flash兼容实现，参考不是架构切换授权。
+
+## 历史0.1.7：版本清单补齐静态目录
 
 - 用户0.1.6仍加载中，无游戏画面/无选服。只读检查确认ver.config、Global.xml、Angel.config和两个基础类库均200，之前适配已推进。当前EffectPluginLib.swf四次页面自身请求均被CORS拦截，PageError明确missingACAO/HTTP200；无播放器panic。公开HEAD证实Flash MIME/190572bytes。
 - 公开ver.config为ZIP，内含13216条文件路径的XML，明确包含该插件，并提供plugins/activity/apps/video目录证据。0.1.7/code8、兼容扩展1.1.1补入公共directoryTypes表并由该表生成监听模式；manifest同步范围，限制每目录后缀及对应MIME。不是按单插件文件补丁，不放开h5脚本/HTML/备份、CGI、其他域或既有服务器CORS策略。
