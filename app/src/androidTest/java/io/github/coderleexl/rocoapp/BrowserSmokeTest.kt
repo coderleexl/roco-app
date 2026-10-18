@@ -26,7 +26,7 @@ class BrowserSmokeTest {
             SystemClock.sleep(200)
         }
         var report = ""
-        scenario.onActivity { report = (it.application as RocoApplication).log.text() + "\nfixture=" + it.probeTitle }
+        scenario.onActivity { report = (it.application as RocoApplication).log.text() + "\nfixture=" + it.probeTitle + "\nfixture-error=" + (it.application as RocoApplication).probe.fixtureFailure }
         fail("Timeout: $label\n$report")
     }
     @Test fun flashExecutesAndPopupRetainsOpenerAndCookie() {

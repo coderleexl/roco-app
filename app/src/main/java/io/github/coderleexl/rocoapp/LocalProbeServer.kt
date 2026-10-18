@@ -13,6 +13,8 @@ class LocalProbeServer : Closeable {
     private val socket = ServerSocket(0, 4, InetAddress.getByName("127.0.0.1"))
     private val workers = Executors.newFixedThreadPool(2)
     val baseUrl = "http://127.0.0.1:${socket.localPort}"
+    @Volatile var fixtureFailure = ""
+        private set
     @Volatile var sharedCookieSeen = false
         private set
 
@@ -43,6 +45,12 @@ class LocalProbeServer : Closeable {
         val payload: ByteArray
         val type: String
         when (path) {
+            "/fixture-error" -> {
+                // Fixed self-test origin only; never installed into official pages.
+                val uri = android.net.Uri.parse("http://127.0.0.1" + route[1])
+                fixtureFailure = (uri.getQueryParameter("message") ?: "unknown").take(600)
+                payload = byteArrayOf(); type = "text/plain"
+            }
             "/probe.swf" -> { payload = flashProbe(); type = "application/x-shockwave-flash" }
             "/probe.html" -> { payload = page.toByteArray(); type = "text/html; charset=utf-8" }
             "/popup.html" -> {
@@ -79,7 +87,11 @@ class LocalProbeServer : Closeable {
         private val page = """
             <!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
             <title>ROCO:probe-loading</title>
-            <script>window.addEventListener('error',()=>document.title='ROCO:javascript-error');window.addEventListener('unhandledrejection',()=>document.title='ROCO:promise-error');</script>
+            <script>
+            function reportFixtureError(kind,message){document.title='ROCO:'+kind;fetch('/fixture-error?message='+encodeURIComponent(String(message).slice(0,500))).catch(()=>{});}
+            window.addEventListener('error',e=>reportFixtureError('javascript-error',e.message+' at '+e.lineno+':'+e.colno));
+            window.addEventListener('unhandledrejection',e=>reportFixtureError('promise-error',e.reason));
+            </script>
             <style>body{margin:0;background:#eef4ee}button{position:fixed;inset:0;width:100%;height:100%;z-index:5;background:transparent;border:0;color:#14532d;font:24px sans-serif}object{width:300px;height:150px}</style>
             <script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config={autoplay:'on',unmuteOverlay:'hidden',allowScriptAccess:true};</script>
             <object type="application/x-shockwave-flash" data="probe.swf"><param name="allowScriptAccess" value="always"></object>
