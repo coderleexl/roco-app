@@ -1,5 +1,14 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.16：已进入游戏，活动IOError分层
+
+用户确认0.1.15确实进入游戏，随后IOError且礼包等点不了。真机zone6（endpoint7）依次open/connect/first-send/first-receive，证明统一规则覆盖并非只补5/7。游戏无panic/AVM2错误分类，traceErrors0；Socket缺桥仍仅原有非公网9000日志器，不为其放开内网。
+
+游戏CORS错误中精确公共路径与无认证HEAD证据：activity/LittleAngelofCivilization/script/LittleAngelofCivilization.exbn=200/application/octet-stream/1004B，activity/ROCOLegendBook/script/ROCOLegendBook.exbn=200/application/octet-stream/1036B，activity/SuperHand/script/SuperHand.exbn=200/application/octet-stream/822B，均无ACAO。activity/4271/s4271.swf与activity/4291/s4291.swf官网404/text/html，分别162/564B；404不是通过添加允许头修复的资源。缓存ver.config检索activity/*.exbn为0，规则依据是真机请求和当前公开响应，不虚称清单证据。
+
+0.1.16只把activity公共目录的exbn/二进制200响应纳入既有适配函数，其余路径、来源、方法、状态和现存策略边界保留。没有改区服桥或解析游戏包，不下载/分发活动资源。下一步用户重进后再次点击原礼包，看三项请求能否正常被Flash读取，再区分404缺文件或其他脚本实现问题；不能因规则和构建通过认定所有礼包已可用。
+
+
 ## 0.1.15：目录已通，统一覆盖编号区服
 
 用户确认0.1.14能选服务器但进不去。真机目录服endpoint0依次socket-open/connect-start/connected/first-send/first-receive，最终发送139/接收216字节，随后EOF；用户可见列表是本阶段额外验收证据。只读console固定正则提取到缺桥目标zone5.17roco.qq.com:443、zone7.17roco.qq.com:443，无AVM2分类错误/panic。公开缓存LoginPlugin.as:330按roomZoneID拼接zone{0}.17roco.qq.com，字段由公开RoomData/read方法定义为uint32。

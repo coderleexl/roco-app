@@ -1,5 +1,10 @@
 # Architecture
 
+## 0.1.16活动二进制脚本
+
+activity目录在原公共资源表中增加exbn，MIME仅application/octet-stream；仍只处理精确HTTPS资源源、官方web2发起、GET/XHR/HTTP200、无既有ACAO/ACAC的响应。来源/路径/方法/状态/MIME与其他目录限制不变；不扩大到apps/libs/res的exbn，不处理404/HTML，不覆盖网站已有跨域策略。依据为真机缺ACAO错误及三个公开HEAD200响应，不声称ver.config清单列出这类脚本（本地清单检索为0）。
+
+
 ## 0.1.15统一编号区服
 
 公开LoginPlugin的connectSvr按roomZoneID拼接zone{0}.17roco.qq.com，真机缺桥日志已确认zone5/zone7:443。用户要求统一覆盖，原生allowsHost接受规范zone1～zone65535.17roco.qq.com，拒绝0/前导零/通配符字面量/超范围/尾缀域/任意IP；所有连接仍固定443，DNS全部地址须公网，连接已核实IP。不是无限编号授权；65535是兼容层映射容量上限，公开roomZoneID实际为uint32，不把该上限称为官方协议限制。

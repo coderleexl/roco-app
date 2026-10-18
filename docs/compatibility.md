@@ -1,5 +1,8 @@
 # Compatibility gates
 
+User0.1.15 confirms selectable servers AND entry into the game interface. Native zone6 endpoint7 connected and recorded first send/receive; no player panic/AVM2 error classification observed. Movement, battles and all map interactions are not accepted yet. User reports IOError and gifts not clickable. Three activity/script/*.exbn resources are public200/application/octet-stream without ACAO; two numbered activity SWFs are public404.0.1.16 adds the typed activity-exbn adapter only. Gift functionality, missing404 assets and official audio remain pending.
+
+
 0.1.14 physical user confirms selectable servers. Native directory endpoint0 connected, first-send and first-receive recorded; final sent139/received216 bytes. No packet bodies were saved. Entering a selected server still fails: missing exact mappings for zone5/zone7:443 were observed.0.1.15 adds a unified numeric zone rule plus lazy exact mappings required by unmodified Ruffle, bounded tozone1..65535. This is a resource limit, not the uint32 protocol's full theoretical range. Actual zone login/map/music remain pending.
 
 

@@ -218,3 +218,19 @@ test('observed outer homepage preloader can read only its public bootstrap confi
     assert.equal(adaptPublicAssetHeaders({...input,responseHeaders:[{name:'Content-Type',value:'text/html'}]}),undefined);
   }
 });
+
+test('observed activity exbn scripts require binary200 responses and the official game origin',()=>{
+  for(const name of ['LittleAngelofCivilization','ROCOLegendBook','SuperHand']) {
+    const input=request({url:'https://res.17roco.qq.com/activity/'+name+'/script/'+name+'.exbn',
+      originUrl:'https://web2.17roco.qq.com/game',responseHeaders:[{name:'Content-Type',value:'application/octet-stream'}]});
+    assert.equal(adaptPublicAssetHeaders(input)?.responseHeaders.at(-1).value,'https://web2.17roco.qq.com',name);
+    for(const change of [
+      {statusCode:404},{statusCode:403},{method:'POST'},
+      {responseHeaders:[{name:'Content-Type',value:'text/html'}]},
+      {originUrl:'https://17roco.qq.com/'},{originUrl:'https://evil.example/'},
+      {url:input.url.replace('/activity/','/apps/')},{url:input.url.replace('/activity/','/libs/')},
+      {url:input.url.replace('/activity/','/res/')},{url:input.url+'.js'},
+      {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Origin',value:'https://existing.example'}]}
+    ]) assert.equal(adaptPublicAssetHeaders({...input,...change}),undefined,name);
+  }
+});

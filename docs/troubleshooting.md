@@ -1,5 +1,8 @@
 # Troubleshooting
 
+0.1.16（app-version17）进入游戏后的礼包IOError：先区分活动exbn/200却无ACAO，与官网旧SWF/404。本轮仅补activity的exbn二进制200规则；404、错误MIME和现有跨域策略仍不改。用户已确认0.1.15进入游戏，目录和zone6双向连接已成立，不为活动资源失败反复修改Socket/代理。点击交互、缺文件或脚本实现问题继续按实际错误验证。
+
+
 0.1.15（app-version16）区服统一规则：endpoint0=dir、1=stat、zoneN=N+1。目录列表0.1.14已由用户确认可选；缺zone5/zone7:443映射导致后续失败。新版按需展开zone1～65535，固定443/公网DNS，拒绝其他端口、非规范编号和任意域名。先查原生socket-open/connect/first-send/receive；顶层构造器可能绕过旧浏览器WS计数，不把其0计数当失败。总量类别固定socket-zone-sent/received，多连接需结合端点阶段，不能将相邻日志必定视为同连接。超范围编号仍不支持，地图/声音单独验收。
 
 

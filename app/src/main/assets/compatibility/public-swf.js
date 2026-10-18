@@ -7,7 +7,7 @@
     ['swf', ['swf']], ['libs', ['swf']], ['conf', ['xml', 'config', 'bin', 'dat']],
     ['res', ['swf', 'xml', 'config', 'bin', 'dat', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp3']],
     ['plugins', ['swf', 'xml', 'txt', 'fint', 'config', 'png']],
-    ['activity', ['swf', 'png', 'xml']], ['apps', ['swf', 'png', 'xml', 'jpg']],
+    ['activity', ['swf', 'png', 'xml', 'exbn']], ['apps', ['swf', 'png', 'xml', 'jpg']],
     ['video', ['swf', 'mp4']]
   ]);
   const requestPatterns = [...Array.from(directoryTypes.keys(), dir => '/' + dir + '/*'), '/preloader.swf*', '/main.swf*', '/ver.config*', '/Global.xml*', '/preloadlist.xml*']
@@ -18,6 +18,7 @@
     ['config', ['application/octet-stream']],
     ['bin', ['application/octet-stream']],
     ['dat', ['application/octet-stream']],
+    ['exbn', ['application/octet-stream']],
     ['png', ['image/png']], ['jpg', ['image/jpeg']], ['jpeg', ['image/jpeg']],
     ['gif', ['image/gif']], ['webp', ['image/webp']], ['mp3', ['audio/mpeg']],
     ['txt', ['text/plain']], ['fint', ['application/octet-stream']], ['mp4', ['video/mp4']]
