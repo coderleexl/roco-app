@@ -4,7 +4,16 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
-## 最新0.1.8：省去Ruffle启动遮罩（待用户验证）
+## 最新0.1.9：声音权限、首页预加载和选服诊断
+
+- 0.1.8真机只读证据：主播放器autoplayon/isPlayingtrue/volume1、Play和Unmute均隐藏，证明配置已生效但不是声音证明；PageError多次提示AudioContext被自动播放策略阻止。现有App没有PermissionDelegate；固定Gecko158源码确认自动播放权限/defaultPROMPT。0.1.9/code10新增PlaybackPolicy及session权限回调，仅处理两种autoplay权限，允许官网首页/default及web2精确HTTPS来源；不授权其他能力、不改系统设置。真实callback与声音仍待用户验证。
+- web2主播放器ver.config/Global.xml/Angel.config/两个基础类库/Effect插件均200。首页隐藏预加载器另外请求preloadlist.xml及ver.config仍失败missingACAO/200；已补官网首页的这两份配置对，MIME/方法/来源/已有服务器策略保护不变。compatibility1.2.1，公共目录规则保留。
+- 用户要求对照Python接口，见docs/networking.md：参考实现原生TCP连dir:443取房间、zone连接/心跳，不等于HTTP跨域。现有缓存Socket信号不足，**不能据此断言只差TCP或全部只是资源问题**，更不能宣布登录/选服已通过。只读使用原有临时缓存，不再拉取/运行参考项目。
+- 为下一次用户加载补game-frame engine-signals.js：MAIN世界只在web2，保留console原行为，仅计数Socket/缺代理/脚本错误/未实现功能，最多8个静态官方Socket域名/数字错误码，计数1000上限；不保存原文/对象/票据，字符串处理有长度限制，状态只在页面内。探针必须逐字段验证数字/域名后输出，不能dump整份page-controlled对象。
+- 新增preloader/PlaybackPolicy/engine privacy测试均有RED→GREEN证据；Node18项/JVM6项通过，lint/主包/测试包完整构建通过42s；最终诊断长度限制改动后Node18项再次通过，lint/主包重建通过33s。最终签名/完整Ruffle资源核对通过，APK SHA256 `86e1191e605a18d2b82ba6e9add7aba0c1a46f3600bee76159626cb315309656`，路径app/build/outputs/apk/debug/app-debug.apk。已覆盖安装Success，包查询确认0.1.9/code10。保持profile和数据，未自动刷新/认证/点击或截图；用户尚未验证本版声音/服务器列表，完整刷新退登仍未修。
+- 下一工具接手优先：用户打开0.1.9并保持当前会话后，只读检查autoplay权限决策、首页两份配置HTTP结果及每个web2游戏帧的__timeCasketEngineSignals（仅验证后输出固定数字计数/官方域名/错误码）；根据实际失败区分AVM2/缺Socket代理/资源，禁止把参考Python的TCP流程当成已确认根因。若需桥接先给出证据及架构比较，当前没有任何桥接实现。
+
+## 历史0.1.8：省去Ruffle启动遮罩
 
 - 用户明确额外播放按钮为Ruffle自带遮罩。新增compatibility/player-options.js，manifest1.2.0以MAIN世界/document_start/all_frames仅注入官网HTTPS范围；在具体页面范围检查后仅设置RufflePlayer.config.autoplay=on，保留已有渲染器/参数/脚本交互/声音遮罩，不模拟点击、不接触认证信息。上游Ruffle保持原版。
 - Node新增3项配置保留/来源边界/manifest测试先RED再GREEN，合计15项通过；JVM4项、lint、主包/测试包本地构建通过43s；签名和官方Ruffle逐文件校验通过。APK SHA256 `780e80c7a2a6465c60324c31bd3b0c0a20a275c40d07e798af7ab47dd9e8f2ef`，输出app/build/outputs/apk/debug/app-debug.apk。覆盖安装Success，包查询确认0.1.8/code9。没有自动打开/刷新/登录或截图；用户验证自动启动、插件加载和选服。

@@ -1,5 +1,7 @@
 # Test plan
 
+Current Node command: `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs tools/engine-signals.test.cjs`.0.1.9 adds native PlaybackPolicy allowlist/permission-isolation tests, outer-homepage bootstrap boundaries, and bounded engine-classification privacy/forwarding tests. These do not establish real audio, callback invocation, child-frame signal coverage or game login. User performs actual verification, without repeated authentication requests.
+
 ## Automated
 
 - `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs`: strip credentials, token queries/fragments and opaque paths; ignore headers and bodies.

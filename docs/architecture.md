@@ -1,5 +1,13 @@
 # Architecture
 
+## 0.1.9 audio and diagnostic additions
+
+Actual0.1.8 player state confirms autoplay:on/isPlayingtrue/volume1 and hidden Play/Unmute overlays in the current game. Browser PageErrors still report AudioContext blocked pending gesture; hidden overlay does not prove sound resumed. Pinned Ruffle hides its overlay without awaiting resume success. App previously lacked PermissionDelegate; pinnedGecko158 sources expose audible/inaudible autoplay and default VALUE_PROMPT.0.1.9 supplies only these permission types for exactHTTPS official homepage/default and web2 via PlaybackPolicy. Other sites denied for autoplay, other permissions unchanged; no microphone/camera access or global media-policy change. Only decision/type metadata is logged. Actual callback/audio recovery require user test.
+
+Outer homepage preloader separately may read exact preloadlist.xml (XML MIME) and ver.config (octet-stream); existing source/method/status/server-policy guards remain. This repairs observed homepage failures, not Socket support.
+
+New engine-signals.js, only exactHTTPS web2 MAIN-world frames, forwards console log/warn/error unchanged while deriving bounded classifications and up to8 numeric error codes/official Socket hosts. It never stringifies objects or persists raw text/arguments/URLs/cookies/tickets; transient strings are size limited. Frame-local state has no native/network telemetry and is page controlled, so probes must validate its schema and never trust it for permission/login decisions. See networking.md; real collection coverage is not proven by Node tests.
+
 ## Current shared resource policy (0.1.7)
 
 This section supersedes the older per-file exception descriptions below. `adaptPublicAssetHeaders` in compatibility/public-swf.js is the common response wrapper, with `allowedAssetTypes` as the single resource/source/MIME policy. It operates at the extension response hook, not by replacing webpage fetch/XHR, and covers eligible Ruffle/Wasm fetches through the same browser request pipeline.

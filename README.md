@@ -10,6 +10,8 @@ Kotlin + GeckoView + 内置 Ruffle 的 Android 网页/Flash **兼容性验证工
 
 0.1.8在官网范围内请求Ruffle自动播放，保留正常声音触摸限制，遮罩是否消失待用户验证。整页刷新回登录已发现官网入口/退出逻辑，尚未修改它或实现真正的官方会话恢复。后续辅助项目仅记录于 [参考清单](docs/references.md)，当前不移植第三方辅助代码。
 
+0.1.8已确认自动播放配置生效、Effect加载，但音频启动被浏览器阻止、选服仍未出现。0.1.9增加官方页面的自动播放权限处理、首页预加载配置适配和不保存原始日志的引擎诊断；声音与选服结果待用户验证。HTTP跨域和TCP选服对照见 [联网记录](docs/networking.md)。
+
 2026-10-18：提交 `ba84be2` 已通过 [GitHub 构建与三项模拟器测试](https://github.com/coderleexl/roco-app/actions/runs/39091368510)，包含真实 Flash 回调、关联窗口和进程重启后的测试 Cookie 保留。自检使用普通 WebGL；官网默认渲染、账号登录与完整游戏仍待真机验证。
 
 已验证版本：[下载 Debug APK 压缩包](https://github.com/coderleexl/roco-app/actions/runs/39091368510/artifacts/12122389419)（需要登录 GitHub），解压安装 `debug/app-debug.apk`。

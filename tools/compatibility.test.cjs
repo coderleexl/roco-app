@@ -76,7 +76,7 @@ test('observed public version config accepts only octet-stream and exact game or
     {url:'http://res.17roco.qq.com/ver.config'},
     {url:'https://res.17roco.qq.com:8443/ver.config'},
     {url:'https://res.17roco.qq.com.evil.example/ver.config'},
-    {originUrl:'https://17roco.qq.com/'},
+    {originUrl:'https://17roco.qq.com/unrelated.html'},
     {originUrl:'https://evil.example/',documentUrl:input.originUrl},
     {originUrl:undefined,documentUrl:undefined},
     {originUrl:'http://web2.17roco.qq.com/'},
@@ -205,5 +205,16 @@ test('version inventory plugin/activity/app/video families share typed policy an
   }
   for(const path of ['/plugins/cgi-bin/login.swf','/plugins/Effect/backup.bak','/plugins/Effect/code.js','/plugins/Effect/page.html','/activity2/Main.swf','/apps2/Main.swf','/h5/game.js','/video/config.xml']) {
     assert.equal(adaptPublicAssetHeaders(request({url:'https://res.17roco.qq.com'+path,originUrl:'https://web2.17roco.qq.com/game'})),undefined,path);
+  }
+});
+
+test('observed outer homepage preloader can read only its public bootstrap configs',()=>{
+  for(const [path,mime] of [['/preloadlist.xml','text/xml'],['/ver.config','application/octet-stream']]) {
+    const input=request({url:'https://res.17roco.qq.com'+path,originUrl:'https://17roco.qq.com/',responseHeaders:[{name:'Content-Type',value:mime}]});
+    assert.equal(adaptPublicAssetHeaders(input)?.responseHeaders.at(-1).value,'https://17roco.qq.com',path);
+    assert.equal(adaptPublicAssetHeaders({...input,originUrl:'https://17roco.qq.com/unrelated.html'}),undefined);
+    assert.equal(adaptPublicAssetHeaders({...input,originUrl:'https://evil.example/'}),undefined);
+    assert.equal(adaptPublicAssetHeaders({...input,url:input.url+'.evil'}),undefined);
+    assert.equal(adaptPublicAssetHeaders({...input,responseHeaders:[{name:'Content-Type',value:'text/html'}]}),undefined);
   }
 });

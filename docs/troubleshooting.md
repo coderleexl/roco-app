@@ -1,5 +1,8 @@
 # Troubleshooting
 
+- **Autoplay runs but Unmute click remains silent**: inspect actual overlay display, player volume and AudioContext warnings separately.0.1.9 adds scoped Gecko autoplay permission responses; inspect safe autoplay-allowed/denied metadata after user load. Do not hide the overlay or force volume as proof of sound, and do not change system audio routing automatically.
+- **No server list after resources200**: compare networking.md, inspect bounded child-frame engine signals after user load. Socket/TCP differs from HTTP CORS. Counter0 or reference Python code alone does not prove current Socket failure/success; no bridge without actual evidence and stated architecture scope.
+
 - **Ruffle installation fails**: confirm build metadata and pinned digest. Inspect extension manifest/API compatibility through authorized remote debugging. App must show the failure, not label it game success.
 - **Website opens but Flash does not**: inspect resource status, Ruffle execution errors and content scripts. Do not substitute a standalone SWF as evidence that official login works.
 - **Login click does nothing**: distinguish touch dispatch, ExternalInterface/parent callbacks, new-window callback and blocked external scheme. Native JavaScript confirmation dialogs require a user decision.

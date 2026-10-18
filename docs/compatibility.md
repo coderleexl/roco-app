@@ -1,5 +1,9 @@
 # Compatibility gates
 
+0.1.9 work: actual0.1.8 confirms autoplay option and Effect/bootstrap HTTP200, but user still reports silence and no server selection. Browser audio-policy warnings and separate outer-homepage bootstrap CORS failures are observed. Scoped native autoplay permission handling, homepage config pairs and bounded child-frame engine diagnostics added; audio/permission-callback/Socket outcomes await user validation. Never classify Python's protocol implementation as proof of our runtime failure. Details innetworking.md and handoff.md.
+
+0.1.9/code10 delivery: Node18/JVM6 tests, lint, app/test APK builds pass locally. Final APK signature and complete upstream Ruffle assets verified, installed in place on Meizu21 (Success/version confirmed). No phone webpage operation performed; real audible output, server list and game gates remain pending. Cloud checks were not used as an installation prerequisite.
+
 Latest0.1.8/code9: scoped Ruffle autoplay preference added; Node15/JVM4/lint/bothAPK builds and package signature/Ruffle checks passed locally, installed in place on Meizu21/version confirmed. Startup overlay removal and real plugin/server/map outcomes await user testing. Full-refresh login behavior is explained by observed official entry/logout code but remains unmodified; no persistent-login guarantee. Future auxiliary reference is recorded only in references.md.
 
 Latest0.1.7/code8: public version inventory extends typed directory rules for plugins/activity/apps/video. Node12/JVM4/lint/bothAPK builds and APK signature/Ruffle checks passed locally; installed in place on Meizu21 and version confirmed. Effect plugin/selection/map retest pending.0.1.6 real-browser evidence now verifies Global.xml/config/base libraries200, followed by Effect CORS failure. User also reports full refresh returns login and confirms a Ruffle startup overlay; official session validity and overlay removal remain under investigation.

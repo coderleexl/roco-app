@@ -120,6 +120,19 @@ class MainActivity : ComponentActivity() {
     private fun newWindow(): GeckoSession {
         val session = GeckoSession(GeckoSessionSettings.Builder().usePrivateMode(false).build())
         configureSettings(session.settings)
+        session.permissionDelegate = object : GeckoSession.PermissionDelegate {
+            override fun onContentPermissionRequest(
+                session: GeckoSession,
+                perm: GeckoSession.PermissionDelegate.ContentPermission
+            ): GeckoResult<Int>? {
+                if (perm.permission != GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_AUDIBLE &&
+                    perm.permission != GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_INAUDIBLE) return null
+                val allowed = PlaybackPolicy.allowsAutoplay(perm.uri, perm.permission)
+                app.log.record(if (allowed) "autoplay-allowed" else "autoplay-denied", number = perm.permission)
+                return GeckoResult.fromValue(if (allowed) GeckoSession.PermissionDelegate.ContentPermission.VALUE_ALLOW
+                    else GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY)
+            }
+        }
         session.navigationDelegate = object : GeckoSession.NavigationDelegate {
             override fun onLoadRequest(session: GeckoSession, request: GeckoSession.NavigationDelegate.LoadRequest): GeckoResult<AllowOrDeny>? {
                 val scheme = android.net.Uri.parse(request.uri).scheme

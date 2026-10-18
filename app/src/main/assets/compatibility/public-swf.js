@@ -10,7 +10,7 @@
     ['activity', ['swf', 'png', 'xml']], ['apps', ['swf', 'png', 'xml', 'jpg']],
     ['video', ['swf', 'mp4']]
   ]);
-  const requestPatterns = [...Array.from(directoryTypes.keys(), dir => '/' + dir + '/*'), '/preloader.swf*', '/main.swf*', '/ver.config*', '/Global.xml*']
+  const requestPatterns = [...Array.from(directoryTypes.keys(), dir => '/' + dir + '/*'), '/preloader.swf*', '/main.swf*', '/ver.config*', '/Global.xml*', '/preloadlist.xml*']
     .map(path => resourceOrigin + path);
   const mimeTypes = new Map([
     ['swf', ['application/x-shockwave-flash']],
@@ -32,6 +32,8 @@
     const home = source.origin === 'https://17roco.qq.com' && ['/', '/default.html'].includes(source.pathname);
     const game = source.origin === 'https://web2.17roco.qq.com';
     if (home && (path === '/preloader.swf' || path === '/swf/ROCO-Z8.swf' || /^\/swf\/ceils\/ROCO-Z8_Ceil_\d+\.swf$/.test(path))) return mimeTypes.get('swf');
+    if (home && path === '/preloadlist.xml') return mimeTypes.get('xml');
+    if (home && path === '/ver.config') return mimeTypes.get('config');
     if (!game) return;
     if (path === '/main.swf') return mimeTypes.get('swf');
     if (path === '/ver.config') return mimeTypes.get('config');

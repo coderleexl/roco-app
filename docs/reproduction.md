@@ -1,5 +1,12 @@
 # Reproduction record
 
+## Meizu0.1.8 silent audio / no server list — 2026-10-18
+
+- User reports Unmute click fails and no server list. Read-only main: readyState2/autoplayon/isPlayingtrue/volume1; Play and Unmute displaynone. Browser PageErrors repeatedly state AudioContext blocked until gesture. Output routing/volume has not been tested or changed; overlay disappearance does not prove sound.
+- Pinned Ruffle unmute handler resumes AudioContext but hides overlay without awaiting success. PinnedGecko158 source confirms autoplay permission types/defaultPROMPT, with no app delegate previously installed.0.1.9 adds scoped playback permission handling; final audible behavior remains unverified.
+- Main ver.config/Global.xml/Angel.config/base libraries/Effect now all200. Outer homepage independently fails preloadlist.xml and ver.config CORS at200. PublicHEAD preloadlist text/xml/3818bytes/noACAO; its public content describes preloading.0.1.9 adds these exact homepage bootstrap pairs, not unrelated endpoints.
+- Read-only ConsoleAPI classification has no useful child-frame Socket signal; state remainsunknown. New frame-local bounded engine classifications in0.1.9 support the next user load without raw logging. Python reference directory/zone TCP flow is documented innetworking.md and is not proof of our current blocker. No refresh/login/taps/screenshots/system-network modification were performed by the developer.
+
 ## Historical user observations — not reproduced by this implementation
 
 1. Firefox with Ruffle loads the official website.
