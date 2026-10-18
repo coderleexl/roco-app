@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">时光匣</string>
-    <string name="shortcut_game">横屏游戏</string>
+    <string name="shortcut_game">游戏全屏</string>
     <string name="shortcut_game_long">横屏打开游戏画面</string>
 </resources>

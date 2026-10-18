@@ -1,5 +1,7 @@
 # Compatibility gates
 
+0.1.18/code19 corrects the0.1.17 user-reported presentation failure: the current homepage was still at login, with a visible960×560 mainiframe but no ready game main; its ready preloader is only1×1. The top official page now presents the existing game/login surface immediately, then focuses the ready main movie when its official ancestry is accessible. A single top-frame owner prevents competing CSS adapters; homepage presentation grants no movie reload or phase telemetry. Node53 tests pass, including login-first presentation and movie/reload fallback. Physical crop/touch/authentication transition remains pending; sound and gifts remain unresolved.
+
 0.1.17/code18 adds an in-app landscape/game-only mode and a dynamic launcher shortcut. Native orientation/chrome changes wait for a ready official movie's presentation acknowledgement; Back restores browsing. The page adapter fits the existing player/frame chain with reversible CSS, without navigation/reload or movie parameter export. Node presentation/lifecycle tests pass; physical crop/touch/rotation and launcher behavior still require acceptance. Existing0.1.16 activity-exbn gift retest remains unanswered; do not mark gifts or official music fixed.
 
 

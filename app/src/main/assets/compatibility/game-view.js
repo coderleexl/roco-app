@@ -17,13 +17,13 @@
       restore.push(() => old === null ? node.removeAttribute(name) : node.setAttribute(name, old));
       node.setAttribute(name, value);
     }
-    function enter(element) {
+    function enter(element, targetWindow = sourceWindow) {
       const player = element.wrappedJSObject || element;
       if (activePlayer === player) return true;
       exit();
       try {
         const chain = [];
-        let win = sourceWindow.wrappedJSObject || sourceWindow, target = player;
+        let win = targetWindow.wrappedJSObject || targetWindow, target = player;
         // Validate every participating document before changing any of them.
         for (let depth = 0; depth < 6; depth++) {
           if (!official(win) || target.ownerDocument !== win.document) return false;
@@ -49,7 +49,7 @@
           style.textContent = `
 html[data-time-casket-view],html[data-time-casket-view] body{margin:0!important;padding:0!important;min-width:0!important;min-height:0!important;width:100%!important;height:100%!important;overflow:hidden!important;background:#000!important}
 html[data-time-casket-view] body *{visibility:hidden!important}
-html[data-time-casket-view] [data-time-casket-path]{display:block!important;visibility:visible!important;position:static!important;margin:0!important;padding:0!important;transform:none!important;opacity:1!important}
+html[data-time-casket-view] [data-time-casket-path]{display:block!important;visibility:hidden!important;position:static!important;margin:0!important;padding:0!important;transform:none!important;filter:none!important;perspective:none!important;contain:none!important;overflow:visible!important;clip:auto!important;clip-path:none!important;opacity:1!important}
 html[data-time-casket-view] [data-time-casket-target]{display:block!important;visibility:visible!important;position:fixed!important;left:0!important;top:0!important;margin:0!important;padding:0!important;border:0!important;width:${width}px!important;height:${height}px!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;transform:none!important;transform-origin:0 0!important;z-index:2147483647!important;opacity:1!important}
 html[data-time-casket-view] [data-time-casket-target] *{visibility:visible!important}`;
           (doc.head || doc.documentElement).appendChild(style);
@@ -73,7 +73,45 @@ html[data-time-casket-view] [data-time-casket-target] *{visibility:visible!impor
         return true;
       } catch (_) { exit(); return false; }
     }
-    return {enter, exit};
+    function mainMovie(win, depth = 0) {
+      // Login can be cross-origin. Leave it in its existing frame; never read
+      // its URL, credentials or DOM. Only inspect accessible official documents.
+      try {
+        if (depth >= 5 || !official(win)) return null;
+        const doc = win.document;
+        for (const element of [...doc.querySelectorAll('ruffle-object,ruffle-embed,ruffle-player')].slice(0, 4)) {
+          const player = element.wrappedJSObject || element, api = player.ruffle?.();
+          if (api?.readyState !== 2) continue;
+          const raw = api.loadedConfig?.url;
+          if (typeof raw !== 'string' || raw.length > 4096) continue;
+          const movie = new URL(raw, doc.baseURI);
+          if (movie.origin === 'https://res.17roco.qq.com' && movie.pathname === '/main.swf') return {element, win};
+        }
+        for (const frame of [...doc.querySelectorAll('iframe')].slice(0, 8)) {
+          const found = mainMovie(frame.contentWindow, depth + 1);
+          if (found) return found;
+        }
+      } catch (_) { /* An inaccessible authentication frame stays untouched. */ }
+      return null;
+    }
+    function enterGame() {
+      try {
+        const win = sourceWindow.wrappedJSObject || sourceWindow;
+        if (win !== win.top || !official(win)) return false;
+        if (new URL(win.location.href).origin === 'https://17roco.qq.com') {
+          const frame = win.document.getElementById('mainiframe');
+          if (!frame || frame.tagName !== 'IFRAME') return false;
+          // The visible 960x560 game/login surface is available before main.swf.
+          // Do not select the homepage's hidden 1x1 preloader as a movie.
+          const target = mainMovie(frame.contentWindow);
+          if (target && enter(target.element, target.win)) return true;
+          return enter(frame, win);
+        }
+        const target = mainMovie(win);
+        return target ? enter(target.element, target.win) : false;
+      } catch (_) { return false; }
+    }
+    return {enter, enterGame, exit};
   }
   if (typeof module !== 'undefined' && module.exports) module.exports = createGameView;
   else root.createTimeCasketGameView = createGameView;

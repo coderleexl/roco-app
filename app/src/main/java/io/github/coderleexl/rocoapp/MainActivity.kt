@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
         }
         action("官网") { current.loadUri(HOME) }
         action("返回") { goBack() }
-        action("横屏游戏") { setGameMode(!gameModeRequested) }
+        action("游戏全屏") { setGameMode(!gameModeRequested) }
         action("刷新游戏") {
             status.text = if (app.gameFrames.reload(current)) "正在重载游戏…"
                 else "当前没有就绪的游戏页面；可点官网重新进入"
@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
         requestedOrientation = if (enabled) ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         if (windows.isNotEmpty()) app.gameFrames.setGameView(current, enabled)
         if (!enabled) applyGamePresentation(false)
-        else if (!gameOnlyActive) status.text = "进入游戏后自动显示游戏画面；返回键退出横屏模式"
+        else if (!gameOnlyActive) status.text = "正在打开游戏窗口；返回键恢复网页"
     }
     private fun applyGamePresentation(enabled: Boolean) {
         gameOnlyActive = enabled && gameModeRequested

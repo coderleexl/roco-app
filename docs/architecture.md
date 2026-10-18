@@ -1,5 +1,13 @@
 # Architecture
 
+## 0.1.18入口即显示游戏窗口
+
+0.1.17将展示绑定到web2 main.swf ready，导致首页登录阶段只有横屏，没有裁切。只读真机几何确认可见区域是顶层mainiframe（960×560），首页ready preloader仅1×1。现在ISOLATED game-control也在官方首页顶层运行，只有顶层拥有展示适配器；子web2继续负责主电影刷新和计数，不操作父层样式。原生在端口连接时发送已有模式请求，不再只等main ready发送，展示ack与movie ready解耦。
+
+game-view.enterGame先取顶层mainiframe，可立即按默认舞台尺寸铺满。只在该窗口内递归检查可访问的精确官方文档（最多5层、每层8个iframe），main就绪后用原播放器/frameElement链；不可访问登录帧保持原样，不读取src/登录DOM。主播放器父链验证失败会回滚并显示外层游戏窗口。退出/重载/换目标都恢复旧样式；祖先的overflow/contain/filter/clip等约束临时清除，以免fixed游戏区域被网页布局裁掉。首页和子帧不会各持有一套父层CSS。
+
+原生homepage展示许可仅HTTPS17roco、默认443、无userinfo、路径/或/default.html；web2刷新许可不变。首页ready消息不能令其成为reload目标，signals不从首页接收；没有扩展到认证域或改变网络策略。“游戏全屏”复用原shortcut ID/session，返回恢复浏览。真机效果需用户验收。
+
 ## 0.1.17横屏游戏入口与页面呈现
 
 顶栏“横屏游戏”与动态launcher shortcut landscape_game发送同一game_mode请求；ShortcutInfo使用NEW_TASK/CLEAR_TOP/SINGLE_TOP且Activity为singleTop，onNewIntent只改变模式，不导航。动态入口避免静态shortcut默认CLEAR_TASK破坏当前页面（见[Android快捷方式Intent规则](https://developer.android.com/develop/ui/compose/system/shortcuts/managing-shortcuts)）。Activity仅为自身请求SENSOR_LANDSCAPE；游戏尚未就绪/需要官方验证时保留浏览UI，真正收到受限content port的game-view-state才隐藏Chrome和系统栏。返回键先退出模式并恢复UNSPECIFIED，不进行网页后退。切换关联窗口按当前session的状态显示UI；销毁时沿原端口清理。

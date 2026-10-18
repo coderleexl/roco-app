@@ -1,7 +1,10 @@
 /* Isolated world: native toolbar -> current game's public Ruffle reload API only. */
 (function () {
   'use strict';
-  if (window.location.origin !== 'https://web2.17roco.qq.com') return;
+  const gameOrigin = window.location.origin === 'https://web2.17roco.qq.com';
+  const presentationOwner = window === window.top;
+  if (!gameOrigin && !(presentationOwner && window.location.origin === 'https://17roco.qq.com' &&
+      ['/', '/default.html'].includes(window.location.pathname))) return;
   let port;
   try { port = browser.runtime.connectNative('time_casket_game_control'); }
   catch (_) { return; }
@@ -15,6 +18,7 @@
     viewActive = active; send({kind: 'game-view-state', enabled: active});
   }
   function game() {
+    if (!gameOrigin) return null;
     for (const element of [...document.querySelectorAll('ruffle-object,ruffle-embed,ruffle-player')].slice(0, 4)) {
       try {
         // Firefox Xray waiver; pass no extension objects or callbacks into page code.
@@ -32,11 +36,12 @@
   function send(message) { try { port.postMessage(message); } catch (_) {} }
   function publish() {
     const target = game(), ready = !!target;
-    if (viewRequested && target) {
-      const active = view.enter(target.element);
+    if (viewRequested && presentationOwner) {
+      const active = view.enterGame();
+      if (!active) view.exit();
       reportView(active);
-      if (!active && !viewFailed) send({kind: 'game-view-failed'});
-      viewFailed = !active;
+      if (!active && ready && !viewFailed) send({kind: 'game-view-failed'});
+      viewFailed = !active && ready;
     } else { view.exit(); reportView(false); viewFailed = false; }
     if (ready !== lastReady) { lastReady = ready; send({kind: 'ready', ready}); }
     if (ready) {

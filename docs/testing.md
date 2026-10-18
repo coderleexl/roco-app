@@ -1,5 +1,7 @@
 # Test plan
 
+0.1.18：Node53/JVM14通过，覆盖登录前仅展示mainiframe而非隐藏preloader、main就绪/重载目标切换、父链失败回退、无容器拒绝、子帧不竞争展示与首页不可刷新。JVM新增首页展示许可与web2刷新许可分离测试；首轮完整构建56s、最终增量构建42s，lint/主包及测试包通过。签名/完整Ruffle资源校验通过，包内兼容脚本与工作区一致。隔离模拟器仅重跑shortcut保留session/返回恢复用例，6.699s、OK(1test)，其余4个未改的本地样例本轮未重跑。真机已覆盖升级0.1.18/code19；官网裁切/触控/登录切换仍需用户验收，不能以模型测试替代。包SHA与设备结果见handoff.md。
+
 0.1.17：Node47项通过，新增game-view的还原/缩放/幂等/父链拒绝/失败回滚及game-control的等待/命令校验/不导航。JVM13、lint及主包/测试包最后构建50s通过；APK签名和完整原版Ruffle核对通过。新增landscapeShortcutKeepsSessionAndBackRestoresBrowsing用例，在原始本地Flash执行后获取真实动态shortcut Intent启动，检查横屏、同一GeckoSession、无新增page-start、返回恢复方向；CI改为5项独立进程。隔离API37/x86_64模拟器5项OK(1test)：shortcut6.653s、Flash/窗口8.882s、seed8.543s、重启Cookie4.973s、声音7.01s。首轮shortcut仅在ActivityScenario.close生命周期追踪失败；测试恢复原fixture Intent后5项完整重跑通过。额外RDP展示注入探针被自动审批拒绝、未执行，未尝试绕过；官方画面缩放/触控及礼包仍需用户验收。APK SHA256 `e5338cfaba2a3d4afcdf64e3bbd8cb3d0c58a89bb4ed29a82a46697798464f78`。
 
 

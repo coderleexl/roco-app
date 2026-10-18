@@ -20,6 +20,53 @@ function fixture(topUrl='https://17roco.qq.com/') {
   const player=gameDoc.node(gameDoc.body);player.ruffle=()=>({metadata:{width:960,height:560}});
   return {topDoc,gameDoc,top,win,frame,player,events};
 }
+
+function homepageFixture() {
+  const f=fixture();f.frame.tagName='IFRAME';f.frame.contentWindow=f.win;
+  f.topDoc.getElementById=id=>id==='mainiframe'?f.frame:null;
+  f.topDoc.baseURI='https://17roco.qq.com/';f.gameDoc.baseURI='https://web2.17roco.qq.com/';
+  f.gameDoc.querySelectorAll=()=>[];
+  return f;
+}
+
+test('homepage immediately isolates the game frame during cross-origin login without reading its URL',()=>{
+  const f=homepageFixture();
+  f.frame.contentWindow={get location(){throw Error('cross-origin login');}};
+  f.topDoc.querySelectorAll=()=>{throw Error('must not choose hidden homepage preloader');};
+  const view=create(f.top);assert.equal(view.enterGame(),true);
+  assert.equal(f.frame.style.values.transform,'scale(2)');
+  assert.equal(f.topDoc.styles.length,1);assert.equal(f.gameDoc.styles.length,0);
+  view.exit();assert.equal(f.frame.getAttribute('style'),'original-frame-style');
+});
+
+test('presentation switches from the login frame to ready main and back during reload, then restores',()=>{
+  const f=homepageFixture(),view=create(f.top);assert.equal(view.enterGame(),true);
+  let ready=0;
+  f.player.ruffle=()=>({readyState:ready,metadata:{width:960,height:560},loadedConfig:{url:'https://res.17roco.qq.com/main.swf'}});
+  f.gameDoc.querySelectorAll=selector=>selector==='iframe'?[]:[f.player];
+  assert.equal(view.enterGame(),true);assert.equal(f.gameDoc.styles.length,0);
+  ready=2;assert.equal(view.enterGame(),true);assert.equal(f.gameDoc.styles.length,1);
+  assert.equal(f.topDoc.styles.length,1);
+  ready=0;assert.equal(view.enterGame(),true);assert.equal(f.gameDoc.styles.length,0);
+  view.exit();assert.equal(f.topDoc.styles.length,0);
+  assert.equal(f.frame.getAttribute('style'),'original-frame-style');
+});
+
+test('missing game container and non-top presenters cannot activate a homepage crop',()=>{
+  const f=homepageFixture();f.topDoc.getElementById=()=>null;
+  assert.equal(create(f.top).enterGame(),false);assert.equal(f.topDoc.styles.length,0);
+  assert.equal(create(f.win).enterGame(),false);assert.equal(f.gameDoc.styles.length,0);
+});
+
+test('an inaccessible movie ancestor falls back to the existing outer game surface',()=>{
+  const f=homepageFixture();
+  f.player.ruffle=()=>({readyState:2,loadedConfig:{url:'https://res.17roco.qq.com/main.swf'}});
+  f.gameDoc.querySelectorAll=selector=>selector==='iframe'?[]:[f.player];
+  Object.defineProperty(f.win,'frameElement',{get(){throw Error('inaccessible');}});
+  const view=create(f.top);assert.equal(view.enterGame(),true);
+  assert.equal(f.topDoc.styles.length,1);assert.equal(f.gameDoc.styles.length,0);
+  view.exit();assert.equal(f.topDoc.styles.length,0);
+});
 test('only game chain is shown, proportionally fitted and fully restored without navigation',()=>{
   const f=fixture(),view=create(f.win);assert.equal(view.enter(f.player),true);
   assert.equal(f.frame.style.values.transform,'scale(2)');

@@ -28,8 +28,10 @@ class GameFrameController(private val log: DiagnosticLog) {
             override fun onConnect(port: WebExtension.Port) {
                 val sender = port.sender
                 val state = sessions[session]
+                val reloadAllowed = allowsPage(sender.url)
                 if (state == null || sender.session !== session || sender.webExtension.id != "compatibility@roco.local" ||
-                    sender.environmentType != WebExtension.MessageSender.ENV_TYPE_CONTENT_SCRIPT || !allowsPage(sender.url) || state.frames.size >= 8) {
+                    sender.environmentType != WebExtension.MessageSender.ENV_TYPE_CONTENT_SCRIPT ||
+                    !(reloadAllowed || allowsPresentationPage(sender.url)) || state.frames.size >= 8) {
                     port.disconnect(); return
                 }
                 val frame = Frame()
@@ -40,6 +42,7 @@ class GameFrameController(private val log: DiagnosticLog) {
                         val data = message as? JSONObject ?: return
                         when (data.optString("kind")) {
                             "signals" -> {
+                                if (!reloadAllowed) return
                                 val values = data.optJSONObject("values") ?: return
                                 for ((key, label) in signalLabels) {
                                     val value = values.opt(key) as? Int ?: continue
@@ -47,14 +50,14 @@ class GameFrameController(private val log: DiagnosticLog) {
                                 }
                             }
                             "ready" -> {
-                                val ready = data.opt("ready") == true
+                                val ready = reloadAllowed && data.opt("ready") == true
                                 if (ready != frame.ready) log.record("game-frame-ready", number = if (ready) 1 else 0)
                                 frame.ready = ready
                                 if (ready && state.gameViewRequested) postGameView(port, true)
                             }
                             "game-view-state" -> {
                                 val enabled = data.opt("enabled") as? Boolean ?: return
-                                frame.gameView = enabled && state.gameViewRequested && frame.ready
+                                frame.gameView = enabled && state.gameViewRequested
                                 log.record("game-view-active", number = if (frame.gameView) 1 else 0)
                                 state.presentation(state.frames.values.any { it.gameView })
                             }
@@ -76,6 +79,7 @@ class GameFrameController(private val log: DiagnosticLog) {
                         state.presentation(state.frames.values.any { it.gameView })
                     }
                 })
+                if (state.gameViewRequested) postGameView(port, true)
             }
         }, "time_casket_game_control")
     }
@@ -112,6 +116,11 @@ class GameFrameController(private val log: DiagnosticLog) {
         fun allowsPage(raw: String?): Boolean = try {
             val uri = URI(raw ?: "")
             uri.scheme == "https" && uri.host == "web2.17roco.qq.com" && uri.port in setOf(-1, 443) && uri.rawUserInfo == null
+        } catch (_: Exception) { false }
+        fun allowsPresentationPage(raw: String?): Boolean = try {
+            val uri = URI(raw ?: "")
+            uri.scheme == "https" && uri.host == "17roco.qq.com" && uri.port in setOf(-1, 443) &&
+                uri.rawUserInfo == null && uri.rawPath in setOf("/", "/default.html")
         } catch (_: Exception) { false }
     }
 }
