@@ -1,5 +1,7 @@
 # Compatibility gates
 
+0.1.21用户再次报告2032 Stream Error和打开活动后的ioerror，技能文字本轮未反馈；只读确认系统字体canvas实际已加载。0.1.22/code23、兼容1.4.3为新观测且公开响应同类的discovery/mend_shape/dawn_hymn三个游戏GET补转发（总11项），并在原生网页alert补固定错误类别数字日志。实际活动/2032/技能名/音乐仍待验证，QQ免扫码授权只有可行性排查，尚未实现；不得把外部QQ启动等同于游戏登录。
+
 0.1.20用户报告首次进入仍IOError，随后其他操作较好，但战斗技能按钮可点、文字空白且仍多次error；不算完整战斗通过。文件桥完成12次、无失败计数，IO到4、traceErrors到6。两条脱敏公开类栈均指向活动1989的setBossPage，另有已知静态404；不能一概归因跨域。0.1.21/code22、兼容1.4.2针对未嵌入字形的设备字体启用受限系统canvas字体渲染，并补Error#1009/#1010/#2032及字体的固定数字分类。真实技能显示、初始IOError和音乐仍待验证。
 
 0.1.19 physical logs now show repeated IO failures, with directory/zone6 connected and first transfer in both directions. The previous res-only diagnostic extractor missed14 game-CGI CORS failures. Public activity CGI HEADs return200/XML but allow onlyhttps://res.17roco.qq.com; the running page isweb2.0.1.20/code21 delegates8 verified activity GETs through the existing official home fetch, preserving its same-origin context and the server's CORS headers. A local Response wraps the original stream for the game's wasm-bindgen realm check; native Request getters also accept genuine foreign Requests while rejecting shadowed URLs. Node61/JVM14/lint/APKs pass; real two-realm Gecko fixture validates foreign Request input, bytes and403 preservation. Actual activity acceptance remains pending, and the three static404 resources still exist as failures.0.1.19 read-only fullscreen geometry is now inside the viewport; touch/music acceptance is still separate.

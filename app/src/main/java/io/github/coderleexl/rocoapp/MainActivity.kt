@@ -276,6 +276,8 @@ class MainActivity : ComponentActivity() {
         }
         session.promptDelegate = object : GeckoSession.PromptDelegate {
             override fun onAlertPrompt(session: GeckoSession, prompt: GeckoSession.PromptDelegate.AlertPrompt): GeckoResult<GeckoSession.PromptDelegate.PromptResponse> {
+                app.log.record("page-alert", number = SafeDiagnostics.alertCode(prompt.message))
+                if (SafeDiagnostics.alertIsIO(prompt.message)) app.log.record("page-alert-io", number = 1)
                 val result = GeckoResult<GeckoSession.PromptDelegate.PromptResponse>()
                 val dialog = AlertDialog.Builder(this@MainActivity).setTitle("网页提示").setMessage(prompt.message)
                     .setPositiveButton("确定") { _, _ -> result.complete(prompt.dismiss()) }

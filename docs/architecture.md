@@ -1,5 +1,11 @@
 # Architecture
 
+## 0.1.22：活动端点补充与网页alert数字诊断
+
+基于当前真机CORS路径和无认证公开HEAD，原game-http端点表追加discovery/mend_shape/dawn_hymn，总11项；方法、来源、同源owner、Response realm、重定向拒绝及失败不重发行为不变，warehouse_security_code继续拒绝转发。
+
+原主电影trace/console没有观察到用户报告的2032，不能把计数0当成没有弹窗。原生onAlertPrompt新增page-alert（仅1009/1010/2032或0）和page-alert-io（固定1），不记录title/message；扫描前4096字符，不把验证码/未知编号存入文件。弹窗仍原样由用户确认。该路径仅覆盖网页JS alert，不宣称覆盖Flash自己绘制的消息框；后者仍依靠引擎trace与对应网络元数据。
+
 ## 0.1.21设备字体与细分错误诊断
 
 公开CombatPluginLib的AttackSkillCell将skillDes.name赋给skillNameText；SWF放置字符700，useOutlines=false，引用字体299且该字体glyph数为0，属于设备字体文本。当前[Ruffle0.7.1设备字体配置](https://github.com/ruffle-rs/ruffle/blob/v0.7.1/web/packages/core/src/public/config/load-options.ts#L289)默认embedded，不能读取设备字体；canvas可通过OffscreenCanvas使用系统字体，但上游标为实验性。0.1.21只对精确官方web2游戏来源、未显式选择deviceFontRenderer且真实2D上下文可用时设置canvas；首页/其他来源/显式选项保留，GPU preferredRenderer不变。没有注入外部字体、替换游戏文字或改Ruffle二进制。真机技能文字仍须验收，不能仅据字体结构断定全部空白都同因。

@@ -4,6 +4,13 @@ import java.net.URI
 import java.util.ArrayDeque
 
 object SafeDiagnostics {
+    /** Fixed classifications only; never retain the alert's title/message or arbitrary numbers. */
+    fun alertCode(message: String?): Int {
+        val text = message.orEmpty().take(4096)
+        return Regex("\\bError #([0-9]{1,5})\\b").findAll(text).map { it.groupValues[1].toInt() }
+            .firstOrNull { it in setOf(1009, 1010, 2032) } ?: 0
+    }
+    fun alertIsIO(message: String?): Boolean = Regex("\\bIOError(?:Event)?\\b|ioError|Stream Error").containsMatchIn(message.orEmpty().take(4096))
     private val knownPaths = setOf("/", "/default.html", "/iframe.html", "/login.html", "/cgi-bin/login", "/fcgi-bin/login2")
     fun url(raw: String?): String = try {
         val uri = URI(raw ?: "")

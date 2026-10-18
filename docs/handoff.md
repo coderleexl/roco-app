@@ -1,6 +1,19 @@
 # 开发交接（2026-10-18）
 
-## 最新0.1.21：战斗设备字体与细分错误日志（2026-10-18）
+## 最新0.1.22：补新活动接口及网页alert日志，QQ授权未实现（2026-10-18）
+
+- 用户新增需求：登录时检测并唤起手机已登录QQ、由用户确认授权免扫码，已明确意图；期间继续报告2032 Stream Error，又明确刚点活动出现“哎呀出现了网络故障 ioerror”。保留两项工作，不把QQ问题当2032来源。真机0.1.21：main ready2、字体后端canvas实际加载，无message-overlay/panic；尚无技能文字改善反馈。文件IO0→3，HTTP bridge完成8次无失败增长；cache没有2032，计数0不能排除用户弹窗。
+- 当前CORS脱敏路径新增discovery/mend_shape/dawn_hymn；无认证HEAD三者均200/text-xml，ACAO固定https://res.17roco.qq.com、ACAC=true，与web2来源不符。0.1.22/code23、兼容1.4.3只追加这三项游戏GET，总11端点；原owner/Request品牌/realm/流与状态保持/失败不重发均不变。新增断言三项均在规则内并明确warehouse_security_code仍拒绝，登录/隐私/防沉迷均未纳入。静态s4271/s4291仍404，2032具体哪次请求及活动1989仍未知。
+- 原生onAlertPrompt记录page-alert，只留1009/1010/2032或0；匹配IOError/ioError/Stream Error时再留page-alert-io=1。只扫前4096字符，验证码/未知编号不会被记录，title/message不写日志，原弹窗行为保留。新JVM测试覆盖固定编号、边界/任意数字拒绝及IO类别。该层是网页JS alert，不宣称能抓Flash内自绘所有弹窗。
+- QQ只完成可行性排查，尚未交付免扫码功能：公开login.html使用官网OAuth client102061779、官网logintarget回调，桌面UA使用PC组件；匿名移动UA转xui style35页面，但没有核实可用的外部QQ唤起/回调。官方Android SDK需AppID和回调，应用自己的授权不能直接当洛克官网登录。当前native拦截所有外部scheme确实是待处理点，但单纯解禁不能证明认证完成；未接SDK、未修改UA/授权流程/认证参数/外部scheme，没有操作真机登录。匿名页面临时签名/查询/Cookie只瞬时处理，不落盘/输出；静态公共JS可缓存。详见networking.md，不能答“已经支持自动检测已登录账号”。
+- Node63/JVM15/lint与主及测试APK通过，构建56s；签名/完整原版Ruffle和包内6个兼容文件逐字节一致通过。SHA256 `297f47fb769e7214f64998f7950e3a11c30e9d9d119f0e2e867f5b7844d14764`。本轮仅端点表/数字日志，不重跑8个未修改的本地浏览器样例；不能以构建认定真实活动通过。
+- 已adb install -r覆盖安装Success，包查询确认0.1.22/code23，保留数据。下一步用户点刚才失败的同一个活动，读新文件桥与IO/page-alert分类。首次IO/2032/活动1989/静态404、技能文字、音乐和QQ快捷授权仍有未完成项；不截图、不清数据、不改网络，不读取/运行/提交未跟踪辅助EXE/work/Gradle配置。
+
+### 追加用户性能反馈（本版安装后，只读排查中）
+
+- 用户报告闪退及打几次后卡顿。系统15:48:42多进程退出=PACKAGE UPDATED，对应本次覆盖安装；另15:44:02有importance400后台子进程LOW_MEMORY，不直接当成前台游戏闪退。crash buffer有15:25:50旧子进程SIGSEGV，栈模块libGLESv2_adreno.so；旧于0.1.21，不能归因刚加的canvas字体。当前进程PSS合计2260.4MiB，GPU pid15997约1371.9MiB，主进程约265.7MiB；RSS有共享不能简单相加。显卡/多进程内存压力是下一步，尚无优化效果。只输出固定原因/时间/数字/模块，不保存原始崩溃文本或参数。
+
+## 历史0.1.21：战斗设备字体与细分错误日志（2026-10-18）
 
 - 用户0.1.20反馈首次进入仍IOError、其他较好；随后报告战斗按钮能点但文字空白，又出现多次error。先说“方框”后明确纠正“文字是空白”，按空白记录，不以方框当缺字体确证。文件HTTP桥完成12次、failed/unavailable无增长；IO2→4、traceErrors2→6，主电影trace/config/login重载至2。原桥已实际返回Response不代表所有活动成功；初始IO及其他错误仍失败。
 - 只读缓存脱敏提取两条Error#1010的公开方法栈，均指向活动1989 UIMain.setBossPage/onDataReceived，经CGI.completeHandler1。公共npc1989/s4271/s4291仍404，不据此断定1010唯一根因。其余观测CGI名称discovery/warehouse_security_code/privacy_agreement；未扩大8个活动接口转发，没有补保护流程。用户后来关闭App，RDP握手EOF两次并清理forward；已告知先不用重新登录，等待新包。

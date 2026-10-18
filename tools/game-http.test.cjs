@@ -31,6 +31,7 @@ test('verified activity Requests use home origin and return a game-realm streami
 });
 test('all verified endpoints share the rule, preserve HTTP failure and do not retry after sending',async()=>{
   const f=fixture();
+  for(const name of ['discovery','mend_shape','dawn_hymn'])assert(endpoints.includes(name));
   for(const endpoint of endpoints)assert.equal((await f.win.fetch('https://17roco.qq.com/cgi-bin/'+endpoint)).status,200);
   const response=await f.win.fetch('https://17roco.qq.com/cgi-bin/online_present?forbidden=1');
   assert.equal(response.status,403);assert.equal(response.ok,false);
@@ -41,7 +42,7 @@ test('all verified endpoints share the rule, preserve HTTP failure and do not re
 test('authentication, compliance, unknown routes, methods, origins and malformed destinations retain native fetch',async()=>{
   const f=fixture();
   for(const url of ['https://17roco.qq.com/cgi-bin/login','https://17roco.qq.com/cgi-bin/chenmi_report',
-    'https://17roco.qq.com/cgi-bin/privacy_agreement','https://17roco.qq.com/cgi-bin/unknown',
+    'https://17roco.qq.com/cgi-bin/privacy_agreement','https://17roco.qq.com/cgi-bin/warehouse_security_code','https://17roco.qq.com/cgi-bin/unknown',
     'https://17roco.qq.com/fcgi-bin/online_present','http://17roco.qq.com/cgi-bin/online_present',
     'https://17roco.qq.com:8443/cgi-bin/online_present','https://u:p@17roco.qq.com/cgi-bin/online_present',
     'https://evil.example/cgi-bin/online_present','https://res.17roco.qq.com/activity/ui.swf']) {

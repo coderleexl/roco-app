@@ -1,5 +1,13 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.22：追加三个实测活动接口；QQ授权可行性
+
+用户0.1.21报告Error#2032 Stream Error，随后明确刚打开活动提示“哎呀出现了网络故障 ioerror”。文件活动IO增至3，HTTP bridge完成8次且无failed增长；console缓存未出现2032，原分类日志未覆盖弹窗来源。只读当前main ready2、deviceFontRenderer=canvas，无Ruffle message-overlay/panic；配置已生效不等于战斗文字验收。不能将2032直接等同于本次任一接口。
+
+当前脱敏CORS路径新增/cgi-bin/discovery、mend_shape、dawn_hymn。三个无认证HEAD均200/text-xml、ACAO=https://res.17roco.qq.com、ACAC=true；与已有游戏web2来源不匹配同类。0.1.22仅将这三个实测游戏GET加入原桥，总11项；没有改变传输实现或纳入warehouse_security_code/privacy_agreement/认证。原静态s4271/s4291仍404，活动1989脚本错误仍待查，不声称全部活动修复。未知接口继续保留浏览器行为。
+
+QQ需求：用户明确要唤起手机上已登录的QQ并确认授权、免扫码。当前App onLoadRequest拦截所有外部scheme；但直接解除拦截尚不能证明登录回调成立。公开login.html使用graph.qq.com/oauth2.0/authorize、官网client_id102061779及17roco/logintarget.html回调，默认桌面UA对应PC组件pt_adapt/qlogin_v2，无已核实的手机QQ深链。匿名移动UA请求转xui.ptlogin2的style35页面，未验证外部QQ授权/返回；仅瞬时分析，不保存页面内临时签名/查询/Cookie。官方[Android SDK文档](https://wiki.connect.qq.com/qq%E7%99%BB%E5%BD%95)要求AppID、tencent回调及授权结果接收；第三方应用自己的QQ授权不能据此视为官网游戏登录。当前未接SDK、未构造游戏授权参数/票据、未操作真机认证、未放开外部scheme。QQ快捷登录仍待核实官方支持的完整网页唤起/回调流程，不能称已交付。
+
 ## 0.1.20真机后续观察与0.1.21文字问题
 
 用户反馈首次进入仍IOError，其他有所改善，随后战斗按钮能点击但文字空白、又有多次error。0.1.20文件显示HTTP bridge完成12次、无failed/unavailable增长；Complete只证明原Response包装完成，不代表每个活动业务成功。IO计数2后增到4，traceErrors2后到6，main重载后trace/config/login到2。不可把残余错误都算成跨域或认为活动已全部通过。
