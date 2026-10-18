@@ -7,9 +7,10 @@ import org.mozilla.geckoview.WebExtension
 
 /** Only restarts a ready main.swf in the selected session. Never falls back to a page reload. */
 class GameFrameController(private val log: DiagnosticLog) {
-    private data class Frame(var ready: Boolean = false, var busy: Boolean = false, val signals: MutableMap<String, Int> = mutableMapOf())
-    private class Session(val feedback: (String) -> Unit) {
+    private data class Frame(var ready: Boolean = false, var busy: Boolean = false, var gameView: Boolean = false, val signals: MutableMap<String, Int> = mutableMapOf())
+    private class Session(val feedback: (String) -> Unit, val presentation: (Boolean) -> Unit) {
         val frames = linkedMapOf<WebExtension.Port, Frame>()
+        var gameViewRequested = false
     }
     private val sessions = linkedMapOf<GeckoSession, Session>()
     private var extension: WebExtension? = null
@@ -18,8 +19,8 @@ class GameFrameController(private val log: DiagnosticLog) {
         extension = value
         sessions.keys.toList().forEach { bind(it, value) }
     }
-    fun attach(session: GeckoSession, feedback: (String) -> Unit) {
-        sessions[session] = Session(feedback)
+    fun attach(session: GeckoSession, presentation: (Boolean) -> Unit = {}, feedback: (String) -> Unit) {
+        sessions[session] = Session(feedback, presentation)
         extension?.let { bind(session, it) }
     }
     private fun bind(session: GeckoSession, extension: WebExtension) {
@@ -49,6 +50,17 @@ class GameFrameController(private val log: DiagnosticLog) {
                                 val ready = data.opt("ready") == true
                                 if (ready != frame.ready) log.record("game-frame-ready", number = if (ready) 1 else 0)
                                 frame.ready = ready
+                                if (ready && state.gameViewRequested) postGameView(port, true)
+                            }
+                            "game-view-state" -> {
+                                val enabled = data.opt("enabled") as? Boolean ?: return
+                                frame.gameView = enabled && state.gameViewRequested && frame.ready
+                                log.record("game-view-active", number = if (frame.gameView) 1 else 0)
+                                state.presentation(state.frames.values.any { it.gameView })
+                            }
+                            "game-view-failed" -> {
+                                log.record("game-view-unavailable")
+                                state.feedback("暂时无法切换游戏画面，可返回后重试")
                             }
                             "reloaded", "reload-failed", "reload-unavailable" -> {
                                 if (!frame.busy) return
@@ -59,11 +71,25 @@ class GameFrameController(private val log: DiagnosticLog) {
                             }
                         }
                     }
-                    override fun onDisconnect(port: WebExtension.Port) { state.frames.remove(port) }
+                    override fun onDisconnect(port: WebExtension.Port) {
+                        state.frames.remove(port)
+                        state.presentation(state.frames.values.any { it.gameView })
+                    }
                 })
             }
         }, "time_casket_game_control")
     }
+    private fun postGameView(port: WebExtension.Port, enabled: Boolean) {
+        try { port.postMessage(JSONObject().put("kind", "game-view").put("enabled", enabled)) }
+        catch (_: Exception) { log.record("game-view-unavailable") }
+    }
+    fun setGameView(session: GeckoSession, enabled: Boolean) {
+        val state = sessions[session] ?: return
+        state.gameViewRequested = enabled
+        state.frames.keys.toList().forEach { postGameView(it, enabled) }
+        if (!enabled) { state.frames.values.forEach { it.gameView = false }; state.presentation(false) }
+    }
+    fun isGameViewActive(session: GeckoSession) = sessions[session]?.frames?.values?.any { it.gameView } == true
     fun reload(session: GeckoSession): Boolean {
         val state = sessions[session] ?: return false
         if (state.frames.values.any { it.busy }) return true

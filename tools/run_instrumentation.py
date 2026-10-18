@@ -10,7 +10,7 @@ for name in ('app-debug.apk', 'app-debug-androidTest.apk'):
         raise RuntimeError(f'Expected one {name}, found {len(matches)}')
     subprocess.run(['adb', 'install', '-r', str(matches[0])], check=True)
 
-for method in ('flashExecutesAndPopupRetainsOpenerAndCookie', 'seedPersistentCookie', 'cookieSurvivesProcessRestart', 'audioFixtureStartsAfterUserGesture'):
+for method in ('flashExecutesAndPopupRetainsOpenerAndCookie', 'seedPersistentCookie', 'cookieSurvivesProcessRestart', 'audioFixtureStartsAfterUserGesture', 'landscapeShortcutKeepsSessionAndBackRestoresBrowsing'):
     subprocess.run(['adb', 'shell', 'am', 'force-stop', 'io.github.coderleexl.rocoapp'], check=True)
     try:
         result = subprocess.run(['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'class',
@@ -40,4 +40,4 @@ for method in ('flashExecutesAndPopupRetainsOpenerAndCookie', 'seedPersistentCoo
             print(f'::error title=Emulator runtime error part {offset // 3000 + 1}::{chunk}', flush=True)
         raise RuntimeError(f'Instrumentation failed: {method}')
     print(f'::notice title=Android smoke passed::{method}', flush=True)
-print('All four separate-process smoke tests passed')
+print('All five separate-process smoke tests passed')

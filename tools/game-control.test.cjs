@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const source=fs.readFileSync(require.resolve('../app/src/main/assets/compatibility/game-control.js'),'utf8');
-function install({origin='https://web2.17roco.qq.com',movie='https://res.17roco.qq.com/main.swf',reload=()=>Promise.resolve(),ready=2}={}) {
+function install({origin='https://web2.17roco.qq.com',movie='https://res.17roco.qq.com/main.swf',reload=()=>Promise.resolve(),ready=2,viewWorks=true}={}) {
   const sent=[],events={};let receiver,disconnect,interval,cleared=0,closed=0,calls=0,connections=0;
   const config={url:movie};
   Object.defineProperty(config,'parameters',{get(){throw Error('must not read authentication');}});
@@ -13,8 +13,10 @@ function install({origin='https://web2.17roco.qq.com',movie='https://res.17roco.
   const window={location:{origin,reload(){throw Error('document reload forbidden');}},setInterval(f){interval=f;return 7;},clearInterval(id){assert.equal(id,7);cleared++;},addEventListener:(type,f)=>events[type]=f};
   const document={baseURI:origin+'/',querySelectorAll:()=>[player]};
   const browser={runtime:{connectNative(name){assert.equal(name,'time_casket_game_control');connections++;return port;}}};
-  vm.runInNewContext(source,{window,document,browser,URL,Promise});
-  return {window,sent,api,request:()=>receiver({kind:'reload'}),events,tick:()=>interval(),disconnect:()=>disconnect(),get calls(){return calls;},get connections(){return connections;},get cleared(){return cleared;},get closed(){return closed;}};
+  let viewCalls=0,exits=0;
+  const createTimeCasketGameView=()=>({enter:()=>{viewCalls++;return viewWorks;},exit:()=>exits++});
+  vm.runInNewContext(source,{window,document,browser,URL,Promise,createTimeCasketGameView});
+  return {window,sent,api,request:(message={kind:'reload'})=>receiver(message),events,tick:()=>interval(),disconnect:()=>disconnect(),get calls(){return calls;},get connections(){return connections;},get cleared(){return cleared;},get closed(){return closed;},get viewCalls(){return viewCalls;},get exits(){return exits;}};
 }
 test('refresh invokes only ready main Ruffle API without exporting parameters or navigating',async()=>{
   const env=install();assert.equal(env.sent[0].ready,true);
@@ -42,4 +44,22 @@ test('pending reload is not duplicated and failures allow another request',async
   reject(Error('SECRET'));await Promise.resolve();assert.equal(env.sent.at(-1).kind,'reload-failed');
   env.request();assert.equal(env.calls,2);assert(!JSON.stringify(env.sent).includes('SECRET'));
   env.disconnect();assert.equal(env.cleared,1);
+});
+
+test('game view waits for the main movie and restores presentation without reloading',()=>{
+  const env=install({ready:0});env.request({kind:'game-view',enabled:true});assert.equal(env.viewCalls,0);
+  env.api.readyState=2;env.tick();assert.equal(env.viewCalls,1);
+  assert(env.sent.some(m=>m.kind==='game-view-state'&&m.enabled===true));
+  env.request({kind:'game-view',enabled:false});assert.equal(env.sent.at(-1).enabled,false);
+  assert.equal(env.calls,0);assert(env.exits>0);
+  assert(!JSON.stringify(env.sent).includes('parameters'));
+});
+
+test('invalid presentation commands and failed page presentation never report fullscreen',()=>{
+  const env=install({viewWorks:false});env.request({kind:'game-view',enabled:'SECRET'});assert.equal(env.viewCalls,0);
+  env.request({kind:'game-view',enabled:true});assert.equal(env.viewCalls,1);
+  assert(!env.sent.some(m=>m.kind==='game-view-state'&&m.enabled===true));
+  assert.equal(env.sent.at(-1).kind,'game-view-failed');
+  const before=env.sent.length;env.tick();assert.equal(env.sent.length,before);
+  env.events.pagehide();assert(env.exits>0);assert.equal(env.calls,0);
 });

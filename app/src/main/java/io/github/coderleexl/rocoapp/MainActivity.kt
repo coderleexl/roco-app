@@ -1,6 +1,11 @@
 package io.github.coderleexl.rocoapp
 
 import android.app.AlertDialog
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +19,9 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import org.mozilla.geckoview.AllowOrDeny
 import org.mozilla.geckoview.GeckoResult
 import org.mozilla.geckoview.GeckoSession
@@ -27,6 +35,11 @@ class MainActivity : ComponentActivity() {
     private lateinit var status: TextView
     private lateinit var address: TextView
     private lateinit var progress: ProgressBar
+    private lateinit var chrome: LinearLayout
+    var gameModeRequested = false
+        private set
+    var gameOnlyActive = false
+        private set
     lateinit var browser: GeckoView
         private set
     private val registry = WindowRegistry<GeckoSession>()
@@ -68,6 +81,7 @@ class MainActivity : ComponentActivity() {
         }
         action("官网") { current.loadUri(HOME) }
         action("返回") { goBack() }
+        action("横屏游戏") { setGameMode(!gameModeRequested) }
         action("刷新游戏") {
             status.text = if (app.gameFrames.reload(current)) "正在重载游戏…"
                 else "当前没有就绪的游戏页面；可点官网重新进入"
@@ -89,24 +103,69 @@ class MainActivity : ComponentActivity() {
             } else status.text = "请先关闭一个子窗口，再打开声音测试"
         }
         if (BuildConfig.DEBUG) action("自检") { loadProbe() }
-        root.addView(HorizontalScrollView(this).apply { addView(toolbar) })
+        chrome = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        chrome.addView(HorizontalScrollView(this).apply { addView(toolbar) })
         status = TextView(this).apply { textSize = 12f }
         address = TextView(this).apply { textSize = 11f; maxLines = 2 }
         progress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
-        root.addView(status); root.addView(address); root.addView(progress)
+        chrome.addView(status); chrome.addView(address); chrome.addView(progress)
+        root.addView(chrome)
         browser = GeckoView(this)
         root.addView(browser, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(root)
+        registerGameShortcut()
 
         val main = newWindow()
         registry.add(main)
         main.open(app.runtime)
         browser.setSession(main)
         main.setActive(true)
+        setGameMode(savedInstanceState?.getBoolean(EXTRA_GAME_MODE) ?: intent.getBooleanExtra(EXTRA_GAME_MODE, false))
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() { goBack() }
         })
         waitForExtension()
+    }
+
+    private fun registerGameShortcut() {
+        try {
+            val manager = getSystemService(ShortcutManager::class.java) ?: return
+            val shortcut = ShortcutInfo.Builder(this, "landscape_game")
+                .setShortLabel(getString(R.string.shortcut_game))
+                .setLongLabel(getString(R.string.shortcut_game_long))
+                .setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher))
+                .setIntent(Intent(this, MainActivity::class.java).setAction(Intent.ACTION_VIEW)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    .putExtra(EXTRA_GAME_MODE, true)).build()
+            val success = manager.addDynamicShortcuts(listOf(shortcut))
+            app.log.record("game-shortcut-ready", number = if (success) 1 else 0)
+        } catch (_: Exception) { app.log.record("game-shortcut-unavailable") }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra(EXTRA_GAME_MODE, false)) setGameMode(true)
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(EXTRA_GAME_MODE, gameModeRequested)
+        super.onSaveInstanceState(outState)
+    }
+    fun setGameMode(enabled: Boolean) {
+        gameModeRequested = enabled
+        app.log.record("game-view-requested", number = if (enabled) 1 else 0)
+        requestedOrientation = if (enabled) ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        if (windows.isNotEmpty()) app.gameFrames.setGameView(current, enabled)
+        if (!enabled) applyGamePresentation(false)
+        else if (!gameOnlyActive) status.text = "进入游戏后自动显示游戏画面；返回键退出横屏模式"
+    }
+    private fun applyGamePresentation(enabled: Boolean) {
+        gameOnlyActive = enabled && gameModeRequested
+        chrome.visibility = if (gameOnlyActive) View.GONE else View.VISIBLE
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            if (gameOnlyActive) hide(WindowInsetsCompat.Type.systemBars()) else show(WindowInsetsCompat.Type.systemBars())
+        }
     }
 
     private fun waitForExtension() {
@@ -131,7 +190,9 @@ class MainActivity : ComponentActivity() {
 
     private fun newWindow(): GeckoSession {
         val session = GeckoSession(GeckoSessionSettings.Builder().usePrivateMode(false).build())
-        app.gameFrames.attach(session) { message -> if (!isDestroyed && windows.isNotEmpty() && session == current) status.text = message }
+        app.gameFrames.attach(session, presentation = { active ->
+            if (!isDestroyed && windows.isNotEmpty() && session == current) applyGamePresentation(active)
+        }) { message -> if (!isDestroyed && windows.isNotEmpty() && session == current) status.text = message }
         configureSettings(session.settings)
         session.permissionDelegate = object : GeckoSession.PermissionDelegate {
             override fun onContentPermissionRequest(
@@ -254,6 +315,8 @@ class MainActivity : ComponentActivity() {
         browser.releaseSession()
         browser.setSession(session)
         session.setActive(true)
+        applyGamePresentation(app.gameFrames.isGameViewActive(session))
+        app.gameFrames.setGameView(session, gameModeRequested)
     }
     private fun closeWindow(session: GeckoSession) {
         if (!registry.remove(session)) return
@@ -266,6 +329,7 @@ class MainActivity : ComponentActivity() {
         showWindow(current)
     }
     private fun goBack() {
+        if (gameModeRequested) { setGameMode(false); return }
         if (history[current] == true) current.goBack()
         else if (current != windows.first()) closeWindow(current)
         else AlertDialog.Builder(this).setMessage("退出兼容性验证？")
@@ -292,5 +356,8 @@ class MainActivity : ComponentActivity() {
         windows.forEach { app.gameFrames.detach(it); it.close() }; registry.clear()
         super.onDestroy()
     }
-    companion object { const val HOME = "https://17roco.qq.com/" }
+    companion object {
+        const val HOME = "https://17roco.qq.com/"
+        const val EXTRA_GAME_MODE = "game_mode"
+    }
 }

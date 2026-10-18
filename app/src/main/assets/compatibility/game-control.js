@@ -8,6 +8,12 @@
   let busy = false;
   let lastReady;
   let lastSignals;
+  let viewRequested = false, viewActive = false, viewFailed = false;
+  const view = createTimeCasketGameView(window);
+  function reportView(active) {
+    if (active === viewActive) return;
+    viewActive = active; send({kind: 'game-view-state', enabled: active});
+  }
   function game() {
     for (const element of [...document.querySelectorAll('ruffle-object,ruffle-embed,ruffle-player')].slice(0, 4)) {
       try {
@@ -18,14 +24,20 @@
         const url = api.loadedConfig?.url;
         if (typeof url !== 'string' || url.length > 4096) continue;
         const movie = new URL(url, document.baseURI);
-        if (movie.origin === 'https://res.17roco.qq.com' && movie.pathname === '/main.swf') return api;
+        if (movie.origin === 'https://res.17roco.qq.com' && movie.pathname === '/main.swf') return {api, element};
       } catch (_) { /* A frame with no ready main movie is not a reload target. */ }
     }
     return null;
   }
   function send(message) { try { port.postMessage(message); } catch (_) {} }
   function publish() {
-    const ready = !!game();
+    const target = game(), ready = !!target;
+    if (viewRequested && target) {
+      const active = view.enter(target.element);
+      reportView(active);
+      if (!active && !viewFailed) send({kind: 'game-view-failed'});
+      viewFailed = !active;
+    } else { view.exit(); reportView(false); viewFailed = false; }
     if (ready !== lastReady) { lastReady = ready; send({kind: 'ready', ready}); }
     if (ready) {
       try {
@@ -43,8 +55,11 @@
     }
   }
   port.onMessage.addListener(message => {
+    if (message?.kind === 'game-view' && typeof message.enabled === 'boolean') {
+      viewRequested = message.enabled; publish(); return;
+    }
     if (message?.kind !== 'reload' || busy) return;
-    const api = game();
+    const api = game()?.api;
     if (!api) { send({kind: 'reload-unavailable'}); publish(); return; }
     busy = true;
     try {
@@ -56,7 +71,7 @@
     } catch (_) { busy = false; send({kind: 'reload-failed'}); }
   });
   const timer = window.setInterval(publish, 500);
-  port.onDisconnect.addListener(() => window.clearInterval(timer));
-  window.addEventListener('pagehide', () => { window.clearInterval(timer); port.disconnect(); }, {once: true});
+  port.onDisconnect.addListener(() => { window.clearInterval(timer); view.exit(); });
+  window.addEventListener('pagehide', () => { window.clearInterval(timer); view.exit(); port.disconnect(); }, {once: true});
   publish();
 })();

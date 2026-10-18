@@ -1,6 +1,18 @@
 # 开发交接（2026-10-18）
 
-## 最新0.1.16：进入游戏已确认，修复活动exbn跨域遗漏（2026-10-18）
+## 最新0.1.17：横屏游戏快捷入口与面向使用者的README（2026-10-18）
+
+- 用户在0.1.16礼包复测提问中追加需求“加快捷方式，进去横屏打开Flash，只需要展示游戏界面”；继续保留礼包IOError/声音待办，优先交付游戏画面入口。用户另明确README不应写开发过程，只面向使用者：此约定持续有效，后续排查/构建/版本流水放docs，不再向README顶部叠开发段落。
+- 0.1.17/code18、兼容1.3.7：顶栏横屏游戏切换及动态launcher shortcut landscape_game，复用当前Activity/GeckoSession。动态Intent使用NEW_TASK/CLEAR_TOP/SINGLE_TOP，避免静态快捷方式默认CLEAR_TASK清当前页面；没有自动请求固定桌面图标，用户可长按应用使用/拖出。模式请求仅本Activity横屏，主游戏就绪前保留官网登录和浏览UI；已通过受限端口确认画面模式后隐藏工具栏/地址/系统栏，返回键退出恢复浏览与系统自动方向。
+- 新ISOLATED game-view先验证现有官方main播放器和父帧链，临时CSS只显示游戏区域、按舞台尺寸居中等比适配，resize重算；所有自有属性/旧inline style记录后可恢复。退出/替换/页面关闭/端口断开清理；无src读取/参数复制/页面重载/认证重放。父链不可访问时保留浏览界面。官网实际CSS/触控与第三方HTML活动弹层效果仍需用户验收。
+- README重写为简介、安装、使用、当前限制、反馈入口；旧段落完整迁docs/readme-history.md并标明历史，构建/调试迁docs/development.md，修正迁移后的相对链接。当前README不再有提交号/Socket参数/构建流水；许可尚未准备完成，不称已完成开源发布。
+- Node47项通过（新增6项含适配/还原、幂等/替换、父链拒绝、部分失败回滚、未就绪等待和失败不隐藏UI）；JVM13/lint/主包及测试包最后构建50s通过（首版53s），签名/完整原版Ruffle校验通过；APK SHA256 `e5338cfaba2a3d4afcdf64e3bbd8cb3d0c58a89bb4ed29a82a46697798464f78`。新增Android用例读取真实动态shortcut并启动，验证横屏/保留session/无新增导航/返回恢复；CI增加为5项独立进程用例，隔离API37/x86_64模拟器5项均OK(1test)：新shortcut6.653s、Flash/关联窗口8.882s、seed8.543s、重启Cookie4.973s、声音7.01s。原版Ruffle逐字节未变。
+- 验证失败/限制：首轮shortcut用例51.373s因onNewIntent更新Intent后ActivityScenario生命周期过滤失配，close阶段等待DESTROYED失败；测试结束前恢复fixture原启动Intent后完整重跑5项通过，产品仍保留正确onNewIntent行为。额外RDP页面注入展示探针在执行前被自动审批拒绝，仅返回blocked by policy，未执行/未换写法重试；因此官方父帧CSS、缩放触控仍由用户验收，不能以Node模型替代真机。
+- 0.1.16已推送22c00c5并安装，但用户尚未反馈礼包结果。当前首次进入游戏/目录/zone6双向连接已确认；活动、移动/战斗、声音、横屏模式还不能以构建通过当完成。下一步完成模拟器验证后覆盖升级，用户点横屏游戏验收，直接读文件，不截图。
+- 已adb install -r覆盖安装Success，包查询确认0.1.17/code18，保留数据；已请求用户点横屏游戏确认画面与触控，等待真机验收。确认AVD为TimeCasketProbe后仅关闭本次隔离模拟器。README、迁移文档相对链接均核对无缺失。
+
+
+## 历史0.1.16：进入游戏已确认，修复活动exbn跨域遗漏（2026-10-18）
 
 - 用户0.1.15明确“确实进去了，然后ioerror，点不了礼包啥的”。首次进入游戏界面已有用户确认，不把此前选服未知继续当当前状态；移动/战斗、礼包和声音仍未通过。真机zone6:443（endpoint7）连接成功并首发/首收，验证统一编号规则不是仅补5/7。无panic/AVM2分类错误，traceErrors0；浏览器表长度探针旧100上限返回null只是探针边界，不是配置缺失。
 - 当前CORS错误提取到3个公共activity/script/*.exbn，HEAD分别200/octet-stream/1004、1036、822bytes且无ACAO；LittleAngelofCivilization、ROCOLegendBook、SuperHand。两个旧activity/4271/s4271.swf、4291/s4291.swf公开404/HTML（162/564bytes），不伪装成功/替换资源。缓存版本清单exbn检索0，证据来自真机实际请求+公开HEAD。

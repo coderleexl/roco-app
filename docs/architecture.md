@@ -1,5 +1,14 @@
 # Architecture
 
+## 0.1.17横屏游戏入口与页面呈现
+
+顶栏“横屏游戏”与动态launcher shortcut landscape_game发送同一game_mode请求；ShortcutInfo使用NEW_TASK/CLEAR_TOP/SINGLE_TOP且Activity为singleTop，onNewIntent只改变模式，不导航。动态入口避免静态shortcut默认CLEAR_TASK破坏当前页面（见[Android快捷方式Intent规则](https://developer.android.com/develop/ui/compose/system/shortcuts/managing-shortcuts)）。Activity仅为自身请求SENSOR_LANDSCAPE；游戏尚未就绪/需要官方验证时保留浏览UI，真正收到受限content port的game-view-state才隐藏Chrome和系统栏。返回键先退出模式并恢复UNSPECIFIED，不进行网页后退。切换关联窗口按当前session的状态显示UI；销毁时沿原端口清理。
+
+ISOLATED的game-view.js只在原有官方web2入口被game-control调用，先找就绪官方main.swf，再预先验证最多6层参与文档均为精确HTTPS17roco/web2且无userinfo。使用当前播放器及其frameElement链，保留DOM/会话，只在参与文档加入临时样式及自有属性；隐藏其他节点，主舞台按metadata尺寸（合法100～4096，默认960×560）居中等比缩放，顶层resize重算。保存并恢复旧属性/顶层inline style，退出/播放器替换/pagehide/端口断开回滚；访问父文档失败时不隐藏原浏览UI。不读取iframe src、不导出电影参数、不调用reload或认证接口。
+
+README现面向使用者，历史过程归档readme-history.md，构建/安装/调试迁到development.md；后续版本验证记录只写docs。
+
+
 ## 0.1.16活动二进制脚本
 
 activity目录在原公共资源表中增加exbn，MIME仅application/octet-stream；仍只处理精确HTTPS资源源、官方web2发起、GET/XHR/HTTP200、无既有ACAO/ACAC的响应。来源/路径/方法/状态/MIME与其他目录限制不变；不扩大到apps/libs/res的exbn，不处理404/HTML，不覆盖网站已有跨域策略。依据为真机缺ACAO错误及三个公开HEAD200响应，不声称ver.config清单列出这类脚本（本地清单检索为0）。

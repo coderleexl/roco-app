@@ -1,5 +1,8 @@
 # Test plan
 
+0.1.17：Node47项通过，新增game-view的还原/缩放/幂等/父链拒绝/失败回滚及game-control的等待/命令校验/不导航。JVM13、lint及主包/测试包最后构建50s通过；APK签名和完整原版Ruffle核对通过。新增landscapeShortcutKeepsSessionAndBackRestoresBrowsing用例，在原始本地Flash执行后获取真实动态shortcut Intent启动，检查横屏、同一GeckoSession、无新增page-start、返回恢复方向；CI改为5项独立进程。隔离API37/x86_64模拟器5项OK(1test)：shortcut6.653s、Flash/窗口8.882s、seed8.543s、重启Cookie4.973s、声音7.01s。首轮shortcut仅在ActivityScenario.close生命周期追踪失败；测试恢复原fixture Intent后5项完整重跑通过。额外RDP展示注入探针被自动审批拒绝、未执行，未尝试绕过；官方画面缩放/触控及礼包仍需用户验收。APK SHA256 `e5338cfaba2a3d4afcdf64e3bbd8cb3d0c58a89bb4ed29a82a46697798464f78`。
+
+
 0.1.16：活动exbn用例先RED（旧规则返回undefined）再GREEN；Node41项通过。覆盖三份观察到的活动脚本二进制200、错误MIME/404/其他来源/其他目录/已存在ACAO的拒绝。JVM13/lint/主包和测试包构建49s、签名和完整官方Ruffle资源核对均通过；APK SHA256 `e339515553d0e947941c23c3d9f015fc4df48d349f73841070b8a4c06c75f962`。本轮未重复模拟器固定样例，活动效果由用户复测。0.1.15用户已确认实际进入游戏，礼包IOError仍失败，不能把模拟器样例代替活动验收。
 
 
@@ -16,7 +19,7 @@
 
 0.1.11本地验证：Node29/JVM9/lint/主包及测试包通过；签名和完整Ruffle资源校验通过。隔离API37/x86_64 AVD四项均OK(1test)：声音手势/PCM加载6.525s、Flash/关联窗口8.756s、seed8.391s、重启Cookie4.924s。不截图，不自动操作官网；新刷新端口/真机声音/服务器列表和阶段诊断仍需用户操作验收。
 
-Current Node command: `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs tools/engine-signals.test.cjs tools/audio-unlock.test.cjs tools/socket-config.test.cjs tools/game-control.test.cjs tools/audio-probe.test.cjs`.0.1.10 passes25 Node tests, including trusted-vs-synthetic gesture handling, resume retry/late context creation, bounded diagnostics, exact bridge configuration and native-startup retry with JSON-text responses. JVM8 tests include actual local binary forwarding (100000bytes), handshake rejection and destination/address policy. These do not establish real sound, website login or server/map compatibility. User performs actual game verification without repeated authentication requests.
+Current Node command: `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs tools/engine-signals.test.cjs tools/audio-unlock.test.cjs tools/socket-config.test.cjs tools/game-control.test.cjs tools/game-view.test.cjs tools/audio-probe.test.cjs`.0.1.10 passes25 Node tests, including trusted-vs-synthetic gesture handling, resume retry/late context creation, bounded diagnostics, exact bridge configuration and native-startup retry with JSON-text responses. JVM8 tests include actual local binary forwarding (100000bytes), handshake rejection and destination/address policy. These do not establish real sound, website login or server/map compatibility. User performs actual game verification without repeated authentication requests.
 
 2026-10-18 local0.1.10: lint/app+test APK builds, signature and full upstream Ruffle asset verification pass. Three separate-process fixed-fixture instrumentation methods on an isolated API37.0/x86_64 AVD returnOK(1test):7.058s/6.751s/3.728s. This also verifies compatibility background/native startup registration. Two earlier smoke attempts timed out before navigation because direct JSONObject native replies did not complete; JSON-text replies plus bounded retry pass the final run. The user's existing AVD was not modified; its insufficient C-disk space was avoided with a workspace-cache fixture AVD. No screenshot or official-game automation occurred.
 

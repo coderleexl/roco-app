@@ -1,5 +1,8 @@
 # Compatibility gates
 
+0.1.17/code18 adds an in-app landscape/game-only mode and a dynamic launcher shortcut. Native orientation/chrome changes wait for a ready official movie's presentation acknowledgement; Back restores browsing. The page adapter fits the existing player/frame chain with reversible CSS, without navigation/reload or movie parameter export. Node presentation/lifecycle tests pass; physical crop/touch/rotation and launcher behavior still require acceptance. Existing0.1.16 activity-exbn gift retest remains unanswered; do not mark gifts or official music fixed.
+
+
 User0.1.15 confirms selectable servers AND entry into the game interface. Native zone6 endpoint7 connected and recorded first send/receive; no player panic/AVM2 error classification observed. Movement, battles and all map interactions are not accepted yet. User reports IOError and gifts not clickable. Three activity/script/*.exbn resources are public200/application/octet-stream without ACAO; two numbered activity SWFs are public404.0.1.16 adds the typed activity-exbn adapter only. Gift functionality, missing404 assets and official audio remain pending.
 
 

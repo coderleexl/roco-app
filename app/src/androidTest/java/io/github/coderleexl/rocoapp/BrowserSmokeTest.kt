@@ -88,4 +88,42 @@ class BrowserSmokeTest {
             await(scenario, "cookie persisted across separate instrumentation processes") { it.probeTitle == "ROCO:cookie-persisted" }
         }
     }
+    @Test fun landscapeShortcutKeepsSessionAndBackRestoresBrowsing() {
+        launch().use { scenario ->
+            await(scenario, "original local Flash runs before shortcut") { it.probeTitle == "ROCO:flash-executed" }
+            var original: org.mozilla.geckoview.GeckoSession? = null
+            var launchIntent: Intent? = null
+            var starts = 0
+            scenario.onActivity { activity ->
+                original = activity.browser.session
+                launchIntent = Intent(activity.intent)
+                starts = (activity.application as RocoApplication).log.text().lineSequence().count { it.contains(" page-start ") }
+                val shortcut = activity.getSystemService(android.content.pm.ShortcutManager::class.java)
+                    .dynamicShortcuts.single { it.id == "landscape_game" }
+                val target = shortcut.intent!!
+                assertTrue(target.getBooleanExtra(MainActivity.EXTRA_GAME_MODE, false))
+                assertEquals(0, target.flags and Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                activity.startActivity(target)
+            }
+            await(scenario, "shortcut enters landscape while waiting for an official game") {
+                it.gameModeRequested && it.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+            }
+            scenario.onActivity { activity ->
+                assertSame(original, activity.browser.session)
+                assertFalse(activity.gameOnlyActive)
+                assertEquals("ROCO:flash-executed", activity.probeTitle)
+                activity.onBackPressedDispatcher.onBackPressed()
+            }
+            await(scenario, "back exits game mode") { !it.gameModeRequested }
+            scenario.onActivity { activity ->
+                assertSame(original, activity.browser.session)
+                assertEquals(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, activity.requestedOrientation)
+                assertEquals(starts, (activity.application as RocoApplication).log.text().lineSequence().count { it.contains(" page-start ") })
+                // ActivityScenario filters lifecycle events by its original
+                // launch Intent. onNewIntent correctly updates the Activity's
+                // intent; restore the fixture identity before scenario.close.
+                activity.intent = launchIntent
+            }
+        }
+    }
 }
