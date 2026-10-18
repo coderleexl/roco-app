@@ -39,6 +39,22 @@ test('all verified endpoints share the rule, preserve HTTP failure and do not re
   assert.equal(broken.forwarded.length,1);assert.equal(broken.fallback.length,0);
   assert.equal(broken.win.__timeCasketHttpState.httpBridgeFailed,1);
 });
+
+test('character backpack guide requests keep their command and credentials through the existing bridge',async()=>{
+  const f=fixture();
+  for(const cmd of [7,8]) {
+    const url='https://17roco.qq.com/cgi-bin/flaunt_suit_rank?cmd='+cmd+'&angel_key=SECRET';
+    const response=await f.win.fetch(new f.GameRequest(url,{credentials:'include'}));
+    assert(response instanceof f.GameResponse);
+    assert.equal(f.forwarded.at(-1).url,url);
+    assert.equal(f.forwarded.at(-1).credentials,'include');
+    assert.equal(await response.text(),'<data>original bytes</data>');
+  }
+  assert.equal(f.fallback.length,0);
+  assert(!JSON.stringify(f.win.__timeCasketHttpState).includes('SECRET'));
+  assert.equal(await f.win.fetch('https://17roco.qq.com/cgi-bin/flaunt_suit_rank',{method:'POST'}),'original');
+  assert.equal(f.forwarded.length,2);
+});
 test('authentication, compliance, unknown routes, methods, origins and malformed destinations retain native fetch',async()=>{
   const f=fixture();
   for(const url of ['https://17roco.qq.com/cgi-bin/login','https://17roco.qq.com/cgi-bin/chenmi_report',

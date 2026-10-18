@@ -1,9 +1,9 @@
-/* MAIN world. Forward verified activity GETs through the existing official home. */
+/* MAIN world. Forward verified game GETs through the existing official home. */
 (function (root) {
   'use strict';
   const endpoints = ['online_present', 'mini_game_manage', 'vip_tab_state', 'star_tower_new',
     'star_tower_exch_shop', 'ifrit_challenge', 'back_player_guide', 'zombie_coming',
-    'discovery', 'mend_shape', 'dawn_hymn'];
+    'discovery', 'mend_shape', 'dawn_hymn', 'flaunt_suit_rank'];
   function install(win) {
     const page = new URL(win.location.href);
     if (page.origin !== 'https://web2.17roco.qq.com' || page.username || page.password ||

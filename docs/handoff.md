@@ -1,5 +1,15 @@
 # 开发交接（2026-10-18）
 
+## 最新0.1.25：人物背包打开前的引导接口（2026-10-18）
+
+- 用户在0.1.24先报告灰/棕色满屏，随后明确纠正“刷新游戏有用”；日志有game-reload-requested/reloaded及主电影重新就绪。不能沿用最初“刷新无效”的结论，也未改成清数据或强制重启。刷新后另三次PSS总3207.1→3880.8→4112.3MiB、GPU674.3→1360.7→1582.1MiB，主要内容进程仍高；缺少相同静止场景对照，尚不能证明泄漏根因或修复。
+- 用户最新明确：**非战斗状态点背包无响应；战斗找不到PP药水；生命药水可以点击并恢复**。此前“打开了”是点击打开的动作，并非背包打开成功，已当面纠正误读。不能把物品消失、用药被服务器拒绝或全部物品系统失效当成确证；药名/实际PP数字/库存仍未知，不再要求重复吃药。
+- 公开UserInfoPlugin.openCurrentUserPanels先发NET_SEND_NEED_GUIDE，NetDataSenderReceiver对应flaunt_suit_rank的cmd7；响应成功后才调用真正开窗回调，cmd8是引导关闭后的请求。CGIUtil对GOT_ERROR直接return，符合“点击无反应”的路径。当前缓存已观测该精确接口CORS；无认证HEAD=200/text-xml、ACAO固定https://res.17roco.qq.com、ACAC=true，与web2页面来源不匹配。人物背包路径有具体阻断证据，宠物背包是否相同原因尚未知。
+- 0.1.25/code26、兼容1.4.6仅将flaunt_suit_rank追加到现有同源GET桥，总12接口；不绕过游戏引导、不伪造成功/库存/PP、不改Socket或游戏SWF。新回归覆盖cmd7/8原查询及include凭据保持、游戏realm原响应流、敏感查询不进计数、POST走原路径。原来源/目的地/状态/失败不重发规则保留。
+- 公开CombatSystemDP.reqUseItems与SpiritBag.GetItemListAction均使用Socket的T_GETITEMSBYTYPE(196643)，不是这个HTTP接口。Combat药品一页6格，筛选COMBAT_HP/PP/RESTORE；GetItemsByTypeP读取id/count并关联公共定义。用药动画与FightResultP.isPP/四个PP值更新是不同环节。生命药有效进一步说明不能直接认定通用用药链路已坏，PP缺失仍待定位，不强行启用技能或补数。
+- 两段只读NetworkWatcher均关闭正文保存，只落公共路径/状态/数字；第一段跨用户刷新，共200响应，UserInfo/ControlBar304、已知s4271/s4291仍404，不能将所有请求算成背包点击。后一段47响应，无新增背包错误证据；历史performance缓冲已到250条，bad=[]不能证明新资源全成功。最新22条脚本错误为活动1989三条、NPC1751.initLevel十九条，不冒充背包/PP堆栈；另有新活动CGI名称尚未纳入本次范围。
+- 本轮Node65/JVM15通过，lint/主及测试APK构建46s通过，签名与完整未修改Ruffle验证通过，包内10个兼容文件逐字节一致。APK SHA256 `b26e05c682d7c655549e81201bbdad0272ecae774c2a72c6451ac4d39ba35738`。adb install -r覆盖安装Success，包查询确认0.1.25/code26，保留数据；已请用户打开后只点人物背包，实际结果待验收。8项未改浏览器样例未重跑，不能以本地测试代替真实背包/PP验收。若背包恢复再只查看PP药品名称/库存和战斗分页，不重复消耗。音乐/技能名/活动2032/内存灰屏/QQ授权仍未完成。
+
 ## 最新0.1.24：撤回导致选服后卡住的WebGL试验（2026-10-18）
 
 - 用户0.1.23实际验收FAILED：“进服务器一直加载不动”，询问与改动是否有关。只读main ready2，configured/actual renderer均webgl，DPR2.73、canvas2618×1527、显示960×560。文件目录0和区服endpoint7均connected/first-send/first-receive，目录最终139/216B；无新增资源IO，scriptErrors1。因此不能归因区服未连上或代理。

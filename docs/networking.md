@@ -1,5 +1,13 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.25：人物背包引导状态阻塞；PP列表另走Socket
+
+用户明确非战斗点击背包无响应，战斗找不到PP药但生命药可正常恢复。公开UserInfoPlugin.openCurrentUserPanels先请求NET_SEND_NEED_GUIDE；NetDataSenderReceiver发送flaunt_suit_rank的cmd7，成功回调后才打开人物背包，cmd8用于引导关闭完成。CGIUtil收到GOT_ERROR直接返回，不弹错误。真机缓存已出现/cgi-bin/flaunt_suit_rank的CORS；匿名HEAD=200/text-xml、ACAO=https://res.17roco.qq.com、ACAC=true，web2页面不符合允许来源。这提供了人物背包无响应的一条具体原因，不能据此证明宠物背包或战斗PP也同因。
+
+0.1.25只追加flaunt_suit_rank到现有精确游戏GET表，共12端点；首页同源发送、游戏realm包装原响应流、状态及错误保持、不重发的实现不变。不绕过引导回调、不构造库存/PP或认证参数，不纳入登录/隐私/防沉迷/warehouse_security_code。新增cmd7/8原查询与include凭据、原流内容和POST拒绝回归；真实开窗结果仍需用户验收。
+
+公开CombatSystemDP.reqUseItems和SpiritBag.GetItemListAction使用T_GETITEMSBYTYPE=196643的Socket请求；公共GetItemsByTypeP读取id/count再关联物品定义。Combat显示一页6格，筛选HP/PP/RESTORE。动画播放不等于FightResult的isPP/ppVar数据已更新。当前没有实际药名/PP数字/库存证据，不解析/记录游戏包或伪造恢复；先确认背包可打开，再只读核对药名/分页。
+
 ## 0.1.22：追加三个实测活动接口；QQ授权可行性
 
 用户0.1.21报告Error#2032 Stream Error，随后明确刚打开活动提示“哎呀出现了网络故障 ioerror”。文件活动IO增至3，HTTP bridge完成8次且无failed增长；console缓存未出现2032，原分类日志未覆盖弹窗来源。只读当前main ready2、deviceFontRenderer=canvas，无Ruffle message-overlay/panic；配置已生效不等于战斗文字验收。不能将2032直接等同于本次任一接口。
