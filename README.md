@@ -8,9 +8,10 @@
 
 需要 Android 8.0 或更高版本。当前提供测试版 APK：
 
-1. 打开 [GitHub Actions 下载页](https://github.com/coderleexl/roco-app/actions/workflows/android.yml)，选择最新成功的运行。
-2. 在 Artifacts 下载 `roco-debug-<commit>`，下载需要登录 GitHub。
-3. 解压并安装 `debug/app-debug.apk`，不要安装名称含 `androidTest` 的测试程序。
+1. 打开 [版本下载页](https://github.com/coderleexl/roco-app/releases)，选择所需测试版。
+2. 下载并安装 `time-casket-<版本>-debug.apk`；同页提供 `SHA256SUMS.txt` 用于核对文件。
+
+开发构建也可在 [GitHub Actions](https://github.com/coderleexl/roco-app/actions/workflows/android.yml) 的成功运行中下载 `roco-debug-<commit>`（需要登录 GitHub），解压后安装 `debug/app-debug.apk`，不要安装名称含 `androidTest` 的测试程序。
 
 升级时使用同签名 APK 覆盖安装可保留应用数据；官方登录状态仍可能过期。
 

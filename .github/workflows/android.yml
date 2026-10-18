@@ -11,7 +11,8 @@ defaults:
     shell: bash
 concurrency:
   group: android-${{ github.ref }}
-  cancel-in-progress: true
+  # Keep the running checks when a requested release is queued behind them.
+  cancel-in-progress: ${{ !contains(github.event.head_commit.message, '[release]') }}
 jobs:
   engine:
     runs-on: ubuntu-24.04
@@ -169,3 +170,38 @@ jobs:
         with:
           name: smoke-reports
           path: test-results/
+  release:
+    needs: [engine, build, smoke]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: roco-debug-${{ github.sha }}
+          path: apks
+      - name: Prepare checked APK and checksum
+        run: python tools/prepare_release.py apks
+      - name: Publish requested test release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(cat release-assets/VERSION)
+          tag="v$version"
+          # A published version is immutable here; never clobber assets/tags.
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists; refusing to overwrite it."
+            exit 1
+          fi
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --silent >/dev/null 2>&1; then
+            echo "Tag $tag already exists; refusing to reuse it for another build."
+            exit 1
+          fi
+          gh release create "$tag" --target "$GITHUB_SHA" \
+            --title "时光匣 $version（测试版）" --prerelease \
+            --notes-file "docs/releases/$version.md" \
+            "release-assets/time-casket-$version-debug.apk" release-assets/SHA256SUMS.txt

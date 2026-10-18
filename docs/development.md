@@ -33,3 +33,10 @@ Debug 构建启用 Gecko 远程调试，可在桌面 Firefox 的 `about:debuggin
 
 
 开始修改前阅读[协作约定](../AGENTS.md)、[交接](handoff.md)与[兼容性](compatibility.md)。项目已有的持续授权见交接；保留本地IDE生成配置，提交时显式选文件。
+
+
+## GitHub 测试版发布
+
+仅用户要求发布时，在main推送提交信息标记`[release]`，并准备`docs/releases/<version>.md`。末尾release任务等待引擎回归、Android构建/lint/单测及全部8项Gecko样例成功，才把同一commit的APK artifact和SHA256发布为GitHub pre-release。`prepare_release.py`核对原artifact校验文件，不重新打包或改变签名；既有Release/tag不覆盖，普通main推送与PR不发布。任务独占contents:write/actions:read，其他任务仍contents:read。`[release]`推送会排队等待当前构建，不取消它；普通推送保留原有取消旧run行为。
+
+GitHub测试包与本地调试包可能不是同一签名；真机保留数据升级用本地原签名重建，不卸载/清数据。此流程是用户授权的GitHub测试发布，不涉及应用商店。

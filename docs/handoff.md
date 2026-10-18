@@ -1,6 +1,16 @@
 # 开发交接（2026-10-18）
 
-## 0.1.27准备：战斗PP图标与浏览器声明
+## 0.1.27云端构建与发布请求
+
+- 修复及README声明已推送main `da86ad4`。Actions `39115988079`的engine与build均成功，8项smoke正在运行；原版图片错误准确复现、补丁红→蓝→蓝/COMPLETE1/ok1通过。初次源码编译完成并保存cache，标准/MVP和JPEG XR保留。手机已于本轮adb install -r覆盖成功，包查询0.1.27/code28，保留数据；没有使用其他签名的云端APK覆盖。
+- 用户最新明确“云端完成后发布到release”，本次0.1.27 GitHub测试Release已获授权，覆盖此前不发布应用的一般约束；不是授权应用商店发布或覆盖既有Release。新增末尾release任务仅在main推送提交含`[release]`且engine/build/8项smoke全部成功后运行，下载同一commit的已校验APK，核对SHA256，发布pre-release和版本说明；无重构建/重签名，不覆盖既有tag/Release。PR和普通提交不发布。
+- 本地CLI无法直接认证GitHub artifact下载，使用公开仓库的nightly.link公开下载入口，并必须与GitHub API给出的artifact ZIP SHA256一致后才提取；不提供账号/凭据、不安装GitHub App。取回引擎后仍核对源/补丁清单及完整扩展。浏览器工具初始化失败，未截图或读取登录页面。
+- 取回engine artifact ZIP SHA256 `94a5cdc33c21abb62cffa0a736351d6d2173a4733cfab9b3c24b4788cf0a4930`与GitHub API一致；内含XPI SHA256 `cec85bc7964ff12ad632f3ee2a9b796b9ea46ad1e0fdb11b727856a2717f9168`。本地再次跑补丁原创样例，颜色1/2/2、COMPLETE1/ok1、错误0，通过；Python边界6项、Node72、JVM15通过。本地lint/主与测试APK构建49s通过，签名有效/完整扩展所有文件及字节匹配。手机安装APK SHA256 `da100f73b5e5f7cfe0093a2779e2677461549a9c98d994d9c4d034aded64c528`。不截图、不操作官方登录/游戏。
+- 发布准备器已用本地实际APK及校验文件跑通，输出APK逐字节相同；此测试不代表Release已发布。README下载入口指向Releases，保留Actions入口。`[release]`提交在concurrency中不取消正在运行的旧run，而是排队；普通提交保留原取消旧run行为。该次新commit匹配的engine/build/smoke全部成功后才自动发布。
+- 用户现在准备拔手机、“下次再搞”：停止手机检查/安装和游戏验证，已确认更新成功，可拔线。将本轮发布准备、README及交接一次提交推送带`[release]`标记，云端自行完成，不要求用户保持连接或继续测试。手机已更新，但真实图标/PP效果与Release结果仍未成立。下次先查GitHub Actions最新该发布提交与`v0.1.27`的实际结果，失败则读engine/build/smoke/发布阶段，不把排队当成功。
+- 下一步以`0.1.27/code28`为手机基线；用户主动进入游戏后再收集PP图标/实际恢复反馈，不再要求找药或重复消耗。不要再安装未修复的0.1.26，也不将云端不同签名APK直接覆盖手机。
+
+## 0.1.27初始准备记录（验证结果以上文为准）：战斗PP图标与浏览器声明
 
 - 用户最终纠正：战斗有PP药，**图标变成生命药水**。不要继续按缺库存/没翻页要求找药或重复吃药。用户“差不多能玩了”是总体主观评价；选服/进入/战斗可达、人物背包打开及生命药恢复已有确认；PP实际恢复数值、技能文字、官网音乐、活动错误和长时间稳定性仍未完整验收。
 - 公共HP/PP PNG均200、60×60且不同SHA256；公开CombatImage/AImage/ResVIPChannel/NormalLoader链复用Loader、ByteArray并会取消图片任务。原创红蓝fixture在原版完整0.7.1稳定复现：正常红→蓝，取消红改载蓝却交回红。独立临时Chrome profile/loopback，无官网/截图/认证；固定phase0红、phase1蓝、phase2红，最终COMPLETE1/ok0，无fixture错误。该证据支持Loader串图，不等于已抓到用户游戏回调。
