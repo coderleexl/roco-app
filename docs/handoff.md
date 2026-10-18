@@ -1,6 +1,16 @@
 # 开发交接（2026-10-18）
 
-## 最新0.1.14：由官方首页创建连接，保留二进制realm（2026-10-18）
+## 最新0.1.15：选服已通过，统一编号区服规则（2026-10-18）
+
+- 用户确认0.1.14“现在可以选服务器了，但是进不去”。真机文件证明dir端点0连接成功、首发/首收，最终sent139/received216；列表已有人机验收证据，区服进入仍失败。只读主游戏无panic/AVM2分类错误；缺桥计数增长，严格提取仅zone5/zone7:443，不输出原始日志/认证/包。
+- 用户进一步明确要求统一zone*，不接受逐个补。公开已缓存LoginPlugin.as connectSvr按roomZoneID拼zone{0}.17roco.qq.com；RoomData及目录读取为uint32。原版Ruffle0.7.1只严格匹配host+port，不支持真正通配。0.1.15/code16、兼容1.3.5实现原生规范数字zone1～65535规则，浏览器lazy展开同范围精确映射并缓存；没有逐个维护5/7，没有修改Ruffle。65535是资源上限，不冒充协议范围/无限通配。
+- 原生配置仍只传两个bootstrap能力URL，新增maxZone；JS验证同一能力根和固定上限。生成表不发DNS或连接，实际Flash选服才连接443；原有能力/官方Origin/公网DNS验证/限流不变。endpoint dir0/stat1/zoneN=N+1，zone总量固定类别，数据原样转发不解析/记录。旧浏览器WS计数可能因顶层路由为0，原生分层日志为准。
+- Node40项通过，含规范编号/界限/伪域名拒绝、65537条lazy表重复读取缓存、正确能力URL、数值配置/能力根拒绝；单次本地Node展开约9ms（不是手机/Wasm耗时）。JVM13项通过，含zone1/5/7/65535各100000字节往返及端点/总量核对；lint、主包/测试包构建49s通过，签名和完整原版Ruffle资源核对通过。APK SHA256 `579e2dab06b232f7b321b8439ba21b13317fbe1adfc894550afd32b38f5a50a4`。隔离API37/x86_64模拟器：原创Flash先执行，再用当前socket-config生成大表重载同一原创样例，count/loadedCount均65537，生成11ms、至FSCommand403ms、resolved/executed均true；这是预热样例，不是官网冷启动/选服/地图证据。临时RDP转发已清理，未操作真机官网。
+- 一次临时只读提取脚本端口变量覆盖，清理报错；已修正、移除遗留调试转发并重跑成功。无截图/系统设置/代理变更。下一步安装本版后由用户选服，直接读endpoint与资源阶段；地图/官网音乐/首页声音浮窗仍未验收。
+- 已adb install -r覆盖安装Success，包查询确认0.1.15/code16，保留数据；已请求用户进入选服并点击区服，等待真实进入结果。未代办真机页面操作。已确认隔离AVD名为TimeCasketProbe后仅关闭本次模拟器。
+
+
+## 历史0.1.14：由官方首页创建连接，保留二进制realm（2026-10-18）
 
 - 0.1.13已安装并推送07ce132，用户已到卡点，**选服仍失败**：iframe allow实际存在，但子帧loopback权限仍denied，dir attempt1/error1/close2，无socket-open。此前“修复”只能指代码尝试，不是验收通过。官网各层document.domain=qq.com，中间声明src=graph、实际游戏web2；release源码继承策略会考虑这些因素，不能把允许声明存在当权限生效。
 - 同一真机游戏调试上下文，用顶层官方原生WebSocket构造器（含保留原newTarget的Reflect.construct）访问无效本地能力路径，两次均到达原生socket-rejected；均为开发者探针，未发上游TCP/游戏包。原生无9号回调，未人工改浏览器/系统权限。另用Windows仅回环固定原创4字节WS服务+临时ADB reverse独立验证：foreignBefore=true、localAfter=true、bytesMatch=true；随后关闭本地服务，清理reverse/forward，恢复调试器顶层。

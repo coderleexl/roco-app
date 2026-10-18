@@ -1,5 +1,8 @@
 # Compatibility gates
 
+0.1.14 physical user confirms selectable servers. Native directory endpoint0 connected, first-send and first-receive recorded; final sent139/received216 bytes. No packet bodies were saved. Entering a selected server still fails: missing exact mappings for zone5/zone7:443 were observed.0.1.15 adds a unified numeric zone rule plus lazy exact mappings required by unmodified Ruffle, bounded tozone1..65535. This is a resource limit, not the uint32 protocol's full theoretical range. Actual zone login/map/music remain pending.
+
+
 0.1.14/code15 replaces the failed0.1.13 iframe delegation with a scoped socket owner: only the two exact configured local capability URLs can use an accessible official homepage WebSocket constructor. Other URLs keep native frame behavior. A capture listener copies foreign ArrayBuffer bytes into the game realm for gloo-net. Physical isolated local echo probe confirms foreign-before/local-after/identical-bytes; its USB reverse and debug forward were removed, and it sent no game/auth data. Actual directory/list/map remain pending.0.1.13 did NOT pass physical selection: allow attributes were present, but child permission stayed denied and WS failed before native socket-open; that script is removed.
 
 

@@ -1,5 +1,8 @@
 # Troubleshooting
 
+0.1.15（app-version16）区服统一规则：endpoint0=dir、1=stat、zoneN=N+1。目录列表0.1.14已由用户确认可选；缺zone5/zone7:443映射导致后续失败。新版按需展开zone1～65535，固定443/公网DNS，拒绝其他端口、非规范编号和任意域名。先查原生socket-open/connect/first-send/receive；顶层构造器可能绕过旧浏览器WS计数，不把其0计数当失败。总量类别固定socket-zone-sent/received，多连接需结合端点阶段，不能将相邻日志必定视为同连接。超范围编号仍不支持，地图/声音单独验收。
+
+
 0.1.13真机仍失败，不能仅看iframe allow已写入就判定权限通过。0.1.14撤掉委派，改为两个精确能力URL由可访问官方首页创建连接；仍按原生socket-open/connect/首收发定位。新增首页声音浮窗反馈已记录，官网音乐仍未验收，先处理用户指定的选服问题。
 
 0.1.12 Debug日志自动保存于应用私有 `files/diagnostics/events.jsonl` 及 `events.previous.jsonl`，各最多128KiB。无需打开诊断弹窗或截图，使用：

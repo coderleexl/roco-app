@@ -17,8 +17,14 @@ class GameSocketBridgeTest {
     @Test fun policyRejectsUnverifiedDestinationsAndNonPublicAddresses() {
         val token = "a".repeat(48)
         assertEquals("dir.17roco.qq.com", GameSocketPolicy.target("/$token/dir.17roco.qq.com", token))
-        for (path in listOf("/wrong/dir.17roco.qq.com", "/$token/127.0.0.1", "/$token/zone1.17roco.qq.com", "/$token/dir.17roco.qq.com:80", "/$token/dir.17roco.qq.com?x=1")) {
+        for (path in listOf("/wrong/dir.17roco.qq.com", "/$token/127.0.0.1", "/$token/zone0.17roco.qq.com", "/$token/zone01.17roco.qq.com", "/$token/zone65536.17roco.qq.com", "/$token/zone7.17roco.qq.com.evil.example", "/$token/dir.17roco.qq.com:80", "/$token/dir.17roco.qq.com?x=1")) {
             assertNull(path, GameSocketPolicy.target(path, token))
+        }
+        for (zone in listOf(1, 5, 7, 65535)) {
+            val host = "zone$zone.17roco.qq.com"
+            assertEquals(host, GameSocketPolicy.target("/$token/$host", token))
+            assertEquals(zone + 1, GameSocketPolicy.endpointId(host))
+            assertEquals("zone", GameSocketPolicy.endpointName(host))
         }
         assertFalse(GameSocketPolicy.allowsOrigin("https://web2.17roco.qq.com.evil.example"))
         for (ip in listOf("127.0.0.1", "10.0.0.1", "172.16.0.1", "192.168.0.1", "169.254.1.1", "100.64.0.1", "0.0.0.0", "224.0.0.1", "::1", "fc00::1", "fe80::1", "2001:db8::1")) {
@@ -27,7 +33,13 @@ class GameSocketBridgeTest {
         assertTrue(GameSocketPolicy.isPublic(InetAddress.getByName("1.1.1.1")))
     }
 
-    @Test fun binaryStreamReachesUpstreamAndDeniedHandshakesNeverConnect() {
+    @Test fun binaryStreamReachesUpstreamAndDeniedHandshakesNeverConnect() = assertBinaryStream("dir.17roco.qq.com", "dir", 0)
+
+    @Test fun numberedZonesUseTheSameBinaryBridgeAndKeepTheirEndpointIds() {
+        for (zone in listOf(1, 5, 7, 65535)) assertBinaryStream("zone$zone.17roco.qq.com", "zone", zone + 1)
+    }
+
+    private fun assertBinaryStream(host: String, endpoint: String, endpointId: Int) {
         val echo = ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))
         val accepted = CountDownLatch(1)
         val echoThread = Thread {
@@ -44,14 +56,14 @@ class GameSocketBridgeTest {
         val totals = CountDownLatch(2)
         GameSocketBridge(record = { kind, value ->
             events.add(kind to value)
-            if (kind in setOf("socket-dir-sent", "socket-dir-received")) totals.countDown()
-        }, connect = { host ->
-            assertEquals("dir.17roco.qq.com", host)
+            if (kind in setOf("socket-$endpoint-sent", "socket-$endpoint-received")) totals.countDown()
+        }, connect = { target ->
+            assertEquals(host, target)
             connects.incrementAndGet()
             Socket("127.0.0.1", echo.localPort)
         }).use { bridge ->
             assertTrue(bridge.awaitReady())
-            val address = bridge.proxyUrl("dir.17roco.qq.com")
+            val address = bridge.proxyUrl(host)
             fun client(url: String, origin: String, received: CountDownLatch, payload: ByteArray? = null) = object : WebSocketClient(URI(url), mapOf("Origin" to origin)) {
                 val collected = java.io.ByteArrayOutputStream()
                 override fun onOpen(handshake: ServerHandshake) { if (payload != null) send(payload) }
@@ -77,10 +89,10 @@ class GameSocketBridgeTest {
             good.closeBlocking()
             assertEquals(1, connects.get())
             assertTrue(totals.await(3, TimeUnit.SECONDS))
-            assertTrue(events.contains("socket-first-send" to 0))
-            assertTrue(events.contains("socket-first-receive" to 0))
-            assertTrue(events.contains("socket-dir-sent" to payload.size))
-            assertTrue(events.contains("socket-dir-received" to payload.size))
+            assertTrue(events.contains("socket-first-send" to endpointId))
+            assertTrue(events.contains("socket-first-receive" to endpointId))
+            assertTrue(events.contains("socket-$endpoint-sent" to payload.size))
+            assertTrue(events.contains("socket-$endpoint-received" to payload.size))
         }
         echo.close(); echoThread.join(2000)
     }

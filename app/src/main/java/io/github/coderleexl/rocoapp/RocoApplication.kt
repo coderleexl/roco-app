@@ -65,7 +65,8 @@ class RocoApplication : Application() {
                                     val proxies = JSONArray()
                                     GameSocketPolicy.hosts.forEach { host -> proxies.put(JSONObject()
                                         .put("host", host).put("port", 443).put("proxyUrl", socketBridge.proxyUrl(host))) }
-                                    return GeckoResult.fromValue(JSONObject().put("proxies", proxies).toString())
+                                    return GeckoResult.fromValue(JSONObject().put("proxies", proxies)
+                                        .put("maxZone", GameSocketPolicy.MAX_ZONE).toString())
                                 }
                                 "ready" -> {
                                     compatibilityReady = true

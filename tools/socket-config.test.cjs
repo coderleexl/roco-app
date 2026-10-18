@@ -8,12 +8,14 @@ function install(url,config=proxies) {
  const window={location:{href:url},RufflePlayer:{config:{autoplay:'on',preferredRenderer:'webgl'}}};
  const ctx=vm.createContext({window,URL});
  vm.runInContext(source,ctx);
- ctx.installTimeCasketSocketConfig(config);
+ ctx.installTimeCasketSocketConfig(config,65535);
  return window.RufflePlayer.config;
 }
 test('only game frames get exact directory/stat bridge configuration with warning diagnostics',()=>{
  const config=install('https://web2.17roco.qq.com/game');
- assert.equal(config.socketProxy,proxies);
+ assert.equal(config.socketProxy.length,65537);
+ assert.deepEqual(Array.from(config.socketProxy.slice(0,2)),proxies);
+ assert.equal(config.socketProxy[65536].host,'zone65535.17roco.qq.com');
  assert.equal(config.logLevel,'warn');
  assert.equal(config.autoplay,'on');
  assert.equal(config.preferredRenderer,'webgl');
@@ -24,13 +26,40 @@ test('malformed capabilities, arbitrary destinations, ports and proxy URLs are r
  for(const mutation of mutations)assert.equal(install('https://web2.17roco.qq.com/',[{...proxies[0],...mutation},proxies[1]]).socketProxy,undefined);
 });
 
+test('numeric zone family expands lazily once and preserves exact host, port and capability',()=>{
+ const {window,calls}=routing(),config=window.RufflePlayer.config;
+ assert.equal(typeof Object.getOwnPropertyDescriptor(config,'socketProxy').get,'function');
+ const start=performance.now(),entries=config.socketProxy;
+ assert.equal(entries.length,65537);assert.equal(config.socketProxy,entries);
+ assert.equal(Object.getOwnPropertyDescriptor(config,'socketProxy').get,undefined);
+ for(const zone of [1,5,7,1234,65535]) {
+  const item=entries[zone+1];assert.equal(item.host,'zone'+zone+'.17roco.qq.com');assert.equal(item.port,443);
+  assert.equal(item.proxyUrl,proxies[0].proxyUrl.replace('dir.17roco.qq.com',item.host));
+  new window.WebSocket(item.proxyUrl);assert.equal(calls.at(-1)[0],'owner');
+ }
+ for(const host of ['zone0.17roco.qq.com','zone01.17roco.qq.com','zone65536.17roco.qq.com','zone*.17roco.qq.com','zone7.17roco.qq.com.evil.example','zone7.17roco.qq.com:80']) {
+  new window.WebSocket(proxies[0].proxyUrl.replace('dir.17roco.qq.com',host));assert.equal(calls.at(-1)[0],'local');
+ }
+ assert(performance.now()-start<5000,'bounded expansion must complete promptly');
+});
+
+test('zone expansion rejects mismatched capability roots and unsupported table limits',()=>{
+ const mismatched=[proxies[0],{...proxies[1],proxyUrl:proxies[1].proxyUrl.replace('a'.repeat(48),'b'.repeat(48))}];
+ assert.equal(install('https://web2.17roco.qq.com/',mismatched).socketProxy,undefined);
+ for(const maxZone of [undefined,0,256,65536,'65535']) {
+  const window={location:{href:'https://web2.17roco.qq.com/'}};
+  const ctx=vm.createContext({window,URL});vm.runInContext(source,ctx);ctx.installTimeCasketSocketConfig(proxies,maxZone);
+  assert.equal(window.RufflePlayer,undefined);
+ }
+});
+
 function routing(topUrl='https://17roco.qq.com/') {
  const calls=[];
  class LocalSocket {constructor(url){calls.push(['local',url]);this.listeners=[];}addEventListener(...args){this.listeners.push(args);}}
  class OwnerSocket {constructor(url){calls.push(['owner',url]);this.listeners=[];}addEventListener(...args){this.listeners.push(args);}}
  const window={location:{href:'https://web2.17roco.qq.com/game'},WebSocket:LocalSocket,
   top:{location:{href:topUrl},WebSocket:OwnerSocket}};
- const ctx=vm.createContext({window,URL});vm.runInContext(source,ctx);ctx.installTimeCasketSocketConfig(proxies);
+ const ctx=vm.createContext({window,URL});vm.runInContext(source,ctx);ctx.installTimeCasketSocketConfig(proxies,65535);
  return {window,ctx,calls,LocalSocket};
 }
 
@@ -69,7 +98,7 @@ test('background retries a lost early native request and registers before readin
    sendNativeMessage:(_app,message)=>{
      if(message.kind==='config') {
        if(++requests===1)return new Promise(()=>{});
-       return Promise.resolve(JSON.stringify({proxies}));
+       return Promise.resolve(JSON.stringify({proxies,maxZone:65535}));
      }
      assert.equal(message.kind,'ready');assert.equal(registered,1);ready();return Promise.resolve({});
    }

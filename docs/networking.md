@@ -1,5 +1,14 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.15：目录已通，统一覆盖编号区服
+
+用户确认0.1.14能选服务器但进不去。真机目录服endpoint0依次socket-open/connect-start/connected/first-send/first-receive，最终发送139/接收216字节，随后EOF；用户可见列表是本阶段额外验收证据。只读console固定正则提取到缺桥目标zone5.17roco.qq.com:443、zone7.17roco.qq.com:443，无AVM2分类错误/panic。公开缓存LoginPlugin.as:330按roomZoneID拼接zone{0}.17roco.qq.com，字段由公开RoomData/read方法定义为uint32。
+
+用户明确希望统一zone规则，不再逐个补。原版Ruffle0.7.1 connect_socket严格比较host+port，host填zone*无效。0.1.15以受限数字域名规则统一原生桥，浏览器按需展开zone1～zone65535的精确映射；这不是官方编号上限，也不是无限通配。bootstrap能力前缀与端口保持同一进程配置，生成映射本身不发DNS/端口探测；仅Flash实际选择目标才通过既有能力路径连接443，所有解析地址仍须公网。未知其他端口、任意IP/其他域、编号0/前导零/超范围均拒绝。超65535若真出现应记录为未支持，不能宣称所有理论uint32编号均覆盖。
+
+临时只读缺桥提取脚本首次误复用了forward端口变量并遗留统计打印，目标证据已提取但清理报错；随后修正、清理本次遗留调试转发并重跑成功。未刷新/登录/点击游戏，不截图，不保存原始console、认证或数据包。下一步在用户点击区服后观察endpoint=zone编号+1的真实TCP/首收发，再判断加载资源与地图。
+
+
 ## 0.1.14：官网首页创建固定回环连接
 
 0.1.13真机复测失败：当前官方iframe均已有精确allow指令，但游戏仍loopback-network=denied，dir attempt1/error1/close2，无socket-open。官网根/中间/游戏文档均已将document.domain放宽为qq.com，中间iframe的声明src为graph，而实际文档已到web2。Firefox release的PermissionsPolicy/HTMLIFrameElement源码显示容器策略按声明src和考虑document.domain的principal继承；这解释为何仅追加精确URL来源不足，但本轮不再扩大OAuth帧授权或改认证src。

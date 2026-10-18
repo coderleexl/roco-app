@@ -21,7 +21,7 @@ async function prepareSockets() {
         socketRegistration = await browser.contentScripts.register({
           matches: ['https://web2.17roco.qq.com/*'],
           allFrames: true, runAt: 'document_start', world: 'MAIN',
-          js: [{code: source + '\ninstallTimeCasketSocketConfig(' + JSON.stringify(config.proxies) + ');'}]
+          js: [{code: source + '\ninstallTimeCasketSocketConfig(' + JSON.stringify(config.proxies) + ',' + JSON.stringify(config.maxZone) + ');'}]
         });
       }
       await native('ready');

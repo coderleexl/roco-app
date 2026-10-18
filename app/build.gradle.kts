@@ -20,8 +20,8 @@ android {
         applicationId = "io.github.coderleexl.rocoapp"
         minSdk = 26
         targetSdk = 35
-        versionCode = 15
-        versionName = "0.1.14"
+        versionCode = 16
+        versionName = "0.1.15"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
     }

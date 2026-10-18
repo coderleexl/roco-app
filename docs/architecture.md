@@ -1,5 +1,14 @@
 # Architecture
 
+## 0.1.15统一编号区服
+
+公开LoginPlugin的connectSvr按roomZoneID拼接zone{0}.17roco.qq.com，真机缺桥日志已确认zone5/zone7:443。用户要求统一覆盖，原生allowsHost接受规范zone1～zone65535.17roco.qq.com，拒绝0/前导零/通配符字面量/超范围/尾缀域/任意IP；所有连接仍固定443，DNS全部地址须公网，连接已核实IP。不是无限编号授权；65535是兼容层映射容量上限，公开roomZoneID实际为uint32，不把该上限称为官方协议限制。
+
+原版Ruffle0.7.1将socketProxy转换为Rust Vec并严格匹配host+port，不识别zone*。原生握手仅返回两个bootstrap能力URL和maxZone=65535，扩展注册前注入；游戏第一次读取config.socketProxy才生成65537条精确映射并缓存，未使用的跟踪帧无需立即分配。生成表没有DNS/连接；只有Flash选择其中一项才用既有本地桥，沿用0.1.14官方顶层构造器和二进制realm转换。能力前缀不落日志；其他WebSocket原样保留。上游Ruffle不修改。
+
+诊断保持dir0/stat1，zoneN为endpointN+1（最大65536）；总量类别用固定socket-zone-sent/received，避免将数字混入只接受字母的日志类别。多个并发zone的汇总缺少独立连接ID，不能单凭相邻总量日志推断同一连接。浏览器dir/stat WS计数可能因顶层构造器路由绕过旧观察器而为0，本轮连接以原生socket-open/connected/first-send/receive为准。
+
+
 ## 0.1.14由官方首页创建固定连接
 
 socket-config.js在验证原有两项配置后，以Proxy保留原WebSocket构造器；只对逐字匹配这两条配置URL的调用，且可读取顶层为精确HTTPS17roco首页/default、无userinfo时，用顶层原生构造器和原newTarget创建原生Socket。其余URL/来源/访问失败均走原构造器。并不重放或生成任何认证/游戏请求；由官方Flash照常发送数据，原生桥的Origin/能力路径/固定目标/DNS及队列限制不变。
