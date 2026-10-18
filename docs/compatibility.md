@@ -1,6 +1,6 @@
 # Compatibility gates
 
-0.1.23真机验收FAILED：选服后一直加载，实际webgl、区服endpoint7双向连接成功，但AVM2报固定RustError“Render backend does not support BitmapData.draw”。0.1.24/code25、兼容1.4.5撤回默认传统WebGL试验，恢复自动/显式后端选择，保留字体/活动/退出日志；新增仅数字位图绘制能力错误计数。恢复进图仍待用户复测。卡住阶段更低GPU PSS不算性能通过，不能把64项模型/文字样例代替完整游戏图形能力；内存/文字/活动/声音/QQ需求仍有待办。
+0.1.23真机验收FAILED：选服后一直加载，实际webgl、区服endpoint7双向连接成功，但AVM2报固定RustError“Render backend does not support BitmapData.draw”。0.1.24/code25、兼容1.4.5撤回默认传统WebGL试验，恢复自动/显式后端选择，保留字体/活动/退出日志；新增仅数字位图绘制能力错误计数。用户已确认恢复并正在战斗；真机wgpu-webgl、bitmapDrawErrors0。完整战斗/技能文字仍待反馈，战斗PSS约4.76～5.30GiB且GPU有回落，退出战斗后的内存对照尚未取得。卡住阶段更低GPU PSS不算性能通过，不能把64项模型/文字样例代替完整游戏图形能力；内存/文字/活动/声音/QQ需求仍有待办。
 
 0.1.22安装后用户报告卡顿/闪退。只读本包进程PSS合计约2.21GiB、GPU约1.34GiB；有后台LOW_MEMORY及较早Adreno驱动SIGSEGV，最近退出为覆盖更新，未确认本次前台退出唯一原因。0.1.23/code24、兼容1.4.4对默认/自动配置试用传统webgl，保留显式后端；Debug/API30+补本包退出原因元数据。真实内存、速度、图形兼容与稳定性均待验收，不把“选了较简单后端”当性能修复完成。QQ授权/活动/文字/声音剩余项继续保留。
 
