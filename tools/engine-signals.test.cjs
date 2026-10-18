@@ -63,3 +63,18 @@ test('non-game origins are untouched and script declaration covers the signal co
   const manifest=require('../app/src/main/assets/compatibility/manifest.json');
   assert(manifest.content_scripts.some(script=>script.world==='MAIN'&&script.js.includes('engine-signals.js')));
 });
+
+test('IO and loader HTTP failures retain only bounded counts, never their paths or credentials',()=>{
+  const {window,events}=install('https://web2.17roco.qq.com/game');
+  const api={loadedConfig:{url:'https://res.17roco.qq.com/main.swf'}};
+  events.loadedmetadata({target:{matches:()=>true,ruffle:()=>api}});
+  api.traceObserver('IOErrorEvent https://res.17roco.qq.com/activity/SECRET.swf?ticket=SECRET');
+  api.traceObserver('[NewLoader] >>>>>>>>>>>>>http code:404 SECRET');
+  api.traceObserver('[NewLoader] >>>>>>>>>>>>>http code:200 SECRET');
+  window.console.error('ioError token=SECRET');
+  const state=window.__timeCasketEngineSignals;
+  assert.equal(state.ioErrors,2);assert.equal(state.httpErrors,1);
+  assert(!JSON.stringify(state).includes('SECRET'));
+  for(let i=0;i<1100;i++)api.traceObserver('IOError http code:500');
+  assert.equal(state.ioErrors,1000);assert.equal(state.httpErrors,1000);
+});

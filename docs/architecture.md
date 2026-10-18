@@ -1,5 +1,11 @@
 # Architecture
 
+## 0.1.19移动端可见区域适配
+
+真机0.1.18黑屏不是main未执行：窗口inline top884.958对应早期1435×2607计算，实际可见区域随后变为1435×662；同target幂等分支直接return，漏掉旋转/原生隐藏工具栏后的异步尺寸变化。现在幂等分支也fit，优先顶层visualViewport的width/height和offsetLeft/offsetTop，无该API时才用innerWidth/innerHeight；监听Window resize与visualViewport resize/scroll并在exit全部移除。窗口轮询提供遗漏事件的恢复路径，不重建DOM或重载游戏。依据[MDN VisualViewport](https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport)的可见区域/固定定位偏移与事件定义。
+
+固定本地view.html用真实Gecko CSS测量舞台bbox，scope仅为模拟官方来源和早期错误尺寸的测试替身，生产校验不变。主电影trace/console新增IOError和loader HTTP错误数字分类，经原有主游戏端口写文件；只保存计数，不保存trace文本、地址或凭据。活动404没有被适配成200，也没有未经入口验证以ui电影替换s电影。
+
 ## 0.1.18入口即显示游戏窗口
 
 0.1.17将展示绑定到web2 main.swf ready，导致首页登录阶段只有横屏，没有裁切。只读真机几何确认可见区域是顶层mainiframe（960×560），首页ready preloader仅1×1。现在ISOLATED game-control也在官方首页顶层运行，只有顶层拥有展示适配器；子web2继续负责主电影刷新和计数，不操作父层样式。原生在端口连接时发送已有模式请求，不再只等main ready发送，展示ack与movie ready解耦。

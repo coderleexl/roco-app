@@ -1,5 +1,11 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.18实机活动复测与0.1.19诊断
+
+用户确认IOError在点击礼包/活动后出现。目录与zone5（endpoint6）连接并首发/首收；主游戏无panic/AVM2分类错误，不能归责代理或目录桥。ROCOLegendBook/SuperHand/LittleAngelofCivilization三个exbn资源实机performance条目均200、75/76/75ms，原相关CORS错误已消失。残留重复CORS路径仅activity/4271/s4271.swf、4291/s4291.swf；本次公开HEAD均404/text/html/564B。对应ui电影公开200、665976/1542587B，缓存ver.config也只列ui；ui4271包含roco_restaurant相关控制类，并非纯图片壳，但s入口契约未知，不作未经验证的重定向或假200。不是所有礼包错误的完整证明，仍需具体名称与新计数对应。
+
+0.1.19新增主游戏ioErrors/httpErrors固定分类和phase-io-errors/phase-http-errors文件数字计数，覆盖IOError/IOErrorEvent和loader trace http code:4xx/5xx；不导出原文、URL、认证或请求数据，不改变HTTP适配范围/网络设置。两次后续RDP只读活动明细遇EOF并清理临时forward；此前资源200和404已有独立证据，EOF不作为资源失败证据。
+
 ## 0.1.16：已进入游戏，活动IOError分层
 
 用户确认0.1.15确实进入游戏，随后IOError且礼包等点不了。真机zone6（endpoint7）依次open/connect/first-send/first-receive，证明统一规则覆盖并非只补5/7。游戏无panic/AVM2错误分类，traceErrors0；Socket缺桥仍仅原有非公网9000日志器，不为其放开内网。

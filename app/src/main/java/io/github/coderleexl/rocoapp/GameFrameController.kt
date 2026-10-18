@@ -110,7 +110,7 @@ class GameFrameController(private val log: DiagnosticLog) {
     }
     companion object {
         private val signalLabels = mapOf("traceAttached" to "phase-trace", "configsLoaded" to "phase-configs", "loginInitialized" to "phase-login",
-            "directoryRequests" to "phase-dir-requests", "traceErrors" to "phase-errors", "missingSocketProxy" to "phase-missing-socket",
+            "directoryRequests" to "phase-dir-requests", "traceErrors" to "phase-errors", "ioErrors" to "phase-io-errors", "httpErrors" to "phase-http-errors", "missingSocketProxy" to "phase-missing-socket",
             "dirWsAttempt" to "dir-ws-attempt", "dirWsOpen" to "dir-ws-open", "dirWsError" to "dir-ws-error", "dirWsClose" to "dir-ws-close",
             "statWsAttempt" to "stat-ws-attempt", "statWsOpen" to "stat-ws-open", "statWsError" to "stat-ws-error", "statWsClose" to "stat-ws-close")
         fun allowsPage(raw: String?): Boolean = try {

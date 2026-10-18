@@ -1,0 +1,54 @@
+<!doctype html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROCO:view-loading</title>
+<style>body{margin:17px;background:#eee}#surroundings{height:1600px}iframe{width:960px;height:560px}</style>
+<div id="surroundings">Original local presentation fixture</div>
+<iframe id="mainiframe" style="border:3px solid green" srcdoc="<!doctype html><style>body{margin:0;background:#16803a;color:white;font:40px sans-serif}</style>Original game surface fixture"></iframe>
+<script src="/game-view.js"></script>
+<script>
+(function () {
+  'use strict';
+  const frame = document.getElementById('mainiframe'), original = frame.getAttribute('style');
+  // A local test double supplies the official scope without navigating to it.
+  // The real document, CSS engine, iframe and visual viewport remain Gecko's.
+  const scope = {document, location:{href:'https://17roco.qq.com/'}, innerWidth:960, innerHeight:6000,
+    addEventListener:window.addEventListener.bind(window), removeEventListener:window.removeEventListener.bind(window)};
+  scope.top = scope;
+  const view = createTimeCasketGameView(scope);
+  let fitted = false, rotated = false, restored = false, pending = false;
+  function fail() { document.title = 'ROCO:view-failed'; }
+  function inside() {
+    const r = frame.getBoundingClientRect(), v = window.visualViewport;
+    return r.width > 0 && r.height > 0 && r.left >= v.offsetLeft - 2 && r.top >= v.offsetTop - 2 &&
+      r.right <= v.offsetLeft + v.width + 2 && r.bottom <= v.offsetTop + v.height + 2;
+  }
+  try {
+    if (!view.enterGame() || frame.getBoundingClientRect().top < 2000) return fail();
+    scope.visualViewport = window.visualViewport;
+    // Same-target polling must recover without a Window resize event.
+    if (!view.enterGame() || !inside()) return fail();
+    fitted = true; document.title = 'ROCO:view-fitted';
+  } catch (_) { fail(); return; }
+  function check() {
+    if (pending || restored || !fitted) return;
+    pending = true;
+    setTimeout(() => {
+      pending = false;
+      try {
+        if (window.innerWidth > window.innerHeight) {
+          view.enterGame();
+          if (!inside()) return fail();
+          rotated = true; document.title = 'ROCO:view-rotated';
+        } else if (rotated) {
+          view.exit(); restored = true;
+          document.title = !document.documentElement.hasAttribute('data-time-casket-view') &&
+            !frame.hasAttribute('data-time-casket-target') && frame.getAttribute('style') === original ?
+            'ROCO:view-restored' : 'ROCO:view-failed';
+        }
+      } catch (_) { fail(); }
+    }, 250);
+  }
+  window.addEventListener('resize', check);
+  window.visualViewport.addEventListener('resize', check);
+})();
+</script>

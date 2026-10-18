@@ -126,4 +126,13 @@ class BrowserSmokeTest {
             }
         }
     }
+    @Test fun gameSurfaceFitsVisualViewportAfterRotationAndRestoresStyles() {
+        launch("/view.html").use { scenario ->
+            await(scenario, "same-target refit recovers the deliberately offscreen local surface") { it.probeTitle == "ROCO:view-fitted" }
+            scenario.onActivity { it.setGameMode(true) }
+            await(scenario, "real Gecko CSS keeps the surface inside the landscape visual viewport") { it.probeTitle == "ROCO:view-rotated" }
+            scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+            await(scenario, "portrait restoration removes presentation styles") { it.probeTitle == "ROCO:view-restored" && !it.gameModeRequested }
+        }
+    }
 }

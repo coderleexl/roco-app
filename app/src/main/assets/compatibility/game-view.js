@@ -2,11 +2,12 @@
 (function (root) {
   'use strict';
   function createGameView(sourceWindow) {
-    let activePlayer, restore = [], resizeWindow, resizeListener;
+    let activePlayer, restore = [], resizeWindow, resizeListener, visualViewport;
     function exit() {
       if (resizeWindow) resizeWindow.removeEventListener('resize', resizeListener);
+      if (visualViewport) for (const event of ['resize', 'scroll']) visualViewport.removeEventListener(event, resizeListener);
       for (const undo of restore.reverse()) { try { undo(); } catch (_) {} }
-      restore = []; activePlayer = resizeWindow = resizeListener = undefined;
+      restore = []; activePlayer = resizeWindow = resizeListener = visualViewport = undefined;
     }
     function official(win) {
       const url = new URL(win.location.href);
@@ -19,7 +20,9 @@
     }
     function enter(element, targetWindow = sourceWindow) {
       const player = element.wrappedJSObject || element;
-      if (activePlayer === player) return true;
+      // Orientation, native chrome and mobile zoom settle asynchronously. Polling
+      // the same target must still refit it even if no Window resize was fired.
+      if (activePlayer === player) { resizeListener(); return true; }
       exit();
       try {
         const chain = [];
@@ -59,16 +62,22 @@ html[data-time-casket-view] [data-time-casket-target] *{visibility:visible!impor
         const oldStyle = top.target.getAttribute('style');
         restore.push(() => oldStyle === null ? top.target.removeAttribute('style') : top.target.setAttribute('style', oldStyle));
         const fit = () => {
-          const availableWidth = top.win.innerWidth, availableHeight = top.win.innerHeight;
-          if (!(availableWidth > 0 && availableHeight > 0)) return;
+          const viewport = top.win.visualViewport;
+          const availableWidth = viewport ? viewport.width : top.win.innerWidth;
+          const availableHeight = viewport ? viewport.height : top.win.innerHeight;
+          if (!(Number.isFinite(availableWidth) && Number.isFinite(availableHeight) && availableWidth > 0 && availableHeight > 0)) return;
+          const offsetLeft = Number.isFinite(viewport?.offsetLeft) ? viewport.offsetLeft : 0;
+          const offsetTop = Number.isFinite(viewport?.offsetTop) ? viewport.offsetTop : 0;
           const scale = Math.min(availableWidth / width, availableHeight / height);
-          top.target.style.setProperty('left', ((availableWidth - width * scale) / 2) + 'px', 'important');
-          top.target.style.setProperty('top', ((availableHeight - height * scale) / 2) + 'px', 'important');
+          top.target.style.setProperty('left', (offsetLeft + (availableWidth - width * scale) / 2) + 'px', 'important');
+          top.target.style.setProperty('top', (offsetTop + (availableHeight - height * scale) / 2) + 'px', 'important');
           top.target.style.setProperty('transform', 'scale(' + scale + ')', 'important');
         };
         fit();
         resizeWindow = top.win; resizeListener = fit;
         resizeWindow.addEventListener('resize', resizeListener);
+        visualViewport = top.win.visualViewport;
+        if (visualViewport) for (const event of ['resize', 'scroll']) visualViewport.addEventListener(event, resizeListener);
         activePlayer = player;
         return true;
       } catch (_) { exit(); return false; }

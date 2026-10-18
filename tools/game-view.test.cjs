@@ -84,6 +84,30 @@ test('same player is idempotent and a replacement player receives a clean presen
   assert.equal(view.enter(replacement),true);assert.equal(f.player.getAttribute('data-time-casket-target'),null);
   assert.equal(f.topDoc.styles.length,1);view.exit();view.exit();assert.equal(f.topDoc.styles.length,0);
 });
+
+test('same target refits after mobile viewport settles even without a window resize event',()=>{
+  const f=fixture(),view=create(f.win);
+  f.top.innerWidth=1435;f.top.innerHeight=2607;
+  assert.equal(view.enter(f.player),true);
+  f.top.innerHeight=662;
+  assert.equal(view.enter(f.player),true);
+  assert.equal(f.frame.style.values.top,'0px');
+  assert.equal(f.frame.style.values.transform,'scale('+662/560+')');
+  assert.equal(f.topDoc.styles.length,1);
+});
+
+test('visual viewport dimensions and offsets control the fit, with all listeners cleaned up',()=>{
+  const f=fixture(),listeners={};
+  f.top.visualViewport={width:1435,height:662,offsetLeft:10,offsetTop:20,
+    addEventListener:(n,fn)=>listeners[n]=fn,removeEventListener:n=>delete listeners[n]};
+  f.top.innerWidth=1435;f.top.innerHeight=2607;
+  const view=create(f.win);assert.equal(view.enter(f.player),true);
+  assert.equal(f.frame.style.values.top,'20px');
+  assert.equal(f.frame.style.values.transform,'scale('+662/560+')');
+  f.top.visualViewport.offsetTop=35;listeners.scroll();assert.equal(f.frame.style.values.top,'35px');
+  f.top.visualViewport.height=560;listeners.resize();assert.equal(f.frame.style.values.transform,'scale(1)');
+  view.exit();assert.deepEqual(Object.keys(listeners),[]);
+});
 test('untrusted or inaccessible ancestors are rejected before any document changes',()=>{
   for(const url of ['https://graph.qq.com/','http://17roco.qq.com/','https://u:p@17roco.qq.com/','https://17roco.qq.com:8443/']) {
     const f=fixture(url);assert.equal(create(f.win).enter(f.player),false);assert.equal(f.gameDoc.styles.length,0);

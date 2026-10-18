@@ -11,6 +11,7 @@ import java.util.concurrent.Executors
 /** Self-test fixtures only; no forwarding, arbitrary files or network proxy. Loopback only. */
 class LocalProbeServer(
     private val audioScript: () -> ByteArray = { byteArrayOf() },
+    private val viewAsset: (String) -> ByteArray = { byteArrayOf() },
     private val record: (String, Int) -> Unit = { _, _ -> }
 ) : Closeable {
     private val socket = ServerSocket(0, 4, InetAddress.getByName("127.0.0.1"))
@@ -49,6 +50,8 @@ class LocalProbeServer(
         val type: String
         when (path) {
             "/audio.js" -> { payload = audioScript(); type = "application/javascript; charset=utf-8" }
+            "/game-view.js" -> { payload = viewAsset("compatibility/game-view.js"); type = "application/javascript; charset=utf-8" }
+            "/view.html" -> { payload = viewAsset("probe/view.html"); type = "text/html; charset=utf-8" }
             "/audio-event" -> {
                 val uri = android.net.Uri.parse("http://127.0.0.1" + route[1])
                 val event = uri.getQueryParameter("event")

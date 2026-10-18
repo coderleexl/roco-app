@@ -49,7 +49,7 @@
         const raw = (window.wrappedJSObject || window).__timeCasketEngineSignals;
         if (!raw) return;
         const values = {};
-        for (const key of ['traceAttached', 'configsLoaded', 'loginInitialized', 'directoryRequests', 'traceErrors', 'missingSocketProxy',
+        for (const key of ['traceAttached', 'configsLoaded', 'loginInitialized', 'directoryRequests', 'traceErrors', 'ioErrors', 'httpErrors', 'missingSocketProxy',
           'dirWsAttempt', 'dirWsOpen', 'dirWsError', 'dirWsClose', 'statWsAttempt', 'statWsOpen', 'statWsError', 'statWsClose']) {
           const value = raw[key];
           if (Number.isInteger(value) && value >= 0 && value <= 1000) values[key] = value;

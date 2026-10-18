@@ -174,7 +174,7 @@ class MainActivity : ComponentActivity() {
         if (app.ruffleReady && app.compatibilityReady) {
             if (BuildConfig.DEBUG && intent.getBooleanExtra("probe", false)) {
                 val path = intent.getStringExtra("probePath")
-                loadProbe(path.takeIf { it in setOf("/probe.html", "/seed.html", "/check.html", "/audio.html") } ?: "/probe.html")
+                loadProbe(path.takeIf { it in setOf("/probe.html", "/seed.html", "/check.html", "/audio.html", "/view.html") } ?: "/probe.html")
             }
             else current.loadUri(HOME)
         } else if (app.ruffleState.contains("失败") || app.ruffleState.contains("损坏") || app.compatibilityState.contains("失败")) {
@@ -337,7 +337,7 @@ class MainActivity : ComponentActivity() {
     }
     fun loadProbe(path: String = "/probe.html") {
         check(BuildConfig.DEBUG)
-        check(path in setOf("/probe.html", "/seed.html", "/check.html", "/audio.html"))
+        check(path in setOf("/probe.html", "/seed.html", "/check.html", "/audio.html", "/view.html"))
         probeTitle = ""
         current.loadUri(app.probe.baseUrl + path)
     }

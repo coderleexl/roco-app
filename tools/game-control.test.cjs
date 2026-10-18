@@ -27,9 +27,9 @@ test('refresh invokes only ready main Ruffle API without exporting parameters or
   env.events.pagehide();assert.equal(env.closed,1);assert.equal(env.cleared,1);
 });
 test('native phase telemetry sends validated counters once and never arbitrary fields',()=>{
-  const env=install();env.window.__timeCasketEngineSignals={traceAttached:1,configsLoaded:2,loginInitialized:'SECRET',directoryRequests:1001,traceErrors:0,missingSocketProxy:0,cookie:'SECRET'};
+  const env=install();env.window.__timeCasketEngineSignals={traceAttached:1,configsLoaded:2,loginInitialized:'SECRET',directoryRequests:1001,traceErrors:0,ioErrors:2,httpErrors:1,missingSocketProxy:0,cookie:'SECRET'};
   env.tick();const signal=env.sent.at(-1);assert.equal(signal.kind,'signals');
-  assert.deepEqual(Object.keys(signal.values).sort(),['configsLoaded','missingSocketProxy','traceAttached','traceErrors']);
+  assert.deepEqual(Object.keys(signal.values).sort(),['configsLoaded','httpErrors','ioErrors','missingSocketProxy','traceAttached','traceErrors']);
   assert(!JSON.stringify(signal).includes('SECRET'));
   const before=env.sent.length;env.tick();assert.equal(env.sent.length,before);
 });

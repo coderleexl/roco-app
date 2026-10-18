@@ -31,6 +31,7 @@ class RocoApplication : Application() {
         private set
     val probe by lazy { LocalProbeServer(
         audioScript = { assets.open("probe/audio.js").use { it.readBytes() } },
+        viewAsset = { path -> assets.open(path).use { it.readBytes() } },
         record = { category, value -> log.record(category, number = value) }
     ) }
     private val socketBridge by lazy { GameSocketBridge({ kind, endpoint -> log.record(kind, number = endpoint) }) }

@@ -4,10 +4,14 @@
   const page = new URL(window.location.href);
   if (page.origin !== 'https://web2.17roco.qq.com' || page.username || page.password || window.__timeCasketEngineSignals) return;
   const state = {socketMentions: 0, missingSocketProxy: 0, scriptErrors: 0, unsupportedFeatures: 0, socketHosts: [], errorCodes: [],
-    traceAttached: 0, traceMessages: 0, configsLoaded: 0, loginInitialized: 0, directoryRequests: 0, traceErrors: 0,
+    traceAttached: 0, traceMessages: 0, configsLoaded: 0, loginInitialized: 0, directoryRequests: 0, traceErrors: 0, ioErrors: 0, httpErrors: 0,
     dirWsAttempt: 0, dirWsOpen: 0, dirWsError: 0, dirWsClose: 0, statWsAttempt: 0, statWsOpen: 0, statWsError: 0, statWsClose: 0};
   window.__timeCasketEngineSignals = state;
   function bump(key) { state[key] = Math.min(1000, state[key] + 1); }
+  function classifyIO(text) {
+    if (/\bIOError(?:Event)?\b|ioError|加载文件出错/.test(text)) bump('ioErrors');
+    if (/\bhttp code:[45]\d{2}\b/i.test(text)) bump('httpErrors');
+  }
   const OriginalWebSocket = window.WebSocket;
   if (typeof OriginalWebSocket === 'function') window.WebSocket = new Proxy(OriginalWebSocket, {
     construct(target, args, newTarget) {
@@ -42,6 +46,7 @@
         if (typeof message !== 'string') return;
         bump('traceMessages');
         const text = message.slice(0, 2000);
+        classifyIO(text);
         if (text === '[AngelAppInstall] 程序相关的配置文件加载完毕!!') bump('configsLoaded');
         if (text === 'LoginPlugin Debug version initialize!!') bump('loginInitialized');
         if (/^(?:推荐请求:|列表请求:)/.test(text)) bump('directoryRequests');
@@ -57,6 +62,7 @@
       try {
         // Never stringify objects, enumerate fields, or retain argument strings.
         const text = args.slice(0, 8).filter(value => typeof value === 'string').map(value => value.slice(0, 2000)).join(' ');
+        classifyIO(text);
         if (/socket|websocket|xmlsocket/i.test(text)) {
           bump('socketMentions');
           for (const host of text.match(/\b(?:dir|zone\d+)\.17roco\.qq\.com\b/g) || []) {
