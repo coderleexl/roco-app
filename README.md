@@ -4,6 +4,8 @@ Kotlin + GeckoView + 内置 Ruffle 的 Android 网页/Flash **兼容性验证工
 
 0.1.5采用「时光匣」显示名称和原创“打开的匣子＋像素光点”图标。品牌源文件、命名清查状态及开源许可待办见 [品牌说明](docs/branding.md)。沿用原applicationId与签名，覆盖升级保留数据；功能验收仍按兼容性记录进行。
 
+0.1.6将逐文件的跨域适配统一为公共静态资源规则：按官网公开Global.xml中的目录、来源和文件MIME筛选，覆盖符合条件的动画/类库/配置/素材。真机已确认ver.config成功，当前卡在Global.xml；新版效果待用户复测。保留原有浏览器数据，不提取登录票据、不自动反复扫码，官方登录恢复仍待验证。规则与限制见 [架构说明](docs/architecture.md)。
+
 2026-10-18：提交 `ba84be2` 已通过 [GitHub 构建与三项模拟器测试](https://github.com/coderleexl/roco-app/actions/runs/39091368510)，包含真实 Flash 回调、关联窗口和进程重启后的测试 Cookie 保留。自检使用普通 WebGL；官网默认渲染、账号登录与完整游戏仍待真机验证。
 
 已验证版本：[下载 Debug APK 压缩包](https://github.com/coderleexl/roco-app/actions/runs/39091368510/artifacts/12122389419)（需要登录 GitHub），解压安装 `debug/app-debug.apk`。

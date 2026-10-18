@@ -1,5 +1,24 @@
 # Architecture
 
+## Current shared resource policy (0.1.6)
+
+This section supersedes the older per-file exception descriptions below. `adaptPublicAssetHeaders` in compatibility/public-swf.js is the common response wrapper, with `allowedAssetTypes` as the single resource/source/MIME policy. It operates at the extension response hook, not by replacing webpage fetch/XHR, and covers eligible Ruffle/Wasm fetches through the same browser request pipeline.
+
+Resource origin is exactHTTPS res.17roco.qq.com. Official public Global.xml identifies swf, libs, conf and res resource roots; these four directories now have typed rules rather than an ever-growing file list. Game source must be exactHTTPS web2.17roco.qq.com. Root main.swf, ver.config and Global.xml remain explicit. Homepage source remains 17roco.qq.com / or /default.html, with only preloader, ROCO-Z8 and its numbered Ceil animation family. The manifest and listener match these scopes; executable policy makes the final decision.
+
+| Resource family | Accepted response MIME |
+|---|---|
+| swf/libs `.swf`, res `.swf` | application/x-shockwave-flash |
+| conf/res `.config`, `.bin`, `.dat`; ver.config | application/octet-stream |
+| conf/res `.xml`; Global.xml | text/xml or application/xml |
+| res `.png`, `.jpg`/`.jpeg`, `.gif`, `.webp`, `.mp3` | Corresponding image/audio MIME only |
+
+Only GET/XHR, HTTP200, valid trusted origins, clean static paths and matching MIME receive the missing ACAO header, set to the initiating trusted origin. Existing ACAO or ACAC policy is never replaced. Percent-encoded/hidden paths, CGI/FastCGI segments, crossdomain.xml, unknown extensions, HTML/errors, different domains/ports, credentials and unrelated homepage paths fail closed. Request bodies/headers, cookies, tickets and response bodies are neither collected nor changed. Login responses and third-party ads are outside scope. Do not treat these rules as globally disabling CORS or as proof every game resource is supported.
+
+Reason for widening: actual0.1.5 PageError shows Global.xml blocked after ver.config succeeds. Independently fetched public Global.xml explicitly names bb.swf, AngelClientLibs_s.swf, AngelProtocal.swf and Angel.config, as well as resource directories. Public HEAD checks confirm all four bootstrap dependencies return200 with expected MIME and noACAO. This supplies an evidence-based directory boundary; the full future resource set has not been exercised. Other hosts (including the configured avatar CDN), unsupported types, Flash Socket and engine gaps still need separate evidence.
+
+Session constraint: user asks to minimize repeated QR authentication. Keep the same profile, package, key and normal persistent browser state; no password/Cookie extraction or authenticated-URL replay. Updates end the live page process; whether the website restores that login is not guaranteed. User performs any required authentication or game verification; no automated retry loop.
+
 - Kotlin Android View app, one process-level GeckoRuntime with normal persistent profile. A main GeckoSession and at most four associated sessions share that runtime. No cross-app Firefox cookie access.
 - `onNewSession` returns a **new unopened** session. Gecko opens it and establishes its opener; app retains it and attaches the view only after open. Do not manually navigate that child using the informational URI.
 - JavaScript alert/confirm/prompt have native presentation and user responses. Authentication stays on official pages; unsupported external-app schemes are blocked with an explanation, not silently launched.

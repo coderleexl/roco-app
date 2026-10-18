@@ -1,5 +1,7 @@
 # Compatibility gates
 
+Latest0.1.6/code7: shared static-resource wrapper replaces per-file rules, bounded by public Global.xml roots and typed responses. Local Node11/JVM4/lint/bothAPK builds, signature and full Ruffle asset checks passed. In-place Meizu install returnedSuccess and version confirmed; new real-browser bootstrap/resource outcomes await user operation.0.1.5 ver.config HTTP200 is verified; valid login recovery, server/map/battle gates remain unknown. User requests avoiding repeated QR attempts; normal profile retained without exporting auth secrets.
+
 Application brand is now 时光匣 (0.1.5/code6), with original vector/adaptive/themed launcher artwork. Package ID and browser/session/game behavior remain unchanged. Branding changes do not pass any game compatibility gate; see branding.md for source assets and remaining name/license review.
 
 0.1.5 local lint/APK build, signature and full Ruffle asset checks passed. aapt confirms label/icon resources and version; Meizu in-place installation returnedSuccess and version was confirmed. User visual check remains pending, no phone screenshots or automated game interaction performed.
@@ -12,7 +14,7 @@ Build and fixture results must come from the matching GitHub commit/run, not fro
 | Ruffle installed and original fixture executes ActionScript | Passed: run39091368510, fixed local fixture requests legacy webgl; default wgpu remains unsupported on this emulator |
 | Associated popup opener, shared cookie and close callback | Passed: run39091368510, includes opener focus selecting main while child remains alive |
 | Fixture cookie survives process restart | Passed: run39091368510, separate seed/check instrumentation processes without reseeding |
-| Complete official game page | Meizu0.1.2 preloader/main now execute with metadata; game loader reports version-file failure, confirmed `/ver.config` missing-ACAO CORS.0.1.3 adaptation awaits user retest |
+| Complete official game page | Meizu0.1.5 preloader/main execute and ver.config returns200; loader now blocked by Global.xml missing-ACAO CORS.0.1.6 shared static policy awaits real-device retest |
 | User authenticates and game receives valid login | Not verified |
 | Server list and selection | Not verified |
 | Map, character, resources | Not verified |

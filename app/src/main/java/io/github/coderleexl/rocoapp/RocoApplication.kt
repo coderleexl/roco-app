@@ -33,7 +33,7 @@ class RocoApplication : Application() {
         runtime.webExtensionController.ensureBuiltIn("resource://android/assets/compatibility/", "compatibility@roco.local")
             .accept({ extension ->
                 compatibilityReady = extension != null
-                compatibilityState = if (compatibilityReady) "公开 SWF 资源兼容已启用" else "资源兼容扩展安装失败"
+                compatibilityState = if (compatibilityReady) "公开静态资源兼容已启用" else "资源兼容扩展安装失败"
                 log.record(if (compatibilityReady) "compatibility-installed" else "compatibility-install-failed")
             }, { error ->
                 compatibilityState = "资源兼容扩展安装失败"

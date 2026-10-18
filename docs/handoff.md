@@ -4,6 +4,14 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
+## 最新0.1.6：公共静态资源适配
+
+- 用户0.1.5停在“努力加载中，请刷新页面”。只读真机证据：preloader/main均执行且无panic，ver.config已200/62ms；下一阻塞Global.xml缺少ACAO/HTTP200。公开HEAD text/xml/2489bytes；公开XML列明四个启动依赖及swf/libs/conf/res目录，依赖HEAD均200、预期MIME且无ACAO。详见reproduction.md。
+- 用户要求统一wrap方法，避免逐文件反复打包。`adaptPublicAssetHeaders` + `allowedAssetTypes`统一官方静态目录/来源/MIME策略，公共函数取代逐文件分支；manifest/listener同步目录范围。兼容扩展1.1.0，App0.1.6/code7。具体允许/拒绝范围在architecture.md最新章节，优先于下面历史逐文件说明。
+- 仅res.17roco.qq.com精确HTTPS资源源，官网首页仅ROCO-Z8/编号Ceil家族/preloader，游戏web2来源按目录和文件类型允许。GET/XHR/200、匹配MIME、已有ACAO/ACAC跳过仍保留；不修改登录/广告/其他域，不全局禁用安全机制。
+- 用户担心多次扫码风控，要求复用本次会话：保留同一profile/包名/签名和数据，不提取或重放认证信息，不自动认证或重试。覆盖升级会结束页面进程，官方会话恢复不能保证；若再次要求扫码由用户决定，不反复要求其认证。安装持续授权仍有效。
+- 新公共规则/启动依赖回归先RED后GREEN；Node11项、JVM4项、lint和主包/测试包构建通过41s。签名及完整官方Ruffle资源核对通过，APK SHA256 `88d36004d681f34aac446578b1db0c0028ce45b57d02e9672ee60d021d634c69`，路径app/build/outputs/apk/debug/app-debug.apk。已覆盖安装Success，包查询确认0.1.6/code7，保留数据且未打开/刷新页面。等待用户检查能否复用官方会话并继续加载；不要为了验证反复要求扫码。当前不等待云端检查，不截图、不自动操作游戏；选服/地图/战斗仍未验证。
+
 ## 0.1.5品牌更新：时光匣
 
 - 用户补充“时光匣也可以”，最终按「时光匣」落地，未采用先前候选「拾帧」。应用显示名由strings.xml提供；新增原创匣子/像素光点矢量Logo、自适应图标和Android33单色图标，源文件docs/brand/logo.svg，说明docs/branding.md。
