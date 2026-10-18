@@ -177,3 +177,33 @@ test('browser hook and manifest apply the shared policy without page script over
   assert.equal(callback(input).responseHeaders.at(-1).value,'https://web2.17roco.qq.com');
   assert.equal(callback({...input,originUrl:'https://evil.example/'}),undefined);
 });
+
+test('version inventory plugin/activity/app/video families share typed policy and retain boundaries',()=>{
+  for(const [path,mime] of [
+    ['/plugins/Effect/EffectPluginLib.swf','application/x-shockwave-flash'],
+    ['/plugins/Other/Config.xml','text/xml'],
+    ['/plugins/Other/text.txt','text/plain'],
+    ['/plugins/Other/font.fint','application/octet-stream'],
+    ['/activity/3989/ui3989.swf','application/x-shockwave-flash'],
+    ['/activity/3989/image.png','image/png'],
+    ['/apps/Other/Main.swf','application/x-shockwave-flash'],
+    ['/apps/Other/Config.xml','application/xml'],
+    ['/video/intro.swf','application/x-shockwave-flash'],
+    ['/video/intro.mp4','video/mp4']
+  ]) {
+    const input=request({url:'https://res.17roco.qq.com'+path,originUrl:'https://web2.17roco.qq.com/game',responseHeaders:[{name:'Content-Type',value:mime}]});
+    assert(adaptPublicAssetHeaders(input),path);
+    for(const extra of [
+      {originUrl:'https://17roco.qq.com/'},
+      {originUrl:'https://evil.example/'},
+      {url:input.url+'.evil'},
+      {method:'POST'}, {type:'image'}, {statusCode:404},
+      {responseHeaders:[{name:'Content-Type',value:'text/html'}]},
+      {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Credentials',value:'true'}]},
+      {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Origin',value:'*'}]}
+    ]) assert.equal(adaptPublicAssetHeaders({...input,...extra}),undefined,path);
+  }
+  for(const path of ['/plugins/cgi-bin/login.swf','/plugins/Effect/backup.bak','/plugins/Effect/code.js','/plugins/Effect/page.html','/activity2/Main.swf','/apps2/Main.swf','/h5/game.js','/video/config.xml']) {
+    assert.equal(adaptPublicAssetHeaders(request({url:'https://res.17roco.qq.com'+path,originUrl:'https://web2.17roco.qq.com/game'})),undefined,path);
+  }
+});

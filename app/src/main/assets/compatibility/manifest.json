@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Time Casket Public Resource Compatibility",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "browser_specific_settings": {
     "gecko": {
       "id": "compatibility@roco.local"
@@ -16,6 +16,10 @@
     "https://res.17roco.qq.com/libs/*",
     "https://res.17roco.qq.com/conf/*",
     "https://res.17roco.qq.com/res/*",
+    "https://res.17roco.qq.com/plugins/*",
+    "https://res.17roco.qq.com/activity/*",
+    "https://res.17roco.qq.com/apps/*",
+    "https://res.17roco.qq.com/video/*",
     "https://res.17roco.qq.com/preloader.swf*",
     "https://res.17roco.qq.com/main.swf*",
     "https://res.17roco.qq.com/ver.config*",

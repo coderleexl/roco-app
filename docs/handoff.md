@@ -4,7 +4,14 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
-## 最新0.1.6：公共静态资源适配
+## 最新0.1.7：版本清单补齐静态目录
+
+- 用户0.1.6仍加载中，无游戏画面/无选服。只读检查确认ver.config、Global.xml、Angel.config和两个基础类库均200，之前适配已推进。当前EffectPluginLib.swf四次页面自身请求均被CORS拦截，PageError明确missingACAO/HTTP200；无播放器panic。公开HEAD证实Flash MIME/190572bytes。
+- 公开ver.config为ZIP，内含13216条文件路径的XML，明确包含该插件，并提供plugins/activity/apps/video目录证据。0.1.7/code8、兼容扩展1.1.1补入公共directoryTypes表并由该表生成监听模式；manifest同步范围，限制每目录后缀及对应MIME。不是按单插件文件补丁，不放开h5脚本/HTML/备份、CGI、其他域或既有服务器CORS策略。
+- 新增目录边界测试先RED后GREEN，Node12项/JVM4项/lint/主包及测试包构建通过43s；签名及官方Ruffle资源校验通过。APK SHA256 `63fa075692069755243649c44c19d8845c48fd793559bd369dbcc2124c2b9a82`。已覆盖安装Success，包查询确认0.1.7/code8。后续继续由用户验证，不自动刷新或登录，不截图，不反复要求扫码。当前会话数据保留，登录有效状态/选服/地图/Socket仍未知。
+- 用户追加：每次刷新回到登录入口，且需要点击Ruffle自带启动遮罩。已确认属于Ruffle遮罩；下一步调查固定版本扩展的自动播放配置以及官网刷新导航，不凭此推断Cookie失效，不保存/重放认证URL。
+
+## 历史0.1.6：公共静态资源适配
 
 - 用户0.1.5停在“努力加载中，请刷新页面”。只读真机证据：preloader/main均执行且无panic，ver.config已200/62ms；下一阻塞Global.xml缺少ACAO/HTTP200。公开HEAD text/xml/2489bytes；公开XML列明四个启动依赖及swf/libs/conf/res目录，依赖HEAD均200、预期MIME且无ACAO。详见reproduction.md。
 - 用户要求统一wrap方法，避免逐文件反复打包。`adaptPublicAssetHeaders` + `allowedAssetTypes`统一官方静态目录/来源/MIME策略，公共函数取代逐文件分支；manifest/listener同步目录范围。兼容扩展1.1.0，App0.1.6/code7。具体允许/拒绝范围在architecture.md最新章节，优先于下面历史逐文件说明。

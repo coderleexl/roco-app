@@ -1,5 +1,7 @@
 # Compatibility gates
 
+Latest0.1.7/code8: public version inventory extends typed directory rules for plugins/activity/apps/video. Node12/JVM4/lint/bothAPK builds and APK signature/Ruffle checks passed locally; installed in place on Meizu21 and version confirmed. Effect plugin/selection/map retest pending.0.1.6 real-browser evidence now verifies Global.xml/config/base libraries200, followed by Effect CORS failure. User also reports full refresh returns login and confirms a Ruffle startup overlay; official session validity and overlay removal remain under investigation.
+
 Latest0.1.6/code7: shared static-resource wrapper replaces per-file rules, bounded by public Global.xml roots and typed responses. Local Node11/JVM4/lint/bothAPK builds, signature and full Ruffle asset checks passed. In-place Meizu install returnedSuccess and version confirmed; new real-browser bootstrap/resource outcomes await user operation.0.1.5 ver.config HTTP200 is verified; valid login recovery, server/map/battle gates remain unknown. User requests avoiding repeated QR attempts; normal profile retained without exporting auth secrets.
 
 Application brand is now 时光匣 (0.1.5/code6), with original vector/adaptive/themed launcher artwork. Package ID and browser/session/game behavior remain unchanged. Branding changes do not pass any game compatibility gate; see branding.md for source assets and remaining name/license review.
@@ -14,7 +16,7 @@ Build and fixture results must come from the matching GitHub commit/run, not fro
 | Ruffle installed and original fixture executes ActionScript | Passed: run39091368510, fixed local fixture requests legacy webgl; default wgpu remains unsupported on this emulator |
 | Associated popup opener, shared cookie and close callback | Passed: run39091368510, includes opener focus selecting main while child remains alive |
 | Fixture cookie survives process restart | Passed: run39091368510, separate seed/check instrumentation processes without reseeding |
-| Complete official game page | Meizu0.1.5 preloader/main execute and ver.config returns200; loader now blocked by Global.xml missing-ACAO CORS.0.1.6 shared static policy awaits real-device retest |
+| Complete official game page | Meizu0.1.6 Global.xml, Angel.config and base libraries return200; loader still blocked before server selection by omitted plugins directory.0.1.7 typed-directory expansion awaits user retest |
 | User authenticates and game receives valid login | Not verified |
 | Server list and selection | Not verified |
 | Map, character, resources | Not verified |

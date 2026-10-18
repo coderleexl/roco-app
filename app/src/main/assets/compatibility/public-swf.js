@@ -2,7 +2,15 @@
 (function (root) {
   'use strict';
   const resourceOrigin = 'https://res.17roco.qq.com';
-  const requestPatterns = ['/swf/*', '/libs/*', '/conf/*', '/res/*', '/preloader.swf*', '/main.swf*', '/ver.config*', '/Global.xml*']
+  // Public Global.xml and the file paths inside the official ver.config archive.
+  const directoryTypes = new Map([
+    ['swf', ['swf']], ['libs', ['swf']], ['conf', ['xml', 'config', 'bin', 'dat']],
+    ['res', ['swf', 'xml', 'config', 'bin', 'dat', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp3']],
+    ['plugins', ['swf', 'xml', 'txt', 'fint', 'config', 'png']],
+    ['activity', ['swf', 'png', 'xml']], ['apps', ['swf', 'png', 'xml', 'jpg']],
+    ['video', ['swf', 'mp4']]
+  ]);
+  const requestPatterns = [...Array.from(directoryTypes.keys(), dir => '/' + dir + '/*'), '/preloader.swf*', '/main.swf*', '/ver.config*', '/Global.xml*']
     .map(path => resourceOrigin + path);
   const mimeTypes = new Map([
     ['swf', ['application/x-shockwave-flash']],
@@ -11,10 +19,11 @@
     ['bin', ['application/octet-stream']],
     ['dat', ['application/octet-stream']],
     ['png', ['image/png']], ['jpg', ['image/jpeg']], ['jpeg', ['image/jpeg']],
-    ['gif', ['image/gif']], ['webp', ['image/webp']], ['mp3', ['audio/mpeg']]
+    ['gif', ['image/gif']], ['webp', ['image/webp']], ['mp3', ['audio/mpeg']],
+    ['txt', ['text/plain']], ['fint', ['application/octet-stream']], ['mp4', ['video/mp4']]
   ]);
   // Central policy shared by every eligible response, not a page fetch override.
-  // Directory roots come from the public Global.xml, not authentication URLs.
+  // Directory roots come from public game configs, not authentication URLs.
   function allowedAssetTypes(asset, source) {
     if (asset.origin !== resourceOrigin || asset.username || asset.password || source.username || source.password) return;
     const path = asset.pathname;
@@ -28,9 +37,8 @@
     if (path === '/ver.config') return mimeTypes.get('config');
     if (path === '/Global.xml') return mimeTypes.get('xml');
     const ext = path.split('.').pop();
-    if (/^\/(?:swf|libs)\//.test(path) && ext === 'swf') return mimeTypes.get(ext);
-    if (path.startsWith('/conf/') && ['xml', 'config', 'bin', 'dat'].includes(ext)) return mimeTypes.get(ext);
-    if (path.startsWith('/res/')) return mimeTypes.get(ext);
+    const directory = path.split('/')[1];
+    if (path.indexOf('/', 1) !== -1 && directoryTypes.get(directory)?.includes(ext)) return mimeTypes.get(ext);
   }
   function adaptPublicAssetHeaders(details) {
     if (details.method !== 'GET' || details.type !== 'xmlhttprequest' || details.statusCode !== 200 || !Array.isArray(details.responseHeaders)) return;

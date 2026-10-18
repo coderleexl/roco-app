@@ -1,10 +1,10 @@
 # Architecture
 
-## Current shared resource policy (0.1.6)
+## Current shared resource policy (0.1.7)
 
 This section supersedes the older per-file exception descriptions below. `adaptPublicAssetHeaders` in compatibility/public-swf.js is the common response wrapper, with `allowedAssetTypes` as the single resource/source/MIME policy. It operates at the extension response hook, not by replacing webpage fetch/XHR, and covers eligible Ruffle/Wasm fetches through the same browser request pipeline.
 
-Resource origin is exactHTTPS res.17roco.qq.com. Official public Global.xml identifies swf, libs, conf and res resource roots; these four directories now have typed rules rather than an ever-growing file list. Game source must be exactHTTPS web2.17roco.qq.com. Root main.swf, ver.config and Global.xml remain explicit. Homepage source remains 17roco.qq.com / or /default.html, with only preloader, ROCO-Z8 and its numbered Ceil animation family. The manifest and listener match these scopes; executable policy makes the final decision.
+Resource origin is exactHTTPS res.17roco.qq.com. Official public Global.xml identifies swf, libs, conf and res resource roots; the XML file inside public ver.config additionally lists plugins, activity, apps and video resources. These eight directories have typed rules rather than an ever-growing file list. A single directoryTypes table supplies extension restrictions and generates listener patterns; manifest coverage is tested. Game source must be exactHTTPS web2.17roco.qq.com. Root main.swf, ver.config and Global.xml remain explicit. Homepage source remains 17roco.qq.com / or /default.html, with only preloader, ROCO-Z8 and its numbered Ceil animation family. Executable policy makes the final decision.
 
 | Resource family | Accepted response MIME |
 |---|---|
@@ -12,10 +12,15 @@ Resource origin is exactHTTPS res.17roco.qq.com. Official public Global.xml iden
 | conf/res `.config`, `.bin`, `.dat`; ver.config | application/octet-stream |
 | conf/res `.xml`; Global.xml | text/xml or application/xml |
 | res `.png`, `.jpg`/`.jpeg`, `.gif`, `.webp`, `.mp3` | Corresponding image/audio MIME only |
+| plugins `.swf`, `.xml`, `.txt`, `.fint`, `.config`, `.png` | Flash, XML, text/plain, octet-stream for fint/config, or image/png respectively |
+| activity `.swf`, `.png`, `.xml`; apps additionally `.jpg` | Corresponding Flash/image/XML MIME only |
+| video `.swf`, `.mp4` | Flash or video/mp4 respectively |
 
 Only GET/XHR, HTTP200, valid trusted origins, clean static paths and matching MIME receive the missing ACAO header, set to the initiating trusted origin. Existing ACAO or ACAC policy is never replaced. Percent-encoded/hidden paths, CGI/FastCGI segments, crossdomain.xml, unknown extensions, HTML/errors, different domains/ports, credentials and unrelated homepage paths fail closed. Request bodies/headers, cookies, tickets and response bodies are neither collected nor changed. Login responses and third-party ads are outside scope. Do not treat these rules as globally disabling CORS or as proof every game resource is supported.
 
 Reason for widening: actual0.1.5 PageError shows Global.xml blocked after ver.config succeeds. Independently fetched public Global.xml explicitly names bb.swf, AngelClientLibs_s.swf, AngelProtocal.swf and Angel.config, as well as resource directories. Public HEAD checks confirm all four bootstrap dependencies return200 with expected MIME and noACAO. This supplies an evidence-based directory boundary; the full future resource set has not been exercised. Other hosts (including the configured avatar CDN), unsupported types, Flash Socket and engine gaps still need separate evidence.
+
+0.1.6 real-browser follow-up verifies Global.xml, Angel.config and both base libraries now return200; EffectPluginLib.swf is the next missing-ACAO dependency. This plugin directory was omitted from the original public-directory policy. Public ver.config is a ZIP containing XML with13216 file entries, explicitly including that exact plugin. Its declared plugin/activity/apps/video paths and suffixes support extending the shared table in0.1.7, not inventing game/auth parameters. The current file list is evidence, not a permanent exhaustive API. h5 scripts/pages, unknown types, backups and undeclared origins remain outside scope; no promise that every future resource is covered.
 
 Session constraint: user asks to minimize repeated QR authentication. Keep the same profile, package, key and normal persistent browser state; no password/Cookie extraction or authenticated-URL replay. Updates end the live page process; whether the website restores that login is not guaranteed. User performs any required authentication or game verification; no automated retry loop.
 
