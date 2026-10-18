@@ -21,11 +21,11 @@ class RocoApplication : Application() {
 
     // Application.onCreate also runs in Gecko's child service processes.
     // Start the parent runtime only when our main Activity asks for it.
-    fun startBrowser() {
+    fun startBrowser(probeMode: Boolean = false) {
         if (::runtime.isInitialized) return
         runtime = GeckoRuntime.create(this, GeckoRuntimeSettings.Builder()
             .remoteDebuggingEnabled(BuildConfig.DEBUG)
-            .consoleOutput(false).debugLogging(false).build())
+            .consoleOutput(BuildConfig.DEBUG && probeMode).debugLogging(false).build())
         try {
             val build = JSONObject(assets.open("ruffle-build.json").bufferedReader().use { it.readText() })
             runtime.webExtensionController.ensureBuiltIn("resource://android/assets/ruffle/", build.getString("id"))

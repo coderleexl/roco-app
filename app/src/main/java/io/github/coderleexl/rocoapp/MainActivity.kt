@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app.startBrowser()
+        app.startBrowser(BuildConfig.DEBUG && intent.getBooleanExtra("probe", false))
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         // API 35 edge-to-edge: keep toolbar and game outside system bars.
         root.setOnApplyWindowInsetsListener { view, insets ->

@@ -79,6 +79,7 @@ class LocalProbeServer : Closeable {
         private val page = """
             <!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
             <title>ROCO:probe-loading</title>
+            <script>window.addEventListener('error',()=>document.title='ROCO:javascript-error');window.addEventListener('unhandledrejection',()=>document.title='ROCO:promise-error');</script>
             <style>body{margin:0;background:#eef4ee}button{position:fixed;inset:0;width:100%;height:100%;z-index:5;background:transparent;border:0;color:#14532d;font:24px sans-serif}object{width:300px;height:150px}</style>
             <script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config={autoplay:'on',unmuteOverlay:'hidden',allowScriptAccess:true};</script>
             <object type="application/x-shockwave-flash" data="probe.swf"><param name="allowScriptAccess" value="always"></object>
@@ -89,8 +90,10 @@ class LocalProbeServer : Closeable {
               const player=document.querySelector('ruffle-object,ruffle-embed,ruffle-player');
               if(player && typeof player.ruffle==='function' && !hooked){
                 hooked=true;
+                document.title='ROCO:player-found';
                 const api=player.ruffle();
                 api.addFSCommandHandler((command,args)=>{if(command==='roco-probe' && args==='executed')document.title='ROCO:flash-executed';});
+                document.title='ROCO:loading-swf';
                 api.load({url:new URL('probe.swf',location.href).href,autoplay:'on',allowScriptAccess:true}).catch(()=>document.title='ROCO:flash-failed');
                 clearInterval(watch);
               }

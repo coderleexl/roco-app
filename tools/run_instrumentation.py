@@ -31,7 +31,7 @@ for method in ('flashExecutesAndPopupRetainsOpenerAndCookie', 'seedPersistentCoo
         for offset in range(0, len(excerpt), 3000):
             chunk = excerpt[offset:offset+3000].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
             print(f'::error title=Smoke test {method} part {offset // 3000 + 1}::{chunk}', flush=True)
-        crash = subprocess.run(['adb', 'logcat', '-d', '-s', 'AndroidRuntime:E', 'RocoExtension:E', 'libc:F', 'DEBUG:F', '*:S'], capture_output=True, text=True, timeout=10).stdout[-9000:]
+        crash = subprocess.run(['adb', 'logcat', '-d', '-s', 'AndroidRuntime:E', 'RocoExtension:E', 'GeckoConsole:V', 'libc:F', 'DEBUG:F', '*:S'], capture_output=True, text=True, timeout=10).stdout[-9000:]
         # This runner is a fresh, unauthenticated emulator with only fixed
         # test fixtures, never a user's phone or official login session.
         (out / f'{method}-crash.txt').write_text(crash, encoding='utf-8')
