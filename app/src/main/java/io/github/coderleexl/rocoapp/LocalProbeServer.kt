@@ -94,7 +94,7 @@ class LocalProbeServer : Closeable {
             window.addEventListener('unhandledrejection',e=>reportFixtureError('promise-error',e.reason));
             </script>
             <style>body{margin:0;background:#eef4ee}button{position:fixed;inset:0;width:100%;height:100%;z-index:5;background:transparent;border:0;color:#14532d;font:24px sans-serif}object{width:300px;height:150px}</style>
-            <script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config={autoplay:'on',unmuteOverlay:'hidden',allowScriptAccess:true};</script>
+            <script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config={autoplay:'on',unmuteOverlay:'hidden',allowScriptAccess:true,preferredRenderer:'webgl'};</script>
             <object type="application/x-shockwave-flash" data="probe.swf"><param name="allowScriptAccess" value="always"></object>
             <button onclick="window.open('popup.html','roco-login');">点此测试关联窗口（测试页，不是游戏）</button>
             <script>
@@ -107,7 +107,7 @@ class LocalProbeServer : Closeable {
                 const api=player.ruffle();
                 api.addFSCommandHandler((command,args)=>{if(command==='roco-probe' && args==='executed')document.title='ROCO:flash-executed';});
                 document.title='ROCO:loading-swf';
-                api.load({url:new URL('probe.swf',location.href).href,autoplay:'on',allowScriptAccess:true}).catch(()=>document.title='ROCO:flash-failed');
+                api.load({url:new URL('probe.swf',location.href).href,autoplay:'on',allowScriptAccess:true,preferredRenderer:'webgl'}).catch(()=>document.title='ROCO:flash-failed');
                 clearInterval(watch);
               }
             },100);
