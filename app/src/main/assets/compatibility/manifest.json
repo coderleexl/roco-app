@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Time Casket Public Resource Compatibility",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "browser_specific_settings": {
     "gecko": {
       "id": "compatibility@roco.local"
@@ -9,6 +9,7 @@
   },
   "permissions": [
     "nativeMessaging",
+    "nativeMessagingFromContent",
     "geckoViewAddons",
     "webRequest",
     "webRequestBlocking",
@@ -29,6 +30,12 @@
     "https://res.17roco.qq.com/preloadlist.xml*"
   ],
   "content_scripts": [
+    {
+      "matches": ["https://web2.17roco.qq.com/*"],
+      "js": ["game-control.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
     {
       "matches": ["https://17roco.qq.com/*", "https://web2.17roco.qq.com/*"],
       "js": ["player-options.js", "audio-unlock.js", "engine-signals.js"],

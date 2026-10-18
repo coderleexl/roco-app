@@ -64,6 +64,25 @@ class BrowserSmokeTest {
             SystemClock.sleep(4000)
         }
     }
+    @Test fun audioFixtureStartsAfterUserGesture() {
+        launch("/audio.html").use { scenario ->
+            await(scenario, "local audio page ready") { it.probeTitle == "ROCO:audio-ready" && it.hasWindowFocus() && it.browser.hasWindowFocus() }
+            val instrumentation = InstrumentationRegistry.getInstrumentation()
+            fun tap(fraction: Float) {
+                instrumentation.waitForIdleSync()
+                val point = IntArray(2)
+                scenario.onActivity { it.browser.getLocationOnScreen(point); point[0] += it.browser.width / 2; point[1] += (it.browser.height * fraction).toInt() }
+                val time = SystemClock.uptimeMillis()
+                MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, point[0].toFloat(), point[1].toFloat(), 0).also { instrumentation.sendPointerSync(it); it.recycle() }
+                SystemClock.sleep(80)
+                MotionEvent.obtain(time, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, point[0].toFloat(), point[1].toFloat(), 0).also { instrumentation.sendPointerSync(it); it.recycle() }
+            }
+            tap(.38f)
+            await(scenario, "WebAudio context running after real fixture touch") { it.probeTitle == "ROCO:audio-web-running" }
+            tap(.62f)
+            await(scenario, "Ruffle accepts original PCM sound fixture") { it.probeTitle == "ROCO:audio-flash-ready" }
+        }
+    }
     @Test fun cookieSurvivesProcessRestart() {
         launch("/check.html").use { scenario ->
             await(scenario, "cookie persisted across separate instrumentation processes") { it.probeTitle == "ROCO:cookie-persisted" }

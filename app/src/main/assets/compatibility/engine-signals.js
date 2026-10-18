@@ -3,9 +3,31 @@
   'use strict';
   const page = new URL(window.location.href);
   if (page.origin !== 'https://web2.17roco.qq.com' || page.username || page.password || window.__timeCasketEngineSignals) return;
-  const state = {socketMentions: 0, missingSocketProxy: 0, scriptErrors: 0, unsupportedFeatures: 0, socketHosts: [], errorCodes: []};
+  const state = {socketMentions: 0, missingSocketProxy: 0, scriptErrors: 0, unsupportedFeatures: 0, socketHosts: [], errorCodes: [],
+    traceAttached: 0, traceMessages: 0, configsLoaded: 0, loginInitialized: 0, directoryRequests: 0, traceErrors: 0};
   window.__timeCasketEngineSignals = state;
   function bump(key) { state[key] = Math.min(1000, state[key] + 1); }
+  // Observe only fixed bootstrap milestones. Keep warn logging: full movie traces
+  // may contain login parameters and must never be copied into diagnostics.
+  window.document?.addEventListener('loadedmetadata', event => {
+    try {
+      const player = event.target;
+      if (!player?.matches?.('ruffle-object,ruffle-embed,ruffle-player')) return;
+      const api = player.ruffle?.();
+      const movie = new URL(api?.loadedConfig?.url, window.document.baseURI);
+      if (movie.origin !== 'https://res.17roco.qq.com' || movie.pathname !== '/main.swf') return;
+      api.traceObserver = message => {
+        if (typeof message !== 'string') return;
+        bump('traceMessages');
+        const text = message.slice(0, 2000);
+        if (text === '[AngelAppInstall] 程序相关的配置文件加载完毕!!') bump('configsLoaded');
+        if (text === 'LoginPlugin Debug version initialize!!') bump('loginInitialized');
+        if (/^(?:推荐请求:|列表请求:)/.test(text)) bump('directoryRequests');
+        if (/Error #\d{1,5}\b|ReferenceError|TypeError|VerifyError/.test(text)) bump('traceErrors');
+      };
+      bump('traceAttached');
+    } catch (_) { /* No raw trace or error is retained. */ }
+  }, true);
   for (const level of ['log', 'warn', 'error']) {
     const original = window.console?.[level];
     if (typeof original !== 'function') continue;

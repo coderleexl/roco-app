@@ -4,10 +4,11 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 function install(url) {
   const calls=[];
-  const window={location:{href:url},console:Object.fromEntries(['log','warn','error'].map(level=>[level,(...args)=>calls.push([level,...args])]))};
+  const events={};
+  const window={location:{href:url},document:{baseURI:url,addEventListener:(name,fn)=>events[name]=fn},console:Object.fromEntries(['log','warn','error'].map(level=>[level,(...args)=>calls.push([level,...args])]))};
   const source=fs.readFileSync(require.resolve('../app/src/main/assets/compatibility/engine-signals.js'),'utf8');
   vm.runInNewContext(source,{window,URL});
-  return {window,calls};
+  return {window,calls,events};
 }
 test('engine signal snapshot classifies failures without retaining raw messages or auth data',()=>{
   const {window,calls}=install('https://web2.17roco.qq.com/game');
@@ -26,6 +27,22 @@ test('engine signal snapshot classifies failures without retaining raw messages 
   assert(!JSON.stringify(state).includes('SECRET'));
   for(let i=0;i<1100;i++)window.console.warn('Socket failed');
   assert.equal(state.socketMentions,1000);
+});
+test('movie traces retain fixed milestones only and ignore other movies',()=>{
+  const {window,events}=install('https://web2.17roco.qq.com/game');
+  const api={loadedConfig:{url:'https://res.17roco.qq.com/main.swf'}};
+  const player={matches:()=>true,ruffle:()=>api};
+  events.loadedmetadata({target:player});
+  const state=window.__timeCasketEngineSignals;
+  assert.equal(state.traceAttached,1);
+  for(const text of ['[AngelAppInstall] 程序相关的配置文件加载完毕!!','LoginPlugin Debug version initialize!!','推荐请求:SECRET','TypeError: Error #1009 SECRET','SECRET'])api.traceObserver(text);
+  api.traceObserver({toString(){throw Error('never inspect trace objects');}});
+  assert.equal(state.traceMessages,5);assert.equal(state.configsLoaded,1);assert.equal(state.loginInitialized,1);assert.equal(state.directoryRequests,1);assert.equal(state.traceErrors,1);
+  assert(!JSON.stringify(state).includes('SECRET'));
+  const foreign={loadedConfig:{url:'https://evil.example/main.swf'}};
+  events.loadedmetadata({target:{matches:()=>true,ruffle:()=>foreign}});
+  assert.equal(foreign.traceObserver,undefined);
+  assert.equal(state.traceAttached,1);
 });
 test('non-game origins are untouched and script declaration covers the signal collector',()=>{
   for(const url of ['https://17roco.qq.com/','https://evil.example/','http://web2.17roco.qq.com/','https://web2.17roco.qq.com:8443/','https://user:pass@web2.17roco.qq.com/']) {

@@ -12,6 +12,7 @@ class RocoApplication : Application() {
     lateinit var runtime: GeckoRuntime
         private set
     val log = DiagnosticLog()
+    val gameFrames = GameFrameController(log)
     var ruffleState = "正在安装 Ruffle"
         private set
     var ruffleReady = false
@@ -37,6 +38,7 @@ class RocoApplication : Application() {
                 if (extension == null) {
                     compatibilityState = "资源兼容扩展安装失败"
                 } else {
+                    gameFrames.install(extension)
                     // Trigger loopback startup now; the background retries until it is ready.
                     socketBridge
                     compatibilityState = "正在准备官方游戏连接"

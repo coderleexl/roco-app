@@ -45,6 +45,8 @@ class LocalProbeServer : Closeable {
         val payload: ByteArray
         val type: String
         when (path) {
+            "/audio.html" -> { payload = AudioProbeFixture.page.toByteArray(); type = "text/html; charset=utf-8" }
+            "/audio.swf" -> { payload = AudioProbeFixture.movie(); type = "application/x-shockwave-flash" }
             "/fixture-error" -> {
                 // Fixed self-test origin only; never installed into official pages.
                 val uri = android.net.Uri.parse("http://127.0.0.1" + route[1])

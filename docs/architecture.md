@@ -1,5 +1,11 @@
 # Architecture
 
+## 0.1.11游戏刷新与声音诊断
+
+GameFrameController按GeckoSession保存兼容扩展content port；消息来源必须为固定扩展、同一session、content环境与精确HTTPS web2来源，最多8个port。内置扩展新增nativeMessagingFromContent，仅ISOLATED game-control脚本连此通道；MAIN脚本不接收native端口。Firefox Xray waiver只用于调用页面自己的无参Ruffle API；核实就绪且loadedConfig.url为官方/main.swf后，顶栏刷新仅调用reload()，不复制parameters或URL、不导航父页面。重复加载期间不重复发请求，关闭窗口/Activity断开端口。Ruffle保留现有配置不等于官方登录一定仍有效。
+
+声音测试仅Debug顶栏手动打开独立本地子窗口；不改变原游戏文档。回环LocalProbeServer提供固定audio.html和原创audio.swf：浏览器振荡器/Flash 44.1kHz单声道PCM各半秒，无外部资源请求，页面离开关闭WebAudio。此测试区分声音链路，不能证明官网背景音乐已修复。engine-signals仅对官方main的loadedmetadata附加traceObserver，保存有界数字阶段计数，丢弃原始trace及其中认证参数。
+
 ## 0.1.10 WebAudio recovery and directory transport
 
 The fixed Gecko158 source revision `eb9a6e3a736802c8e080a76c44dc81f409d99d54`, `dom/media/autoplay/AutoplayPolicy.cpp`, checks AudioContext through site permission/global policy/top-level activation. It does not use the same GV audible-media request status as HTMLMediaElement. The0.1.9 PermissionDelegate alone therefore does not establish WebAudio permission. `audio-unlock.js` wraps the native AudioContext constructor on exact official homepage/game documents, tracks at most16 contexts privately, preserves prototype/constructor behavior, and retries suspended contexts after trusted pointer/touch/click/key input. Later-created contexts also resume if the document has already been activated. Rejected resumes remain retryable; there is no synthetic click, browser-policy bypass or forced overlay hiding. Public audio diagnostics contain only bounded numeric counters, never contexts/errors/URLs.

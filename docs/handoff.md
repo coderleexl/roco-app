@@ -4,7 +4,18 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
-## 最新0.1.10：WebAudio恢复与应用内目录服桥（2026-10-18）
+## 最新0.1.11：游戏层刷新、声音分层试听与加载阶段诊断（2026-10-18）
+
+- 用户最新反馈：0.1.10进入后连接弹窗消失，但不能选服务器；声音仍不确定是否是首页本身没有背景音乐；要求刷新停留游戏/选服层。**服务器列表、真实声音、地图均未验收通过**。
+- 刷新后的只读证据：main就绪、音量1、socketProxy数量2、无panic/AVM2错误分类；AutoExec和Login插件也HTTP200。首页3个和主游戏1个AudioContext均running、无可见unmute遮罩；系统媒体流未静音且走speaker。这只能排除本次快照的挂起/零音量，不能证明音频样本实际播放或可听。旧audio-policy警告是缓存累计，不当成当前仍被阻止的证明。
+- 缺桥告警唯一目标为非公网IPv4:9000（不输出IP）。静态阅读公开main.swf确认SocketLogger含对应目标与stat:9000握手，故更可能是日志连接，**不能认定这是目录服失败，也不放开内网9000**。公开Login插件的初始化在创建UI后才调用目录连接；当前不知是否走到这一步，不把全部问题归于CORS或用户代理。临时公开文件/反编译仅留.cache，不入库或分发。
+- 0.1.11/code12、兼容扩展1.3.1：新增GameFrameController及ISOLATED game-control.js，扩展content native port按固定扩展/同一session/精确HTTPS web2/环境校验，最多8端口。顶栏“刷新游戏”只对就绪官方/main.swf调用无参Ruffle reload()，保留外层文档、使用Ruffle内存中的原配置；不复制参数/认证地址、不做整页reload回退。无游戏时提示；窗口/Activity关闭清理。**仍需用户验证是否留在游戏层及官方会话是否有效，不能承诺一定直接到选服**。
+- Debug顶栏新增“声音测试”，独立本地子窗口提供浏览器振荡器与原创Flash PCM两种半秒提示音；关闭子窗口返回原游戏。无外部资源/游戏包，无自动试听或设置改动。用户分别报告两种是否可听，以区分Gecko输出/Ruffle声音与官网当前无音乐；请求播放和样例ready不能证明实际可听。
+- engine-signals对官方main的loadedmetadata附加公共traceObserver，仅保存有界数字：traceAttached/traceMessages/configsLoaded/loginInitialized/directoryRequests/traceErrors。继续warn级别，不保留trace原文/参数/错误文本，不调用认证或游戏接口；刷新后的阶段增量用于下轮定位。
+- 本地验证：Node29项、JVM9项、lint、主包和测试包完整构建通过（最后46s）；签名与完整官方Ruffle资源校验通过。APK SHA256 `8080c3baba6cbc70ae4e50934d5aa157ebb048f526f789813b544aedd1efbfbe`。独立API37/x86_64模拟器4项均OK(1test)：新声音手势/PCM加载6.525s、原Flash/关联窗口8.756s、seed8.391s、进程重启Cookie4.924s。模拟器禁用输出，不证明可听；游戏刷新端口/Xray及trace阶段仍需真机用户操作后检查。
+- 最终APK已adb install -r覆盖安装Success，包查询确认0.1.11/code12，保留数据；未自动打开/刷新/登录或点击真机页面。下一步：用户先试听两种声音，再关闭测试窗口进入游戏、点“刷新游戏”；只读检查新阶段计数和native game-frame-ready/game-reload分类，确认是否到达Login.initialize/目录连接后再修服务器。保留本地/IDE生成配置，不改代理/TUN/VPS/系统设置，不截图。
+
+## 历史0.1.10：WebAudio恢复与应用内目录服桥（2026-10-18）
 
 - 用户明确要求修复声音和连接。固定Gecko158源码revision `eb9a6e3a736802c8e080a76c44dc81f409d99d54` 的AutoplayPolicy.cpp确认：WebAudio与HTML媒体的GV权限回调路径不同。新增audio-unlock.js，仅官网首页/default和web2，在真实触摸/点击/按键后恢复挂起的AudioContext；也处理先点击、后创建音频上下文的时序。最多追踪16个上下文，失败可重试，不模拟点击、不隐藏遮罩、不改音量/系统策略；仅公开固定数字诊断。
 - 新增GameSocketBridge/Policy，Java-WebSocket1.6.0，只监听127.0.0.1随机端口，192位进程内能力路径、精确官方Origin/Host校验。目标仅公开Global.xml的dir/stat两个域名及443端口；DNS私网/回环等地址拒绝，连接使用已校验IP。双向透传官方Flash原始二进制，不解析/生成认证或游戏包、不落盘；8连接、16工作线程/16排队任务、1MiB待发/帧上限、64消息队列，关闭时释放连接。上游Ruffle逐字节未改。现有代理/TUN/VPS/系统网络设置未改，TCP仍走系统既有路由。

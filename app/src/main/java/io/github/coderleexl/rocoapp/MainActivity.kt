@@ -68,7 +68,10 @@ class MainActivity : ComponentActivity() {
         }
         action("官网") { current.loadUri(HOME) }
         action("返回") { goBack() }
-        action("刷新") { current.reload() }
+        action("刷新游戏") {
+            status.text = if (app.gameFrames.reload(current)) "正在重载游戏…"
+                else "当前没有就绪的游戏页面；可点官网重新进入"
+        }
         action("关闭子窗口") { if (windows.size > 1) closeWindow(if (current != windows.first()) current else windows.last()) }
         action("桌面/手机") {
             desktop = !desktop
@@ -76,6 +79,15 @@ class MainActivity : ComponentActivity() {
             current.reload()
         }
         action("诊断") { showDiagnostics() }
+        if (BuildConfig.DEBUG) action("声音测试") {
+            if (windows.size < 5) {
+                val child = newWindow()
+                registry.add(child, current)
+                child.open(app.runtime)
+                showWindow(child)
+                child.loadUri(app.probe.baseUrl + "/audio.html")
+            } else status.text = "请先关闭一个子窗口，再打开声音测试"
+        }
         if (BuildConfig.DEBUG) action("自检") { loadProbe() }
         root.addView(HorizontalScrollView(this).apply { addView(toolbar) })
         status = TextView(this).apply { textSize = 12f }
@@ -103,7 +115,7 @@ class MainActivity : ComponentActivity() {
         if (app.ruffleReady && app.compatibilityReady) {
             if (BuildConfig.DEBUG && intent.getBooleanExtra("probe", false)) {
                 val path = intent.getStringExtra("probePath")
-                loadProbe(path.takeIf { it in setOf("/probe.html", "/seed.html", "/check.html") } ?: "/probe.html")
+                loadProbe(path.takeIf { it in setOf("/probe.html", "/seed.html", "/check.html", "/audio.html") } ?: "/probe.html")
             }
             else current.loadUri(HOME)
         } else if (app.ruffleState.contains("失败") || app.ruffleState.contains("损坏") || app.compatibilityState.contains("失败")) {
@@ -119,6 +131,7 @@ class MainActivity : ComponentActivity() {
 
     private fun newWindow(): GeckoSession {
         val session = GeckoSession(GeckoSessionSettings.Builder().usePrivateMode(false).build())
+        app.gameFrames.attach(session) { message -> if (!isDestroyed && windows.isNotEmpty() && session == current) status.text = message }
         configureSettings(session.settings)
         session.permissionDelegate = object : GeckoSession.PermissionDelegate {
             override fun onContentPermissionRequest(
@@ -239,6 +252,7 @@ class MainActivity : ComponentActivity() {
         if (!registry.remove(session)) return
         history.remove(session)
         if (browser.session == session) browser.releaseSession()
+        app.gameFrames.detach(session)
         session.close()
         popupClosed++
         app.log.record("popup-close")
@@ -252,7 +266,7 @@ class MainActivity : ComponentActivity() {
     }
     fun loadProbe(path: String = "/probe.html") {
         check(BuildConfig.DEBUG)
-        check(path in setOf("/probe.html", "/seed.html", "/check.html"))
+        check(path in setOf("/probe.html", "/seed.html", "/check.html", "/audio.html"))
         probeTitle = ""
         current.loadUri(app.probe.baseUrl + path)
     }
@@ -268,7 +282,7 @@ class MainActivity : ComponentActivity() {
         handler.removeCallbacksAndMessages(null)
         prompts.forEach { if (it.isShowing) it.cancel() }
         browser.releaseSession()
-        windows.forEach { it.close() }; registry.clear()
+        windows.forEach { app.gameFrames.detach(it); it.close() }; registry.clear()
         super.onDestroy()
     }
     companion object { const val HOME = "https://17roco.qq.com/" }

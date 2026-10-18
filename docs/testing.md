@@ -1,10 +1,15 @@
 # Test plan
 
-Current Node command: `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs tools/engine-signals.test.cjs tools/audio-unlock.test.cjs tools/socket-config.test.cjs`.0.1.10 passes25 Node tests, including trusted-vs-synthetic gesture handling, resume retry/late context creation, bounded diagnostics, exact bridge configuration and native-startup retry with JSON-text responses. JVM8 tests include actual local binary forwarding (100000bytes), handshake rejection and destination/address policy. These do not establish real sound, website login or server/map compatibility. User performs actual game verification without repeated authentication requests.
+0.1.11本地验证：Node29/JVM9/lint/主包及测试包通过；签名和完整Ruffle资源校验通过。隔离API37/x86_64 AVD四项均OK(1test)：声音手势/PCM加载6.525s、Flash/关联窗口8.756s、seed8.391s、重启Cookie4.924s。不截图，不自动操作官网；新刷新端口/真机声音/服务器列表和阶段诊断仍需用户操作验收。
+
+Current Node command: `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs tools/engine-signals.test.cjs tools/audio-unlock.test.cjs tools/socket-config.test.cjs tools/game-control.test.cjs`.0.1.10 passes25 Node tests, including trusted-vs-synthetic gesture handling, resume retry/late context creation, bounded diagnostics, exact bridge configuration and native-startup retry with JSON-text responses. JVM8 tests include actual local binary forwarding (100000bytes), handshake rejection and destination/address policy. These do not establish real sound, website login or server/map compatibility. User performs actual game verification without repeated authentication requests.
 
 2026-10-18 local0.1.10: lint/app+test APK builds, signature and full upstream Ruffle asset verification pass. Three separate-process fixed-fixture instrumentation methods on an isolated API37.0/x86_64 AVD returnOK(1test):7.058s/6.751s/3.728s. This also verifies compatibility background/native startup registration. Two earlier smoke attempts timed out before navigation because direct JSONObject native replies did not complete; JSON-text replies plus bounded retry pass the final run. The user's existing AVD was not modified; its insufficient C-disk space was avoided with a workspace-cache fixture AVD. No screenshot or official-game automation occurred.
 
 ## Automated
+
+- 0.1.11: Node命令增加 `tools/game-control.test.cjs`，覆盖仅主电影刷新、无参数导出/整页导航、错误后重试与并发抑制；加载trace测试只保留固定阶段计数。JVM补充官方刷新来源边界。
+- 新增 `audioFixtureStartsAfterUserGesture` 独立模拟器用例：真实测试触摸启动浏览器AudioContext并确认running，再加载原创Flash PCM样例并确认ready。CI共4项独立进程用例；无音频输出的模拟器不能证明物理可听声音。
 
 - `node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs`: strip credentials, token queries/fragments and opaque paths; ignore headers and bodies.
 - `./gradlew testDebugUnitTest lintDebug assembleDebug assembleDebugAndroidTest`: Kotlin sanitizer/ring-buffer tests, static Android checks, arm64/x86_64 Debug APK and instrumentation APK.
@@ -14,6 +19,10 @@ Current Node command: `node --test tools/diagnostics.test.cjs tools/compatibilit
   3. Cookie seeded with Max-Age; process force-stopped; separate instrumentation run checks persistence without first setting a cookie.
 - Instrumentation stdout must contain `OK (1 test)`; adb exit code alone is insufficient. Build/emulator reports are artifacts.
 - Public entry probe records status/elapsed time and sanitized redirect metadata only. Network failure is recorded as failure/unknown, not interpreted as game incompatibility.
+
+## 0.1.11人工复测
+
+用户先点顶栏“声音测试”，分别试听浏览器和Flash，反馈两种是否能听见；点“关闭子窗口”返回原游戏。主游戏就绪时点“刷新游戏”，检查是否仍在游戏层、服务器列表是否出现；无主游戏时只显示提示。官方认证/扫码及选服均由用户操作，不自动重放认证地址。真实音乐、实际选服和地图分别验收，不以测试音或资源HTTP200替代。
 
 ## Manual game acceptance
 
