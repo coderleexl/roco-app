@@ -1,5 +1,11 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.20真机后续观察与0.1.21文字问题
+
+用户反馈首次进入仍IOError，其他有所改善，随后战斗按钮能点击但文字空白、又有多次error。0.1.20文件显示HTTP bridge完成12次、无failed/unavailable增长；Complete只证明原Response包装完成，不代表每个活动业务成功。IO计数2后增到4，traceErrors2后到6，main重载后trace/config/login到2。不可把残余错误都算成跨域或认为活动已全部通过。
+
+只读缓存提取两条Error#1010栈的公开类/方法，均位于activity1989 UIMain.setBossPage/onDataReceived，经过CGI.completeHandler1；未导出原文/参数/认证。旧npc1989.swf及s4271/s4291仍404，现有证据不足以证明#1010一定由该404引起。其余已知CGI名称仅discovery、warehouse_security_code和privacy_agreement；本版不扩大8个活动转发范围。字体使用问题独立见architecture.md。后续手机App关闭导致RDP握手EOF两次；均清理forward，没有再导航/登录或截图。
+
 ## 0.1.20：活动IOError主因转向CGI来源不匹配
 
 0.1.19实际IO计数至少12；用户点三个活动，NetworkWatcher记录ui4292/ui3760/ui1931均304，地图/NPC1989资源请求有四次404。只取元数据，关闭正文保存，未导出Cookie/headers/body/查询。304本身只是缓存校验，另一次静态观察可见非零contentSize，不能将304当空文件或批量坏缓存。旧3个静态404仍真实，但不能解释全部礼包IO。

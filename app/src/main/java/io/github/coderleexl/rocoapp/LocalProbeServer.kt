@@ -52,6 +52,9 @@ class LocalProbeServer(
             "/audio.js" -> { payload = audioScript(); type = "application/javascript; charset=utf-8" }
             "/game-view.js" -> { payload = viewAsset("compatibility/game-view.js"); type = "application/javascript; charset=utf-8" }
             "/view.html" -> { payload = viewAsset("probe/view.html"); type = "text/html; charset=utf-8" }
+            "/text.html" -> { payload = viewAsset("probe/text.html"); type = "text/html; charset=utf-8" }
+            "/text.swf" -> { payload = TextProbeFixture.movie(); type = "application/x-shockwave-flash" }
+            "/player-options.js" -> { payload = viewAsset("compatibility/player-options.js"); type = "application/javascript; charset=utf-8" }
             "/game-http.js" -> { payload = viewAsset("compatibility/game-http.js"); type = "application/javascript; charset=utf-8" }
             "/http-child.html" -> { payload = viewAsset("probe/http-child.html"); type = "text/html; charset=utf-8" }
             "/http.html" -> {

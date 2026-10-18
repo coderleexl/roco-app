@@ -1,5 +1,7 @@
 # Test plan
 
+0.1.21：Node63/JVM14、lint与两APK通过，构建62s；签名/完整原版Ruffle及6个兼容文件包内一致性通过。新原创零字形设备字体中文Flash样例在真实Gecko/Ruffle生成六个非空、至少4种不同摘要的中文字形，5.660s、OK(1test)；未截图，未导出字形图像。原shortcut/Flash/session回归5.447s、OK(1test)，其他6个未改样例未重跑。CI加入第8个独立进程用例。设备字体选项边界及错误1009/1010/2032、缺字体数字分类/遥测隐私测试通过；已覆盖安装0.1.21/code22。真实战斗文字、首次IOError/活动错误/音乐仍待验收，详见handoff.md。
+
 0.1.20：Node61（新增5项活动HTTP桥，含外realm Request、URL遮蔽拒绝、Response/流字节/403/abort/拒绝敏感端点/不重发）、JVM14、lint及两APK通过，首轮65s、最终增量37s。签名、完整原版Ruffle及包内兼容脚本一致性校验通过。新增本地HTTP两真实Gecko realm用例首轮5.686s、最终外realm Request输入5.343s，原快捷入口/Flash/session回归5.962s，均OK(1test)；HTTP样例验证游戏realm Response、原流内容和403保持，使用本地scope，不证明官方同源请求/礼包业务成功。本轮其余5个未改样例未重跑；CI增加此Node文件及第7个独立进程用例。已覆盖安装0.1.20/code21，最终兼容1.4.1；实际活动、404缺文件、音乐继续待验收，详见handoff.md。
 
 0.1.19：Node56/JVM14、lint及两APK最终构建48s通过（首轮75s），签名/完整原版Ruffle/包内兼容脚本一致性通过。新增两项视口回归先RED再GREEN：同目标无resize时重算，visualViewport尺寸/偏移与事件清理；IO/HTTP分类测试验证只保留限额数字。新本地真实Gecko布局用例7.176s、原快捷入口/Flash/session用例6.446s，均OK(1test)，CI增加至6项独立进程。新用例先因loadProbe第二处路径表漏加/view.html崩溃，修复并重跑通过；本轮其余4项未改样例不重跑。实际官网黑屏/触控仍待用户验收，活动IOError仍失败；详见handoff.md。

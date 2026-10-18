@@ -1,5 +1,7 @@
 # Compatibility gates
 
+0.1.20用户报告首次进入仍IOError，随后其他操作较好，但战斗技能按钮可点、文字空白且仍多次error；不算完整战斗通过。文件桥完成12次、无失败计数，IO到4、traceErrors到6。两条脱敏公开类栈均指向活动1989的setBossPage，另有已知静态404；不能一概归因跨域。0.1.21/code22、兼容1.4.2针对未嵌入字形的设备字体启用受限系统canvas字体渲染，并补Error#1009/#1010/#2032及字体的固定数字分类。真实技能显示、初始IOError和音乐仍待验证。
+
 0.1.19 physical logs now show repeated IO failures, with directory/zone6 connected and first transfer in both directions. The previous res-only diagnostic extractor missed14 game-CGI CORS failures. Public activity CGI HEADs return200/XML but allow onlyhttps://res.17roco.qq.com; the running page isweb2.0.1.20/code21 delegates8 verified activity GETs through the existing official home fetch, preserving its same-origin context and the server's CORS headers. A local Response wraps the original stream for the game's wasm-bindgen realm check; native Request getters also accept genuine foreign Requests while rejecting shadowed URLs. Node61/JVM14/lint/APKs pass; real two-realm Gecko fixture validates foreign Request input, bytes and403 preservation. Actual activity acceptance remains pending, and the three static404 resources still exist as failures.0.1.19 read-only fullscreen geometry is now inside the viewport; touch/music acceptance is still separate.
 
 0.1.18 physical acceptance FAILED: game-only mode shows black, and gifts/activities still trigger IOError. Read-only geometry shows a running main movie but its outer frame starts near y885, entirely below the662-high visual viewport; a presentation acknowledgement did not establish visibility.0.1.19/code20 uses visualViewport size/offsets/events plus same-target periodic refitting. The exact stale-position regression is reproduced then fixed; a real Gecko local DOM/CSS fixture validates bounds across rotation and restoration. Official crop/touch still needs physical acceptance. Three previously adapted exbn resources now report200; two numbered activity script SWFs remain public404 despite their UI movies returning200. IOError remains unresolved; numeric IO/HTTP error counters were added without retaining raw traces.
@@ -56,11 +58,11 @@ Build and fixture results must come from the matching GitHub commit/run, not fro
 | Ruffle installed and original fixture executes ActionScript | Passed: run39091368510, fixed local fixture requests legacy webgl; default wgpu remains unsupported on this emulator |
 | Associated popup opener, shared cookie and close callback | Passed: run39091368510, includes opener focus selecting main while child remains alive |
 | Fixture cookie survives process restart | Passed: run39091368510, separate seed/check instrumentation processes without reseeding |
-| Complete official game page | Meizu0.1.9 homepage bootstrap pair and game configs/base libraries/Effect return200; user reports a server connection failure dialog; complete game page remains unverified |
-| User authenticates and game receives valid login | Not verified |
-| Server list and selection | Failed user retest on0.1.9: server connection dialog; successful list/selection not verified, exact Socket/network cause pending |
-| Map, character, resources | Not verified |
-| Movement, interface and one basic battle | Not verified |
+| Complete official game page | Partial: user enters game; activities and battle labels still fail |
+| User authenticates and game receives valid login | Observed session reaches game through user-operated official login; recovery remains unknown |
+| Server list and selection | Passed user selection in0.1.14 and entry in0.1.15; directory/zone bidirectional transfer recorded |
+| Map, character, resources | Partial: game entry confirmed; some static files404 and activities still fail |
+| Movement, interface and one basic battle | Failed battle acceptance: user reaches skills and can click, but text is blank; movement/full battle not accepted |
 | 15-minute stability | Not verified |
 | Official session recovery / re-login after restart | Not verified; fixture cookies do not prove game authentication |
 

@@ -27,10 +27,11 @@ test('refresh invokes only ready main Ruffle API without exporting parameters or
   env.events.pagehide();assert.equal(env.closed,1);assert.equal(env.cleared,1);
 });
 test('native phase telemetry sends validated counters once and never arbitrary fields',()=>{
-  const env=install();env.window.__timeCasketEngineSignals={traceAttached:1,configsLoaded:2,loginInitialized:'SECRET',directoryRequests:1001,traceErrors:0,ioErrors:2,httpErrors:1,missingSocketProxy:0,cookie:'SECRET'};
+  const env=install();env.window.__timeCasketEngineSignals={traceAttached:1,configsLoaded:2,loginInitialized:'SECRET',directoryRequests:1001,traceErrors:0,ioErrors:2,httpErrors:1,missingSocketProxy:0,
+    scriptErrors:3,unsupportedFeatures:4,nullObjectErrors:1,undefinedAccessErrors:2,streamErrors:-1,fontWarnings:'SECRET',cookie:'SECRET'};
   env.window.__timeCasketHttpState={httpBridgeAttempt:3,httpBridgeComplete:2,httpBridgeFailed:-1,httpBridgeUnavailable:'SECRET',url:'SECRET'};
   env.tick();const signal=env.sent.at(-1);assert.equal(signal.kind,'signals');
-  assert.deepEqual(Object.keys(signal.values).sort(),['configsLoaded','httpBridgeAttempt','httpBridgeComplete','httpErrors','ioErrors','missingSocketProxy','traceAttached','traceErrors']);
+  assert.deepEqual(Object.keys(signal.values).sort(),['configsLoaded','httpBridgeAttempt','httpBridgeComplete','httpErrors','ioErrors','missingSocketProxy','nullObjectErrors','scriptErrors','traceAttached','traceErrors','undefinedAccessErrors','unsupportedFeatures']);
   assert(!JSON.stringify(signal).includes('SECRET'));
   const before=env.sent.length;env.tick();assert.equal(env.sent.length,before);
 });

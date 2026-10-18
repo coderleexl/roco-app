@@ -3,8 +3,8 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const scriptPath='../app/src/main/assets/compatibility/player-options.js';
-function run(url,existing) {
-  const window={location:{href:url}};
+function run(url,existing,OffscreenCanvas) {
+  const window={location:{href:url},OffscreenCanvas};
   if(existing) window.RufflePlayer=existing;
   vm.runInNewContext(fs.readFileSync(require.resolve(scriptPath),'utf8'),{window,URL});
   return window;
@@ -21,6 +21,19 @@ test('official game documents request autoplay without changing other player opt
     assert.equal(window.RufflePlayer.other,'keep');
   }
   assert.equal(run('https://17roco.qq.com/').RufflePlayer.config.autoplay,'on');
+});
+
+test('game device text uses available system CJK fonts, preserving explicit choices and fallback',()=>{
+  class Canvas {getContext(kind){assert.equal(kind,'2d');return {};}}
+  assert.equal(run('https://web2.17roco.qq.com/game',null,Canvas).RufflePlayer.config.deviceFontRenderer,'canvas');
+  assert.equal(run('https://17roco.qq.com/',null,Canvas).RufflePlayer.config.deviceFontRenderer,undefined);
+  assert.equal(run('https://web2.17roco.qq.com/game').RufflePlayer.config.deviceFontRenderer,undefined);
+  class Unsupported {getContext(){throw Error('unavailable');}}
+  assert.equal(run('https://web2.17roco.qq.com/game',null,Unsupported).RufflePlayer.config.autoplay,'on');
+  class Missing {getContext(){return null;}}
+  assert.equal(run('https://web2.17roco.qq.com/game',null,Missing).RufflePlayer.config.deviceFontRenderer,undefined);
+  const existing={config:{deviceFontRenderer:'embedded',preferredRenderer:'webgl'}};
+  assert.equal(run('https://web2.17roco.qq.com/game',existing,Canvas).RufflePlayer.config.deviceFontRenderer,'embedded');
 });
 test('unrelated pages, hosts, schemes, ports and userinfo remain untouched',()=>{
   for(const url of ['https://17roco.qq.com/unrelated.html','https://evil.example/','https://web2.17roco.qq.com.evil.example/','http://17roco.qq.com/','https://17roco.qq.com:8443/','https://web2.17roco.qq.com:8443/','https://user:pass@17roco.qq.com/','about:blank']) {

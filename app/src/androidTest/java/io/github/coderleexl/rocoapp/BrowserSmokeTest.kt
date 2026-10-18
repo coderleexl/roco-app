@@ -140,4 +140,9 @@ class BrowserSmokeTest {
             await(scenario, "two real Gecko realms preserve activity bytes and HTTP failure") { it.probeTitle == "ROCO:http-bridge-ok" }
         }
     }
+    @Test fun deviceFontMovieProducesDistinctChineseGlyphs() {
+        launch("/text.html").use { scenario ->
+            await(scenario, "original Flash device text produces six nonempty and distinct CJK glyphs") { it.probeTitle == "ROCO:text-glyphs-ok" }
+        }
+    }
 }

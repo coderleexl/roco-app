@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><title>ROCO:text-loading</title>
+<script src="/player-options.js"></script>
+<script>
+// Fixed local fixture: measure only its own generated glyph buffers. No screenshots.
+const scope = {location:{href:'https://web2.17roco.qq.com/'}, RufflePlayer:{config:{autoplay:'on',preferredRenderer:'webgl'}}, OffscreenCanvas};
+applyTimeCasketPlayerOptions(scope);
+window.RufflePlayer = scope.RufflePlayer;
+const ink = new Map(), expected = new Set('技能名称火花');
+const proto = OffscreenCanvasRenderingContext2D.prototype, fill = proto.fillText;
+proto.fillText = function (text, ...args) {
+  const result = Reflect.apply(fill, this, [text, ...args]);
+  if (expected.has(text) && this.canvas.width <= 256 && this.canvas.height <= 256) {
+    const data = this.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
+    let hash = 2166136261, nonzero = false;
+    for (let i = 3; i < data.length; i += 4) { nonzero ||= data[i] > 0; hash = Math.imul(hash ^ data[i], 16777619); }
+    if (nonzero) ink.set(text, hash);
+    if (ink.size === expected.size && new Set(ink.values()).size >= 4) document.title = 'ROCO:text-glyphs-ok';
+  }
+  return result;
+};
+</script>
+<object type="application/x-shockwave-flash" data="/text.swf" width="400" height="80"></object>
+<script>
+setTimeout(() => { if (document.title !== 'ROCO:text-glyphs-ok') {
+  document.title = 'ROCO:text-failed';
+  fetch('/fixture-error?message=' + encodeURIComponent('CJK glyph count=' + ink.size + ', mode=' + window.RufflePlayer.config.deviceFontRenderer));
+}}, 45000);
+</script>

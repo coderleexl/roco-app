@@ -1,5 +1,13 @@
 # Architecture
 
+## 0.1.21设备字体与细分错误诊断
+
+公开CombatPluginLib的AttackSkillCell将skillDes.name赋给skillNameText；SWF放置字符700，useOutlines=false，引用字体299且该字体glyph数为0，属于设备字体文本。当前[Ruffle0.7.1设备字体配置](https://github.com/ruffle-rs/ruffle/blob/v0.7.1/web/packages/core/src/public/config/load-options.ts#L289)默认embedded，不能读取设备字体；canvas可通过OffscreenCanvas使用系统字体，但上游标为实验性。0.1.21只对精确官方web2游戏来源、未显式选择deviceFontRenderer且真实2D上下文可用时设置canvas；首页/其他来源/显式选项保留，GPU preferredRenderer不变。没有注入外部字体、替换游戏文字或改Ruffle二进制。真机技能文字仍须验收，不能仅据字体结构断定全部空白都同因。
+
+本地原创text.swf用零字形SimSun设备字体及六个固定中文字，独立样例在真实Gecko/Ruffle运行。观察样例自身OffscreenCanvas的字形调用和非空、不同的字形缓冲摘要，确认实际走系统字体路径；不截图、不导出图像、无官方内容。production配置函数由本地scope替身复用，不放宽官方来源。
+
+主电影trace与console进一步分类Error#1009/#1010/#2032、缺字体，console脚本错误/未支持计数也进入既有只接收0..1000数字的原生文件端口。保留原游戏弹窗/请求失败；这些是观测次数，trace和console可能重复，不能当独立弹窗数量。未知Error仍进入总分类，不保存原文/堆栈/查询。不能声称已hook游戏内部所有Flash弹窗。
+
 ## 0.1.20活动HTTP同源传输
 
 活动CGI虽然HTTP200，却固定允许https://res.17roco.qq.com，而实际JS/Wasm运行页面是web2，导致跨域失败。静态适配器原先只处理res资源，不能解决该层；不覆盖官网已有ACAO/ACAC。MAIN game-http对固定8个活动GET使用已经可访问的官网首页fetch。源必须HTTPSweb2；目标必须HTTPS17roco默认443、无userinfo、精确/cgi-bin/端点；父页面必须HTTPS17roco首页/default。未知目标或无法访问父页面保留原fetch。登录/防沉迷/隐私接口不在表内，POST不转发。

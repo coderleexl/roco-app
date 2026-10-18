@@ -78,3 +78,19 @@ test('IO and loader HTTP failures retain only bounded counts, never their paths 
   for(let i=0;i<1100;i++)api.traceObserver('IOError http code:500');
   assert.equal(state.ioErrors,1000);assert.equal(state.httpErrors,1000);
 });
+
+test('fixed script error and missing-font categories are observed in both traces and console without raw text',()=>{
+  const {window,events}=install('https://web2.17roco.qq.com/game');
+  const api={loadedConfig:{url:'https://res.17roco.qq.com/main.swf'}};
+  events.loadedmetadata({target:{matches:()=>true,ruffle:()=>api}});
+  api.traceObserver('TypeError: Error #1010 SECRET');
+  window.console.error('AVM2 error Error #1009 SECRET');
+  window.console.error('IOError Error #2032 SECRET');
+  window.console.warn('Font SECRET not found');
+  window.console.warn('Loading font SECRET');
+  const state=window.__timeCasketEngineSignals;
+  assert.equal(state.undefinedAccessErrors,1);assert.equal(state.nullObjectErrors,1);
+  assert.equal(state.streamErrors,1);assert.equal(state.fontWarnings,1);
+  api.traceObserver('Error #10101 SECRET');assert.equal(state.undefinedAccessErrors,1);
+  assert(!JSON.stringify(state).includes('SECRET'));
+});

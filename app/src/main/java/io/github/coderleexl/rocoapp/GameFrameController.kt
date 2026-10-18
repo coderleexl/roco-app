@@ -111,6 +111,9 @@ class GameFrameController(private val log: DiagnosticLog) {
     companion object {
         private val signalLabels = mapOf("traceAttached" to "phase-trace", "configsLoaded" to "phase-configs", "loginInitialized" to "phase-login",
             "directoryRequests" to "phase-dir-requests", "traceErrors" to "phase-errors", "ioErrors" to "phase-io-errors", "httpErrors" to "phase-http-errors", "missingSocketProxy" to "phase-missing-socket",
+            "scriptErrors" to "phase-script-errors", "unsupportedFeatures" to "phase-unsupported",
+            "nullObjectErrors" to "phase-null-object", "undefinedAccessErrors" to "phase-undefined-access",
+            "streamErrors" to "phase-stream-errors", "fontWarnings" to "phase-font-warnings",
             "httpBridgeAttempt" to "http-bridge-attempt", "httpBridgeComplete" to "http-bridge-complete",
             "httpBridgeFailed" to "http-bridge-failed", "httpBridgeUnavailable" to "http-bridge-unavailable",
             "dirWsAttempt" to "dir-ws-attempt", "dirWsOpen" to "dir-ws-open", "dirWsError" to "dir-ws-error", "dirWsClose" to "dir-ws-close",

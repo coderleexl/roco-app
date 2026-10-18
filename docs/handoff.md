@@ -1,6 +1,16 @@
 # 开发交接（2026-10-18）
 
-## 最新0.1.20：活动CGI的同源传输与响应realm（2026-10-18）
+## 最新0.1.21：战斗设备字体与细分错误日志（2026-10-18）
+
+- 用户0.1.20反馈首次进入仍IOError、其他较好；随后报告战斗按钮能点但文字空白，又出现多次error。先说“方框”后明确纠正“文字是空白”，按空白记录，不以方框当缺字体确证。文件HTTP桥完成12次、failed/unavailable无增长；IO2→4、traceErrors2→6，主电影trace/config/login重载至2。原桥已实际返回Response不代表所有活动成功；初始IO及其他错误仍失败。
+- 只读缓存脱敏提取两条Error#1010的公开方法栈，均指向活动1989 UIMain.setBossPage/onDataReceived，经CGI.completeHandler1。公共npc1989/s4271/s4291仍404，不据此断定1010唯一根因。其余观测CGI名称discovery/warehouse_security_code/privacy_agreement；未扩大8个活动接口转发，没有补保护流程。用户后来关闭App，RDP握手EOF两次并清理forward；已告知先不用重新登录，等待新包。
+- 公开CombatPluginLib：AttackSkillCell给skillNameText赋skillDes.name；SWF字段700 useOutlines=false引用字体299，字体glyph数0，依赖设备字形。Ruffle0.7.1默认embedded无法读手机字体，canvas可用但上游标实验性。0.1.21/code22、兼容1.4.2仅精确官方web2、未显式选字体后端、OffscreenCanvas真实2D可用时启用canvas；首页、显式选项、GPU preferredRenderer保留。没有修改游戏SWF、Ruffle二进制、网络设置或认证。不据源码分析直接认定真实文字已修好。
+- trace/console新增1009空对象、1010未定义访问、2032流错误及缺字体的固定数字分类；原console脚本错误和未支持计数也经既有0..1000受限端口落文件。未知错误仍有总计数，不保留原文/URL参数/堆栈/凭据；可能双通道重复观测，不等于弹窗数量，也没有宣称hook到Flash内部所有统一弹窗。未屏蔽错误/假成功。
+- 新原创TextProbeFixture生成SimSun零字形设备字体及六个固定中文字的微型SWF。真实Gecko/Ruffle本地样例检查六字均有非空字形、至少4种不同摘要，验证系统字体路径实际生成中文字；只取自有字形buffer摘要，无截图/图像导出/游戏内容。生产配置函数复用于固定scope替身。新Android独立进程用例5.660s、OK(1test)，原shortcut/Flash/session回归5.447s、OK(1test)，其余6个未改样例本轮未重跑；CI加入第8项。
+- Node63、JVM14、lint与主/测试APK通过，构建62s；签名/完整原版Ruffle验证通过，包内6个兼容文件逐字节一致。APK SHA256 `f6d838d978014cd89d0e82f8c98c9c2fe9cc5e94dbc8e7fc4e075c25f1e40c8e`。已adb install -r覆盖安装Success，包查询确认0.1.21/code22，保留数据。README仅补使用者可见的战斗文字限制，兼容表纠正旧版本仍写未选服的过时状态。
+- 下一步用户正常进入一次战斗确认技能名/PP/其他中文；复现统一error时结合新分类日志与标题/编号对应来源。首次IOError、活动1989、静态404、音乐与完整战斗/稳定性仍未完成，不能把本地中文样例当官网验收。未跟踪Gradle配置/work/辅助EXE保留且未读取/运行/提交。
+
+## 历史0.1.20：活动CGI的同源传输与响应realm（2026-10-18）
 
 - 用户要求读“大量ioerror”日志并手动点了三个活动。0.1.19文件计数从4逐步增至12；目录/zone6（endpoint7）首收发成功，不能归因代理或连接断开。只读全屏几何已从旧y885修正到bbox约(149.8,0,1135.37,662.3)，位于1435×662.3可见区内；仍未据此宣称触控/声音通过。
 - 纠正上轮诊断遗漏：原CORS提取器只列res公共静态路径，忽略活动CGI。当前缓存79条CORS匹配提取到14次17roco game-cgi（随后增至15），包括online_present、mini_game_manage、vip_tab_state、star_tower_new、star_tower_exch_shop、ifrit_challenge、back_player_guide；另有保护流程类别，不作为本次转发目标。用户三次点击期间只读NetworkWatcher看到ui4292/ui3760/ui1931等304，旧NPC1989四次404。公共无认证HEAD验证活动CGI=200/text-xml，ACAO固定https://res.17roco.qq.com、ACAC=true，带web2或首页Origin均不变；游戏页面实际web2，来源不匹配。这比缺SWF更能解释活动UI加载后ioError，不再将全部礼包错误归因404或304。公开UI公共CGI错误处理会对ioError弹网络故障提示；所查UI4292配置ifrit_challenge、3760=back_player_guide、1931=zombie_coming。
