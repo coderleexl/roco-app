@@ -4,8 +4,8 @@ Build and fixture results must come from the matching GitHub commit/run, not fro
 
 | Gate | Status / evidence needed |
 |---|---|
-| GitHub APK build / lint / unit tests | Pending successful Actions run |
-| Ruffle installed and original fixture executes ActionScript | Pending emulator smoke |
+| GitHub APK build / lint / unit tests | Passed: run39043167729 and run39089159173; source build and packaged extension integrity verified |
+| Ruffle installed and original fixture executes ActionScript | Installation passed on Android emulator; Flash execution blocked by a fixture JavaScript exception, under diagnosis |
 | Associated popup opener, shared cookie and close callback | Pending emulator smoke |
 | Fixture cookie survives process restart | Pending two separate instrumentation runs |
 | Complete official game page | Not verified on prototype |

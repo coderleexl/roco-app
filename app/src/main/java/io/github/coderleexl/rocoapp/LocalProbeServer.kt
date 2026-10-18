@@ -48,7 +48,7 @@ class LocalProbeServer : Closeable {
             "/fixture-error" -> {
                 // Fixed self-test origin only; never installed into official pages.
                 val uri = android.net.Uri.parse("http://127.0.0.1" + route[1])
-                fixtureFailure = (uri.getQueryParameter("message") ?: "unknown").take(600)
+                fixtureFailure = (fixtureFailure + "\n" + (uri.getQueryParameter("message") ?: "unknown").take(1400)).takeLast(6500)
                 payload = byteArrayOf(); type = "text/plain"
             }
             "/probe.swf" -> { payload = flashProbe(); type = "application/x-shockwave-flash" }
@@ -88,8 +88,9 @@ class LocalProbeServer : Closeable {
             <!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
             <title>ROCO:probe-loading</title>
             <script>
-            function reportFixtureError(kind,message){document.title='ROCO:'+kind;fetch('/fixture-error?message='+encodeURIComponent(String(message).slice(0,500))).catch(()=>{});}
-            window.addEventListener('error',e=>reportFixtureError('javascript-error',e.message+' at '+e.lineno+':'+e.colno));
+            function reportFixtureError(kind,message){if(kind)document.title='ROCO:'+kind;fetch('/fixture-error?message='+encodeURIComponent(String(message).slice(0,1300))).catch(()=>{});}
+            const originalConsoleError=console.error.bind(console);console.error=(...args)=>{reportFixtureError(null,args.map(String).join(' '));originalConsoleError(...args);};
+            window.addEventListener('error',e=>reportFixtureError('javascript-error',e.message+' at '+e.lineno+':'+e.colno+' '+(e.error?.stack||'')));
             window.addEventListener('unhandledrejection',e=>reportFixtureError('promise-error',e.reason));
             </script>
             <style>body{margin:0;background:#eef4ee}button{position:fixed;inset:0;width:100%;height:100%;z-index:5;background:transparent;border:0;color:#14532d;font:24px sans-serif}object{width:300px;height:150px}</style>
