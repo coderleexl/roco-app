@@ -35,3 +35,7 @@ Real Meizu0.1.0 error is now reproduced and classified as the public root movie 
 0.1.2/code3 is now installed in place on Meizu21: adb returnedSuccess and package inspection confirmed the version. User will verify homepage and post-scan behavior; those gates remain pending. Future project APK upgrades are authorized without repeated permission prompts; device settings/root/data clearing remain outside that authorization.
 
 Latest0.1.3/code4: Node7 tests, JVM4, lint and both APK builds passed locally; signature and official Ruffle assets verified. Installed on Meizu21 in place, Success/version confirmed. Previous0.1.2 now demonstrably executes preloader/main; ver.config adaptation and official session restoration still require user testing. No server/map/battle gate has passed.
+
+0.1.3 homepage visual failure: user sees black background and Start button. Root player executes, but dynamic animation fragment ROCO-Z8_Ceil_3.swf has explicit missingACAO/HTTP200 PageError.0.1.4 adds only that exact homepage dependency. This snapshot contains no game main frame, so ver.config fix remains unverified; no renderer or game login success is inferred.
+
+0.1.4/code5 local Node8/JVM4/lint/bothAPK builds passed; signature and upstream Ruffle assets verified. Meizu in-place installation returnedSuccess, version confirmed; homepage visual recovery awaits user refresh. No new game acceptance gate passed.

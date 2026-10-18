@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Roco Public SWF Compatibility",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "browser_specific_settings": {
     "gecko": {
       "id": "compatibility@roco.local"
@@ -15,7 +15,8 @@
     "https://res.17roco.qq.com/swf/ROCO-Z8.swf*",
     "https://res.17roco.qq.com/preloader.swf*",
     "https://res.17roco.qq.com/main.swf*",
-    "https://res.17roco.qq.com/ver.config*"
+    "https://res.17roco.qq.com/ver.config*",
+    "https://res.17roco.qq.com/swf/ceils/ROCO-Z8_Ceil_3.swf*"
   ],
   "background": {
     "scripts": [

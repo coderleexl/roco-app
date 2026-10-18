@@ -90,3 +90,21 @@ test('observed public version config accepts only octet-stream and exact game or
   assert(adaptPublicSwfHeaders({...input,originUrl:undefined,documentUrl:input.originUrl}));
   assert.equal(adaptPublicSwfHeaders(request({responseHeaders:input.responseHeaders})),undefined);
 });
+
+test('observed homepage animation fragment is limited to the exact movie and homepage',()=>{
+  const input=request({url:'https://res.17roco.qq.com/swf/ceils/ROCO-Z8_Ceil_3.swf'});
+  assert.deepEqual(adaptPublicSwfHeaders(input),{responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Origin',value:'https://17roco.qq.com'}]});
+  for(const extra of [
+    {url:'https://res.17roco.qq.com/swf/ceils/ROCO-Z8_Ceil_4.swf'},
+    {url:input.url+'.evil'},
+    {originUrl:'https://web2.17roco.qq.com/'},
+    {originUrl:'https://17roco.qq.com/unrelated.html'},
+    {originUrl:'https://evil.example/',documentUrl:input.originUrl},
+    {url:'http://res.17roco.qq.com/swf/ceils/ROCO-Z8_Ceil_3.swf'},
+    {url:'https://res.17roco.qq.com:8443/swf/ceils/ROCO-Z8_Ceil_3.swf'},
+    {method:'POST'}, {statusCode:404}, {type:'image'},
+    {responseHeaders:[{name:'Content-Type',value:'application/octet-stream'}]},
+    {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Origin',value:'*'}]},
+    {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Credentials',value:'true'}]}
+  ]) assert.equal(adaptPublicSwfHeaders({...input,...extra}),undefined);
+});

@@ -10,6 +10,8 @@ Kotlin + GeckoView + 内置 Ruffle 的**验证工具**，不是腾讯官方客�
 
 当前专项本地调试，不等待云端检查。真机0.1.2已确认preloader/main加载执行；下一处“版本文件加载失败”定位为公开ver.config跨域拦截，0.1.3已补充这一精确文件并通过本地测试、构建和校验。免密恢复优先使用既有官方浏览器会话，真实登录保持时长和重开恢复仍待用户测试；不保存密码或认证URL。最新安装/测试状态见 [交接记录](docs/handoff.md)，完整游戏流程仍未通过验收。
 
+主页黑屏只剩“开始”的0.1.3反馈已定位为另一个动态动画文件ROCO-Z8_Ceil_3.swf跨域拦截；0.1.4补充该精确文件。主页视觉恢复与0.1.3版本配置修复效果分别等待用户验证，不能混为已通过的游戏流程。
+
 ## 不装 SDK，直接下载 APK
 
 1. 打开 [GitHub Actions](https://github.com/coderleexl/roco-app/actions/workflows/android.yml)。

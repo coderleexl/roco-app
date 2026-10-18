@@ -9,7 +9,7 @@
       source = new URL(details.originUrl || details.documentUrl);
     } catch (_) { return; }
     if (asset.origin !== 'https://res.17roco.qq.com' || asset.username || asset.password || source.username || source.password) return;
-    const homeMovie = ['/swf/ROCO-Z8.swf', '/preloader.swf'].includes(asset.pathname)
+    const homeMovie = ['/swf/ROCO-Z8.swf', '/preloader.swf', '/swf/ceils/ROCO-Z8_Ceil_3.swf'].includes(asset.pathname)
       && source.origin === 'https://17roco.qq.com' && ['/', '/default.html'].includes(source.pathname);
     // Post-auth document paths may vary. Only this exact public movie is allowed
     // from the observed official web2 origin; no authentication response changes.
@@ -26,7 +26,7 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = {adaptPublicSwfHeaders};
   if (root.browser?.webRequest) {
     root.browser.webRequest.onHeadersReceived.addListener(adaptPublicSwfHeaders,
-      {urls: ['https://res.17roco.qq.com/swf/ROCO-Z8.swf*', 'https://res.17roco.qq.com/preloader.swf*', 'https://res.17roco.qq.com/main.swf*', 'https://res.17roco.qq.com/ver.config*'], types: ['xmlhttprequest']},
+      {urls: ['https://res.17roco.qq.com/swf/ROCO-Z8.swf*', 'https://res.17roco.qq.com/preloader.swf*', 'https://res.17roco.qq.com/main.swf*', 'https://res.17roco.qq.com/ver.config*', 'https://res.17roco.qq.com/swf/ceils/ROCO-Z8_Ceil_3.swf*'], types: ['xmlhttprequest']},
       ['blocking', 'responseHeaders']);
   }
 })(globalThis);

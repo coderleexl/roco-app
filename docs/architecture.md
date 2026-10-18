@@ -30,3 +30,7 @@ On0.1.2 both preloader and main reach readyState2 with metadata and no error ove
 ### Login persistence boundary
 
 The shared normal GeckoRuntime profile already persists browser state; a separate-process fixture proved ordinary persistent Cookie retention, not official login retention. No password vault, extracted auth tickets, callback URL replay or custom authentication is implemented. User should verify a normal close/reopen after game loading is repaired. Successful restoration depends on the official session remaining valid; if it expires, the user completes official authentication again. Do not store authenticated page URLs as a shortcut.
+
+### Homepage animation dependency (0.1.4)
+
+Real0.1.3 PageError confirms exact `/swf/ceils/ROCO-Z8_Ceil_3.swf` missingACAO atHTTP200 while root player remains executable. Compatibility1.0.3 adds this public Flash dependency only for the same official homepage sources as ROCO-Z8. Manifest/listener include its precise pattern and code rejects suffix lookalikes and other numbered siblings. PublicHEAD confirms Flash MIME/164312 bytes; no renderer change is justified by current evidence. Visual recovery and any further dynamic dependencies require user retest. Each preceding adaptation has revealed a separately fetched dependency; this does not prove all resources or the game protocol are compatible.
