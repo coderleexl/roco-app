@@ -20,8 +20,8 @@ android {
         applicationId = "io.github.coderleexl.rocoapp"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "0.1.9"
+        versionCode = 11
+        versionName = "0.1.10"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
     }
@@ -41,6 +41,7 @@ androidComponents {
     }
 }
 dependencies {
+    implementation("org.java-websocket:Java-WebSocket:1.6.0")
     implementation("org.mozilla.geckoview:geckoview:158.0.20261007201254")
     implementation("androidx.activity:activity-ktx:1.10.1")
     testImplementation("junit:junit:4.13.2")

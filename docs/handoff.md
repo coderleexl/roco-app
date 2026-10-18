@@ -4,7 +4,17 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
-## 0.1.9真机复测与诊断盲区（2026-10-18）
+## 最新0.1.10：WebAudio恢复与应用内目录服桥（2026-10-18）
+
+- 用户明确要求修复声音和连接。固定Gecko158源码revision `eb9a6e3a736802c8e080a76c44dc81f409d99d54` 的AutoplayPolicy.cpp确认：WebAudio与HTML媒体的GV权限回调路径不同。新增audio-unlock.js，仅官网首页/default和web2，在真实触摸/点击/按键后恢复挂起的AudioContext；也处理先点击、后创建音频上下文的时序。最多追踪16个上下文，失败可重试，不模拟点击、不隐藏遮罩、不改音量/系统策略；仅公开固定数字诊断。
+- 新增GameSocketBridge/Policy，Java-WebSocket1.6.0，只监听127.0.0.1随机端口，192位进程内能力路径、精确官方Origin/Host校验。目标仅公开Global.xml的dir/stat两个域名及443端口；DNS私网/回环等地址拒绝，连接使用已校验IP。双向透传官方Flash原始二进制，不解析/生成认证或游戏包、不落盘；8连接、16工作线程/16排队任务、1MiB待发/帧上限、64消息队列，关闭时释放连接。上游Ruffle逐字节未改。现有代理/TUN/VPS/系统网络设置未改，TCP仍走系统既有路由。
+- 兼容扩展1.3.0的背景脚本通过native messaging取得配置，在首次官网导航前注册web2限定的MAIN/document_start脚本，再回传ready。**范围只解决目录/统计服能力缺口，未知zone区服未接入，不宣布能进地图**。游戏帧logLevel改warn以补上0.1.9漏报缺桥的盲区；不保存原始警告/认证URL，探针仍只输出经过验证的固定数字/官方域名。
+- 验证通过：Node25项、JVM8项（含来源/令牌拒绝及100000字节本地二进制完整往返）、lint、主APK与androidTest包。最后完整构建38s。APK签名和完整官方Ruffle逐文件校验通过；SHA256 `41c384d729dd0d6868f0cfb766fdddd8349d08136cef4fce4ab3cd64756cef06`，路径app/build/outputs/apk/debug/app-debug.apk。
+- 本地API37.0/x86_64模拟器最终三项分别返回OK(1test)：Flash FSCommand＋关联窗口/测试Cookie共享（7.058s）、seed（6.751s）、跨进程Cookie保留（3.728s）。覆盖了扩展初始化握手，仍不代表官网有声/目录登录通过。只使用固定本地样例，未打开官网或截图。用户已有AVD因C盘不足无法启动；改在工作区.cache/avds创建独立临时AVD，不改原AVD配置。
+- 已解决的失败证据：首轮编译引用库不存在的bufferedAmount，改为库公开输出队列统计后通过；模拟器首两轮初始化卡住，日志确认config请求到达但嵌套JSONObject回传未完成。改用显式JSON文本回传/解析并加入有界请求超时和重试，最终同一自检通过。此前成功构建不能覆盖这些运行失败；当前以最后三项成功为准。
+- 手机已adb install -r覆盖安装Success，只读包查询确认0.1.10/code11。用户负责新版声音/服务器列表/地图验收；保留同一applicationId/签名/profile，未自动打开、刷新、登录或点击游戏。下次先看__timeCasketAudioState（created/running/suspended/closed/attempts/rejected只读数字）、加载后的socketProxy数量（应为2，不输出proxyUrl/能力路径）、固定native socket连接分类、web2的脱敏引擎信号。若缺zone映射，先记录实际官方目标/端口证据再扩展；不接受任意服务器IP，不反复要求扫码。整页刷新退登本轮仍未修改。
+
+## 历史0.1.9真机复测与诊断盲区（2026-10-18）
 
 - 用户确认安装后仍无声音，进入时“取消静音”浮窗点击无效；随后报告服务器弹出“咒语连接失败”（按用户原话记录，未截屏核对文本），询问是否与代理有关。声音修复验收失败，服务器连接仍失败，地图未验证。
 - 当前页面只读检查：首页 `/preloadlist.xml`、`/ver.config` 均200（38/165ms）；深层web2主播放器的ver.config、Global.xml、Angel.config、两份基础类库、Effect均200（133/52/32/44/44/41ms）。首页这一对跨域修复已有真机证据；这不代表所有资源或游戏流程通过。

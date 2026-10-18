@@ -2,6 +2,7 @@ package io.github.coderleexl.rocoapp
 
 import android.app.Application
 import org.json.JSONObject
+import org.json.JSONArray
 import org.mozilla.geckoview.GeckoRuntime
 import org.mozilla.geckoview.GeckoRuntimeSettings
 import org.mozilla.geckoview.GeckoResult
@@ -22,6 +23,7 @@ class RocoApplication : Application() {
     var diagnosticReady = false
         private set
     val probe by lazy { LocalProbeServer() }
+    private val socketBridge by lazy { GameSocketBridge({ kind, endpoint -> log.record(kind, number = endpoint) }) }
 
     // Application.onCreate also runs in Gecko's child service processes.
     // Start the parent runtime only when our main Activity asks for it.
@@ -32,9 +34,38 @@ class RocoApplication : Application() {
             .consoleOutput(BuildConfig.DEBUG && probeMode).debugLogging(false).build())
         runtime.webExtensionController.ensureBuiltIn("resource://android/assets/compatibility/", "compatibility@roco.local")
             .accept({ extension ->
-                compatibilityReady = extension != null
-                compatibilityState = if (compatibilityReady) "公开静态资源兼容已启用" else "资源兼容扩展安装失败"
-                log.record(if (compatibilityReady) "compatibility-installed" else "compatibility-install-failed")
+                if (extension == null) {
+                    compatibilityState = "资源兼容扩展安装失败"
+                } else {
+                    // Trigger loopback startup now; the background retries until it is ready.
+                    socketBridge
+                    compatibilityState = "正在准备官方游戏连接"
+                    extension.setMessageDelegate(object : WebExtension.MessageDelegate {
+                        override fun onMessage(nativeApp: String, message: Any, sender: WebExtension.MessageSender): GeckoResult<Any>? {
+                            if (sender.webExtension.id != "compatibility@roco.local" || sender.session != null) {
+                                log.record("socket-init-sender-rejected"); return null
+                            }
+                            val data = message as? JSONObject ?: return null
+                            when (data.optString("kind")) {
+                                "config" -> {
+                                    log.record("socket-config-request", number = if (socketBridge.isReady) 1 else 0)
+                                    if (!socketBridge.isReady) return GeckoResult.fromValue("{}")
+                                    val proxies = JSONArray()
+                                    GameSocketPolicy.hosts.forEach { host -> proxies.put(JSONObject()
+                                        .put("host", host).put("port", 443).put("proxyUrl", socketBridge.proxyUrl(host))) }
+                                    return GeckoResult.fromValue(JSONObject().put("proxies", proxies).toString())
+                                }
+                                "ready" -> {
+                                    compatibilityReady = true
+                                    compatibilityState = "静态资源兼容和官方目录连接已启用"
+                                    log.record("compatibility-installed")
+                                }
+                                "failed" -> { compatibilityState = "官方游戏连接初始化失败"; log.record("socket-init-failed") }
+                            }
+                            return GeckoResult.fromValue("ok")
+                        }
+                    }, "time_casket_socket")
+                }
             }, { error ->
                 compatibilityState = "资源兼容扩展安装失败"
                 log.record("compatibility-install-failed", number = (error as? WebExtension.InstallException)?.code ?: 0)
