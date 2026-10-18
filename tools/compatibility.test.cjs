@@ -64,3 +64,29 @@ test('observed homepage preloader and post-scan main movie allow only their offi
   assert.equal(adaptPublicSwfHeaders(request({url:'https://res.17roco.qq.com/main.swf'})),undefined);
   assert.equal(adaptPublicSwfHeaders(request({url:'https://res.17roco.qq.com/preloader.swf',originUrl:'https://web2.17roco.qq.com/'})),undefined);
 });
+
+test('observed public version config accepts only octet-stream and exact game origin',()=>{
+  const input=request({url:'https://res.17roco.qq.com/ver.config?v=public-version',originUrl:'https://web2.17roco.qq.com/official-callback',responseHeaders:[{name:'Content-Type',value:'application/octet-stream'}]});
+  assert.deepEqual(adaptPublicSwfHeaders(input),{responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Origin',value:'https://web2.17roco.qq.com'}]});
+  for(const extra of [
+    {url:'https://res.17roco.qq.com/ver.config.evil'},
+    {url:'https://res.17roco.qq.com/other.config'},
+    {url:'http://res.17roco.qq.com/ver.config'},
+    {url:'https://res.17roco.qq.com:8443/ver.config'},
+    {url:'https://res.17roco.qq.com.evil.example/ver.config'},
+    {originUrl:'https://17roco.qq.com/'},
+    {originUrl:'https://evil.example/',documentUrl:input.originUrl},
+    {originUrl:undefined,documentUrl:undefined},
+    {originUrl:'http://web2.17roco.qq.com/'},
+    {originUrl:'https://web2.17roco.qq.com:8443/'},
+    {originUrl:'https://web2.17roco.qq.com.evil.example/'},
+    {originUrl:'https://user:pass@web2.17roco.qq.com/'},
+    {method:'POST'}, {statusCode:302}, {statusCode:404}, {type:'image'},
+    {responseHeaders:[{name:'Content-Type',value:'text/html'}]},
+    {responseHeaders:[{name:'Content-Type',value:'application/x-shockwave-flash'}]},
+    {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Origin',value:'*'}]},
+    {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Credentials',value:'true'}]}
+  ]) assert.equal(adaptPublicSwfHeaders({...input,...extra}),undefined,JSON.stringify(extra));
+  assert(adaptPublicSwfHeaders({...input,originUrl:undefined,documentUrl:input.originUrl}));
+  assert.equal(adaptPublicSwfHeaders(request({responseHeaders:input.responseHeaders})),undefined);
+});

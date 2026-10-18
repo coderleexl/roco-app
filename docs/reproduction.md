@@ -37,3 +37,11 @@ The CI `public-entry.json` observes only unauthenticated HTTP availability/redir
 - Cached PageError explicitly identifies each exact res.17roco.qq.com asset as missingACAO/HTTP200. Public unauthenticated HEAD independently returns Flash MIME, lengths9721/54455 respectively, and noACAO. Third-party advertising errors are separate and not adapted.
 - Version0.1.2 adds only these observed movie/source pairs. Its new regression fails on0.1.1 and passes after the change. Main's source is exact HTTPS web2 origin; the post-auth path is not guessed. Whether official authentication completed, game received valid login, or additional resource/socket issues remain is unknown until user retest.
 - No phone taps, screenshots, console argument dumps, request credentials, ticket URLs or response bodies were collected. Temporary ADB debug forward removed after inspection.
+
+## Meizu0.1.2 version-file failure — 2026-10-18
+
+- User reports advancing into the game loader, then “版本文件加载失败，请检查配置”. This does not establish server selection or map entry.
+- Read-only frame/player inspection confirms both preloader and main atreadyState2, metadata present, no error overlay/panic. This verifies the previous two public movie adaptations in the real browser.
+- The official web2 frame records two requests for exact res-host `/ver.config` (61ms/43ms, status0 from resource timing). Cached PageError separately confirms missingACAO/HTTP200 for both requests. Public unauthenticated HEAD returns200, application/octet-stream, Content-Length217494, withoutACAO.
+- 0.1.3 adds only this public version file, scoped to web2 origin and its observed MIME. New regression is RED before the adapter change and GREEN after. Further dynamic resources, valid game login, servers, map and sockets remain unverified.
+- User also requested password-free login. Current normal persistent profile is retained; real official session recovery has not been tested. No credentials, token URLs or cookies were extracted, persisted or replayed. Plan: user-operated close/reopen after resource loading is repaired, then determine whether the official session restores or requires reauthentication.

@@ -4,7 +4,16 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
-## 最新待安装版本：0.1.2
+## 最新版本：0.1.3，已安装，待用户复测
+
+- 0.1.2真机只读检查已确认preloader/main均readyState2、metadata存在、无错误覆盖层和panic；前一轮公开SWF加载问题已推进。用户随后报告“版本文件加载失败，请检查配置”，不能据此认定已选服或进入地图。
+- 实际失败为res.17roco.qq.com精确 `/ver.config`：web2游戏帧两次请求，PageError明确HTTP200缺少ACAO；公开HEAD确认octet-stream、217494字节、无ACAO。未读取或记录认证状态、Cookie、票据或认证URL。
+- 0.1.3/code4、兼容扩展1.0.2仅增加上述文件，精确HTTPS web2来源，GET/XHR/200、octet-stream MIME及已有ACAO/ACAC策略跳过限制均保留。其他配置文件/动态资源未泛化放行。
+- 回归先RED再GREEN；Node7项、JVM4项、lint、主包/测试包构建通过43s；签名和完整官方Ruffle资源核对通过。APK SHA256 `7163fdefdfa7d56bf78405da7a26be9638cca1d6c1b881655a0d31164fe661d3`，输出仍为 `app/build/outputs/apk/debug/app-debug.apk`。
+- 已按持续安装授权执行adb install -r，Success；包查询确认0.1.3/code4。保留数据，未自动打开或刷新网页。下一步由用户检查版本文件提示是否消失、是否出现服务器列表，再按新证据推进资源/联网问题。
+- 用户询问免密登录：现有正常Gecko profile已经保留浏览器会话，但官方重开恢复/有效期未实测。待加载修复后由用户关闭重开验证；不新增密码保存、Cookie提取、认证URL重放或猜测鉴权参数。
+
+## 历史版本：0.1.2
 
 - 用户在0.1.1报告：主页动画不全、可以扫码、扫码后再次Flash加载错误。不能把此前“可以了”视为登录通过。
 - 只读Gecko帧/播放器检查与PageError定位：主页 `https://res.17roco.qq.com/preloader.swf`，以及官方web2页面的 `/main.swf`，均HTTP200缺少ACAO、播放器state0/无metadata。有独立公开HEAD证据：Flash MIME，大小9721/54455字节；未发现播放器panic。页面认证结果和具体失败弹窗文本尚未知。

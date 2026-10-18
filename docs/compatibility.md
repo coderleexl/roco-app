@@ -8,7 +8,7 @@ Build and fixture results must come from the matching GitHub commit/run, not fro
 | Ruffle installed and original fixture executes ActionScript | Passed: run39091368510, fixed local fixture requests legacy webgl; default wgpu remains unsupported on this emulator |
 | Associated popup opener, shared cookie and close callback | Passed: run39091368510, includes opener focus selecting main while child remains alive |
 | Fixture cookie survives process restart | Passed: run39091368510, separate seed/check instrumentation processes without reseeding |
-| Complete official game page | Meizu0.1.1 QR page opens but homepage preloader and post-scan main SWF are blocked by confirmed missing-ACAO CORS;0.1.2 exact-asset adaptation awaits installation/user retest |
+| Complete official game page | Meizu0.1.2 preloader/main now execute with metadata; game loader reports version-file failure, confirmed `/ver.config` missing-ACAO CORS.0.1.3 adaptation awaits user retest |
 | User authenticates and game receives valid login | Not verified |
 | Server list and selection | Not verified |
 | Map, character, resources | Not verified |
@@ -33,3 +33,5 @@ Real Meizu0.1.0 error is now reproduced and classified as the public root movie 
 0.1.1 actual follow-up: QR interaction is possible, but user reports incomplete homepage animation and the same Flash error after scanning. Read-only evidence confirms `/preloader.swf` on the homepage and `/main.swf` in the official web2 frame are independently CORS-blocked. This is not proof of successful game login.0.1.2 adds those exact public assets with separate source-origin constraints; no game acceptance gate is passed by this source change alone.
 
 0.1.2/code3 is now installed in place on Meizu21: adb returnedSuccess and package inspection confirmed the version. User will verify homepage and post-scan behavior; those gates remain pending. Future project APK upgrades are authorized without repeated permission prompts; device settings/root/data clearing remain outside that authorization.
+
+Latest0.1.3/code4: Node7 tests, JVM4, lint and both APK builds passed locally; signature and official Ruffle assets verified. Installed on Meizu21 in place, Success/version confirmed. Previous0.1.2 now demonstrably executes preloader/main; ver.config adaptation and official session restoration still require user testing. No server/map/battle gate has passed.
