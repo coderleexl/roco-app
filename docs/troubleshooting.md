@@ -1,12 +1,14 @@
 # Troubleshooting
 
+0.1.13真机仍失败，不能仅看iframe allow已写入就判定权限通过。0.1.14撤掉委派，改为两个精确能力URL由可访问官方首页创建连接；仍按原生socket-open/connect/首收发定位。新增首页声音浮窗反馈已记录，官网音乐仍未验收，先处理用户指定的选服问题。
+
 0.1.12 Debug日志自动保存于应用私有 `files/diagnostics/events.jsonl` 及 `events.previous.jsonl`，各最多128KiB。无需打开诊断弹窗或截图，使用：
 
 ```powershell
 python tools/read_device_diagnostics.py --adb 'D:\workspace\platform-tools-latest-windows\platform-tools\adb.exe' --serial 461QYGDN225SM
 ```
 
-输出仅at/kind/number。0.1.13先确认app-version14，再看content-permission9/loopback-allowed9、phase-login/phase-dir-requests、dir-ws-attempt/open/error、socket-open/connect-start/连接结果/first-send/first-receive。文件尚未产生或轮换前一份不存在会显示available:false；高频队列可能丢日志，缺一条不能单独证明某阶段从未执行。保留原文件以跨覆盖升级核对版本；不要收集原始HAR、全量logcat、网页trace或Cookie。用户0.1.11已确认浏览器/Flash两种试听可听，选服排障不要求重复试听。
+输出仅at/kind/number。0.1.14先确认app-version15，再看content-permission9/loopback-allowed9、phase-login/phase-dir-requests、dir-ws-attempt/open/error、socket-open/connect-start/连接结果/first-send/first-receive。文件尚未产生或轮换前一份不存在会显示available:false；高频队列可能丢日志，缺一条不能单独证明某阶段从未执行。保留原文件以跨覆盖升级核对版本；不要收集原始HAR、全量logcat、网页trace或Cookie。用户0.1.11已确认浏览器/Flash两种试听可听，选服排障不要求重复试听。
 
 - **0.1.12本地桥监听但浏览器WS失败**：本轮真机游戏帧loopback-network权限denied、顶层prompt，原生无9号权限回调，游戏未到socket-open。0.1.13补官方精确来源iframe委派与原生LOCAL_DEVICE_ACCESS授权。先查新版权限与连接日志；若仍denied，检查iframe的allow及父子来源，不凭构建通过宣告已恢复选服。不授予local-network、不改代理/TUN/系统设置。
 

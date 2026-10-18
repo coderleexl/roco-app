@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Time Casket Public Resource Compatibility",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "browser_specific_settings": {
     "gecko": {
       "id": "compatibility@roco.local"
@@ -38,7 +38,7 @@
     },
     {
       "matches": ["https://17roco.qq.com/*", "https://web2.17roco.qq.com/*"],
-      "js": ["player-options.js", "audio-unlock.js", "engine-signals.js", "loopback-delegation.js"],
+      "js": ["player-options.js", "audio-unlock.js", "engine-signals.js"],
       "world": "MAIN",
       "run_at": "document_start",
       "all_frames": true

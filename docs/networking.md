@@ -1,5 +1,14 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.14：官网首页创建固定回环连接
+
+0.1.13真机复测失败：当前官方iframe均已有精确allow指令，但游戏仍loopback-network=denied，dir attempt1/error1/close2，无socket-open。官网根/中间/游戏文档均已将document.domain放宽为qq.com，中间iframe的声明src为graph，而实际文档已到web2。Firefox release的PermissionsPolicy/HTMLIFrameElement源码显示容器策略按声明src和考虑document.domain的principal继承；这解释为何仅追加精确URL来源不足，但本轮不再扩大OAuth帧授权或改认证src。
+
+同一游戏调试上下文，只对无效本地能力路径使用顶层官方WebSocket构造器，原生桥两次正常收到并拒绝。它们是开发者诊断握手，无上游TCP/游戏包，不当游戏成功。另起Windows仅回环固定字节WS服务，经临时ADB reverse连接，真机收到原创4字节：原数据跨realm、复制后游戏realm的ArrayBuffer检查通过且字节完全相同。所有临时转发/反向转发清理，未修改系统代理/TUN/网络设置。
+
+正式修复只对原配置两个完整能力URL逐字匹配，且顶层是可访问官方HTTPS首页/default，使用该顶层原生构造器；所有其他请求保留原行为。最先注册capture监听器，将外realm ArrayBuffer复制到本realm后交给原有Flash监听器，内容不解析、不落日志。0.1.13的iframe allow脚本已移除，桥的官方Origin/固定目标/DNS限制不变。下一步仍按真实socket-open→connect→首次收发→用户服务器列表验证。
+
+
 ## 0.1.13：跨域游戏帧缺少回环委派
 
 0.1.12真机文件直接读回：phase-login1、dir-ws-attempt1/error1/close2，未见socket-open。播放器/全局配置与失败WS使用同一回环端口。ADB转发到该端口后用无效能力路径发出本地握手，服务正常拒绝并写socket-rejected；这是开发者本地探针记录，不是游戏连接遭拒，也未触发上游TCP。设备全局代理字段为空，连接元数据未发现HTTP代理，但未据此排除其他网络因素。

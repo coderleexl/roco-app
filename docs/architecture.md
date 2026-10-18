@@ -1,5 +1,12 @@
 # Architecture
 
+## 0.1.14由官方首页创建固定连接
+
+socket-config.js在验证原有两项配置后，以Proxy保留原WebSocket构造器；只对逐字匹配这两条配置URL的调用，且可读取顶层为精确HTTPS17roco首页/default、无userinfo时，用顶层原生构造器和原newTarget创建原生Socket。其余URL/来源/访问失败均走原构造器。并不重放或生成任何认证/游戏请求；由官方Flash照常发送数据，原生桥的Origin/能力路径/固定目标/DNS及队列限制不变。
+
+不同realm的原生MessageEvent.data是顶层ArrayBuffer；Ruffle所用gloo-net会在游戏realm做instanceof检查。因此先注册capture消息监听器，仅对ArrayBuffer执行逐字节复制，并覆盖该事件自身data供既有监听器读取，不解析或记录数据；字符串等类型不动。保留原生事件、readyState、发送/关闭和监听器行为。真机独立本地固定字节探针证明foreignBefore=true/localAfter=true/bytesMatch=true；尚不代表真实目录协议成功。0.1.13委派脚本已移除，保留原生受限LOCAL_DEVICE_ACCESS处理。
+
+
 ## 0.1.13官方帧回环授权
 
 loopback-delegation.js仅在精确HTTPS17roco来源运行，document_start观察iframe插入；不读取或修改认证src，只在没有显式loopback-network指令时追加两个官方来源的有限allowlist，清理pagehide观察器。跨域OAuth帧只有导航到被列出的官方来源后才获得该委派；不向graph等第三方来源或任意局域网授权。PlaybackPolicy新增独立allowsLoopback入口，只接收LOCAL_DEVICE_ACCESS并复用原有严格官方文档边界；NativeDelegate记录loopback-allowed/denied数字分类。已有浏览器自动播放规则不变，LOCAL_NETWORK_ACCESS仍不处理，桥的固定主机/端口/能力/DNS边界不变。
