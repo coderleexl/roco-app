@@ -1,5 +1,14 @@
 # 开发交接（2026-10-18）
 
+## 最新0.1.26：同类游戏CGI按服务器声明自动识别（2026-10-18）
+
+- 用户确认0.1.25人物背包可以打开，但出现新错误弹窗，并质疑是否只能逐接口修复。背包开窗已通过，不等于内部所有面板/PP通过。当前缓存无AVM2错误编号，新CORS有angel_info_tools；公开UserInfo.CurrentUserDetailPanel发此接口，匿名HEAD与前几项同为200/text-xml、ACAO=res、ACAC=true。consumption_gift/seven_luminaries_fight/warrior_fight_place同类，控制用不存在路径404。弹窗的精确编号/来源尚未取得，不以CORS存在认定所有弹窗都同因。
+- 不再将每个新名字都追加发版，也没有找到可信的完整官网接口清单。0.1.26/code27、兼容1.5.0保留12项已验证快速路径，对官方web2游戏原请求中的规范HTTPS17默认443、/cgi-bin/小写数字下划线GET，先从现有首页发**不带查询、原headers、Cookie或Referer的HEAD**。只接收200、XML MIME、ACAO精确res及ACAC=true且无重定向的服务器声明，随后才同源发送原GET；不预先爬接口、不读HEAD正文、不解析认证/业务数据。
+- 登录/授权/票据/密码/验证码/隐私/防沉迷/实名/账户保护/支付等名称以及POST、其他域/端口/路径形式不探测。匿名声明不符合/失败/超时维持原请求路径；不是关闭CORS或给任意CGI假200。探测4s超时，每页最多128个路径，缓存成功/拒绝/失败且并发共享，已验证12项不占预算；实际GET不因失败换通道重发。新路径首次会多一个HEAD往返；HEAD不支持或未声明的接口仍可能需要另行核实。
+- 新增6个0..1000数字经主电影端口落文件：http-probe-attempt/accepted/rejected/failed/limited、http-bridge-http-errors。区分匿名核对与实际HTTP4xx/5xx；既有complete仍仅表示包装完成。Map只在内存留规范路径/Promise，文件不记录接口名、查询、headers、正文、Cookie或原始错误。此轮不改变Socket/渲染/字体，也未宣称修复PP、404、活动1989/1751或高内存。
+- Node72/JVM15通过，新增未知接口匿名/无Referer与headers、命令保持、并发单探测、拒绝/错误/重定向/失败、不探测敏感路径、128预算、已abort不探测、探测等待中首页导航后禁止委派、真实403保持/GET不重发及受限日志字段回归。扩展原两真实Gecko realm样例：本地服务给主页面设置固定测试Cookie，HEAD必须无Cookie/查询/原header/Referer、GET必须保留Cookie/查询/header，未列名new_game_activity只探测一次，原字节/本realmResponse/403同时检查。仅本地固定样例，失败不会请求官网。
+- 初轮构建通过；补齐HEAD无Referer和等待后owner复核后，最终lint/主及测试APK构建40s通过。API37模拟器两真实Gecko realm样例5.376s、OK(1test)；其余7项未改浏览器样例未重跑。签名/完整未修改Ruffle及包内10个兼容文件、HTTP样例逐字节一致通过。APK SHA256 `9b04b8993acabed50db150ada339cce7492af75a54219e606bd014c063e88853`。adb install -r覆盖安装Success，包查询确认0.1.26/code27，保留数据；已请用户打开背包及原报错面板，官网新弹窗与自动适配实际效果待验收。下一步从文件读取新探测与错误计数，不再逐个要求打开诊断弹窗。本轮启动的无窗口模拟器已关闭；不截图、不清数据、不修改系统网络，未跟踪Gradle/work/辅助EXE保持原样。
+
 ## 最新0.1.25：人物背包打开前的引导接口（2026-10-18）
 
 - 用户在0.1.24先报告灰/棕色满屏，随后明确纠正“刷新游戏有用”；日志有game-reload-requested/reloaded及主电影重新就绪。不能沿用最初“刷新无效”的结论，也未改成清数据或强制重启。刷新后另三次PSS总3207.1→3880.8→4112.3MiB、GPU674.3→1360.7→1582.1MiB，主要内容进程仍高；缺少相同静止场景对照，尚不能证明泄漏根因或修复。

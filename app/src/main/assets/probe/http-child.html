@@ -8,11 +8,13 @@
     const owner = {location:{href:'https://17roco.qq.com/'}, fetch:parent.fetch.bind(parent),
       Request:class extends HomeRequest {
         constructor(url, init) {
-          super(new URL(url.includes('/back_player_guide') ? '/http-failure' : '/http-echo', location.href), init);
+          const local = url.includes('/back_player_guide') ? '/http-failure' :
+            url.includes('/new_game_activity') ? '/http-discover' : '/http-echo';
+          super(new URL(local + new URL(url).search, location.href), init);
         }
       }};
     const scope = {location:{href:'https://web2.17roco.qq.com/game'}, top:owner,
-      fetch:window.fetch.bind(window), Request, Response};
+      fetch:() => Promise.reject(Error('unexpected native fetch')), Request, Response};
     // Only this local fixture supplies synthetic origin metadata. Production
     // origin checks and the browser's actual two realms remain unchanged.
     installTimeCasketGameHttpBridge(scope);
@@ -21,7 +23,15 @@
         await response.text() !== '<fixture>original bytes</fixture>') throw Error('realm or bytes');
     const failure = await scope.fetch('https://17roco.qq.com/cgi-bin/back_player_guide');
     if (!(failure instanceof Response) || failure.status !== 403 || failure.ok) throw Error('HTTP failure masked');
-    if (scope.__timeCasketHttpState.httpBridgeComplete !== 2 || scope.__timeCasketHttpState.httpBridgeFailed !== 0) throw Error('counters');
+    for (let i = 0; i < 2; i++) {
+      const discovered = await scope.fetch(new parent.Request('https://17roco.qq.com/cgi-bin/new_game_activity?fixture=1',
+        {credentials:'include', headers:{'X-Fixture':'original'}}));
+      if (!(discovered instanceof Response) || discovered instanceof parent.Response || discovered.status !== 200 ||
+          await discovered.text() !== '<fixture>original bytes</fixture>') throw Error('discovery');
+    }
+    const state = scope.__timeCasketHttpState;
+    if (state.httpBridgeComplete !== 4 || state.httpBridgeFailed !== 0 || state.httpBridgeHttpErrors !== 1 ||
+        state.httpBridgeProbeAttempt !== 1 || state.httpBridgeProbeAccepted !== 1) throw Error('counters');
     parent.document.title = 'ROCO:http-bridge-ok';
   } catch (_) { parent.document.title = 'ROCO:http-bridge-failed'; }
 })();

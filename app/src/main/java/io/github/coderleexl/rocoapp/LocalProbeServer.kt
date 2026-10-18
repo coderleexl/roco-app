@@ -42,9 +42,21 @@ class LocalProbeServer(
         if (!header.endsWith("\r\n\r\n")) return@use
         val route = header.lineSequence().first().split(' ')
         val path = route.getOrNull(1)?.substringBefore('?') ?: "/"
-        if (route.firstOrNull() != "GET") return@use
         val cookie = header.lineSequence().firstOrNull { s -> s.startsWith("Cookie:", true) }.orEmpty()
         val hasCookie = cookie.contains("roco_probe=present")
+        if (route.firstOrNull() == "HEAD" && path == "/http-discover") {
+            val clean = !hasCookie && route.getOrNull(1) == path &&
+                header.lineSequence().none { s -> s.startsWith("X-Fixture:", true) || s.startsWith("Referer:", true) }
+            val status = if (clean) "200 OK" else "400 Bad Request"
+            it.getOutputStream().apply {
+                write(("HTTP/1.1 $status\r\nContent-Type: text/xml\r\n" +
+                    "Access-Control-Allow-Origin: https://res.17roco.qq.com\r\n" +
+                    "Access-Control-Allow-Credentials: true\r\nContent-Length: 0\r\nConnection: close\r\n\r\n").toByteArray())
+                flush()
+            }
+            return@use
+        }
+        if (route.firstOrNull() != "GET") return@use
         if (path == "/popup.html" && hasCookie) sharedCookieSeen = true
         val payload: ByteArray
         val type: String
@@ -61,9 +73,11 @@ class LocalProbeServer(
                 payload = "<!doctype html><title>ROCO:http-loading</title><iframe src='/http-child.html'></iframe>".toByteArray()
                 type = "text/html; charset=utf-8"
             }
-            "/http-echo", "/http-failure" -> {
+            "/http-echo", "/http-failure", "/http-discover" -> {
                 val content = "<fixture>original bytes</fixture>".toByteArray()
-                val status = if (path == "/http-failure") "403 Forbidden" else "200 OK"
+                val clean = path != "/http-discover" || hasCookie && route.getOrNull(1) == "/http-discover?fixture=1" &&
+                    header.lineSequence().any { s -> s.equals("X-Fixture: original", true) }
+                val status = if (path == "/http-failure") "403 Forbidden" else if (!clean) "400 Bad Request" else "200 OK"
                 it.getOutputStream().apply {
                     write("HTTP/1.1 $status\r\nContent-Type: text/xml\r\nContent-Length: ${content.size}\r\nConnection: close\r\n\r\n".toByteArray())
                     write(content); flush()
@@ -99,7 +113,7 @@ class LocalProbeServer(
                 return@use
             }
         }
-        val setCookie = if (path in setOf("/seed.html", "/probe.html")) "Set-Cookie: roco_probe=present; Max-Age=86400; Path=/; HttpOnly; SameSite=Lax\r\n" else ""
+        val setCookie = if (path in setOf("/seed.html", "/probe.html", "/http.html")) "Set-Cookie: roco_probe=present; Max-Age=86400; Path=/; HttpOnly; SameSite=Lax\r\n" else ""
         val response = "HTTP/1.1 200 OK\r\nContent-Type: $type\r\nContent-Length: ${payload.size}\r\nCache-Control: no-store\r\n${setCookie}Connection: close\r\n\r\n"
         it.getOutputStream().apply { write(response.toByteArray()); write(payload); flush() }
     }

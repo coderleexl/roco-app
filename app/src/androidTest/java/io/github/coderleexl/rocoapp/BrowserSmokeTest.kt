@@ -137,7 +137,7 @@ class BrowserSmokeTest {
     }
     @Test fun activityHttpBridgeReturnsLocalRealmAndPreservesFailureStatus() {
         launch("/http.html").use { scenario ->
-            await(scenario, "two real Gecko realms preserve activity bytes and HTTP failure") { it.probeTitle == "ROCO:http-bridge-ok" }
+            await(scenario, "two real Gecko realms preserve bytes, HTTP failure and anonymous contract discovery") { it.probeTitle == "ROCO:http-bridge-ok" }
         }
     }
     @Test fun deviceFontMovieProducesDistinctChineseGlyphs() {

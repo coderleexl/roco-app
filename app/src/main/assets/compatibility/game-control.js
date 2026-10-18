@@ -56,7 +56,9 @@
           if (Number.isInteger(value) && value >= 0 && value <= 1000) values[key] = value;
         }
         const http = (window.wrappedJSObject || window).__timeCasketHttpState;
-        for (const key of ['httpBridgeAttempt', 'httpBridgeComplete', 'httpBridgeFailed', 'httpBridgeUnavailable']) {
+        for (const key of ['httpBridgeAttempt', 'httpBridgeComplete', 'httpBridgeFailed', 'httpBridgeUnavailable',
+          'httpBridgeProbeAttempt', 'httpBridgeProbeAccepted', 'httpBridgeProbeRejected', 'httpBridgeProbeFailed',
+          'httpBridgeProbeLimited', 'httpBridgeHttpErrors']) {
           const value = http?.[key];
           if (Number.isInteger(value) && value >= 0 && value <= 1000) values[key] = value;
         }

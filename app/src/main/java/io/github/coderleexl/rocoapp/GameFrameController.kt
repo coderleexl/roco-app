@@ -117,6 +117,9 @@ class GameFrameController(private val log: DiagnosticLog) {
             "bitmapDrawErrors" to "phase-bitmap-draw-errors",
             "httpBridgeAttempt" to "http-bridge-attempt", "httpBridgeComplete" to "http-bridge-complete",
             "httpBridgeFailed" to "http-bridge-failed", "httpBridgeUnavailable" to "http-bridge-unavailable",
+            "httpBridgeProbeAttempt" to "http-probe-attempt", "httpBridgeProbeAccepted" to "http-probe-accepted",
+            "httpBridgeProbeRejected" to "http-probe-rejected", "httpBridgeProbeFailed" to "http-probe-failed",
+            "httpBridgeProbeLimited" to "http-probe-limited", "httpBridgeHttpErrors" to "http-bridge-http-errors",
             "dirWsAttempt" to "dir-ws-attempt", "dirWsOpen" to "dir-ws-open", "dirWsError" to "dir-ws-error", "dirWsClose" to "dir-ws-close",
             "statWsAttempt" to "stat-ws-attempt", "statWsOpen" to "stat-ws-open", "statWsError" to "stat-ws-error", "statWsClose" to "stat-ws-close")
         fun allowsPage(raw: String?): Boolean = try {

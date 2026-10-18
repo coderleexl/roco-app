@@ -1,5 +1,7 @@
 # Troubleshooting
 
+0.1.26同类CGI自动适配：先核对app-version27，再查看http-probe-attempt/accepted/rejected/failed/limited以及http-bridge-attempt/complete/failed/http-errors。accepted只表示匿名HEAD符合旧Flash来源的XML/CORS声明，不是游戏业务成功；http-errors保留真实4xx/5xx，rejected表示声明/状态不合，failed包括HEAD网络错误/4s超时，limited表示本页128路径预算耗尽。拒绝/失败在本页缓存，页面重新加载后才重新核对。已验证12接口走原快速路径，不一定增加probe；原GET不会因失败换通道重发。若这些计数正常但仍有弹窗，继续分资源404、脚本/渲染及Socket，不能逐个弹窗都扩CGI或归因代理。日志自动在原私有目录轮转，无需用户打开诊断弹窗；不能导出原始请求或游戏包。
+
 0.1.17横屏游戏：先打开一次新版App注册动态快捷入口，再长按应用图标选“横屏游戏”，也可用顶栏按钮。官方登录尚未完成时保留网页；游戏画面已就绪却没有进入专注显示，查看game-view-active/game-view-unavailable固定分类和ready状态。父帧访问/样式失败应保留浏览UI，按返回键退出模式；不要以重载/重放登录链接解决显示问题。动态shortcut未被桌面支持时仍可用App按钮，未自动发起桌面固定图标确认。系统方向只在当前Activity请求，不改系统自动旋转设置。
 
 

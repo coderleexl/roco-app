@@ -1,5 +1,15 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.26：同类来源限制自动识别，不再逐个扩名单
+
+0.1.25用户确认人物背包打开，内部仍有弹窗。缓存出现angel_info_tools CORS，公开UserInfo.CurrentUserDetailPanel/CurrentUserSpiritPanel使用该接口；匿名HEAD=200/text-xml、ACAO精确https://res.17roco.qq.com、ACAC=true。新观测consumption_gift、seven_luminaries_fight、warrior_fight_place同样声明，不存在的控制路径404。当前无AVM2编号，尚不能把这次弹窗唯一归因该接口。
+
+0.1.26保留12个验证过的快速路径；对游戏实际提出的新规范GET，按服务器响应声明发现同类接口。只在web2游戏与可访问的精确官方首页/default.html之间使用既有原生fetch。目的地限定HTTPS17默认443、无userinfo、/cgi-bin/[a-z][a-z0-9_]{0,63}；认证/保护/支付等敏感名称及POST不探测。先向**去除查询的路径**发HEAD，credentials=omit、无原headers、referrer空/no-referrer、cache=no-store、redirect=error、4s超时。响应仅200、XML MIME、ACAO=res、ACAC=true、未重定向才接纳。原GET及查询/headers/凭据/abort和响应流/状态继续保留，不解析或日志化业务/认证内容。
+
+每页最多128条路径决策，并发共享HEAD，成功/拒绝/失败都缓存到页面结束；不是自动爬取接口。未声明/HEAD失败/预算耗尽使用原浏览器请求路径，已发实际GET不换通道重试。因此同类新接口通常无需再发APK；不支持HEAD、声明不同、静态404、脚本错误或Socket问题仍需单独核实。新接口首次多一次HEAD往返，不能承诺所有弹窗消失。
+
+文件增加http-probe-attempt/accepted/rejected/failed/limited及http-bridge-http-errors六个受限数字，仍不保存接口名/查询/正文/headers/票据。complete只表示返回原响应包装，不代表业务成功。新增本地两realm真浏览器样例核对匿名HEAD不携带固定测试Cookie/查询/header/Referer，而随后GET保留Cookie/查询/header，并验证只探测一次、原字节与403不变。
+
 ## 0.1.25：人物背包引导状态阻塞；PP列表另走Socket
 
 用户明确非战斗点击背包无响应，战斗找不到PP药但生命药可正常恢复。公开UserInfoPlugin.openCurrentUserPanels先请求NET_SEND_NEED_GUIDE；NetDataSenderReceiver发送flaunt_suit_rank的cmd7，成功回调后才打开人物背包，cmd8用于引导关闭完成。CGIUtil收到GOT_ERROR直接返回，不弹错误。真机缓存已出现/cgi-bin/flaunt_suit_rank的CORS；匿名HEAD=200/text-xml、ACAO=https://res.17roco.qq.com、ACAC=true，web2页面不符合允许来源。这提供了人物背包无响应的一条具体原因，不能据此证明宠物背包或战斗PP也同因。
