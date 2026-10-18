@@ -8,7 +8,7 @@ Build and fixture results must come from the matching GitHub commit/run, not fro
 | Ruffle installed and original fixture executes ActionScript | Passed: run39091368510, fixed local fixture requests legacy webgl; default wgpu remains unsupported on this emulator |
 | Associated popup opener, shared cookie and close callback | Passed: run39091368510, includes opener focus selecting main while child remains alive |
 | Fixture cookie survives process restart | Passed: run39091368510, separate seed/check instrumentation processes without reseeding |
-| Complete official game page | Meizu0.1.0 official shell loads, root SWF blocked by confirmed missing-ACAO CORS policy;0.1.1 targeted adapter retest pending |
+| Complete official game page | Meizu0.1.1 QR page opens but homepage preloader and post-scan main SWF are blocked by confirmed missing-ACAO CORS;0.1.2 exact-asset adaptation awaits installation/user retest |
 | User authenticates and game receives valid login | Not verified |
 | Server list and selection | Not verified |
 | Map, character, resources | Not verified |
@@ -29,3 +29,5 @@ Verified run: [Actions39090465122](https://github.com/coderleexl/roco-app/action
 2026-10-18 latest verification: ba84be2 / run39091368510 build and all three smoke methods passed; local Windows build and signature/asset checks passed. Main APK installed successfully on Meizu21 with user approval. Actual website, renderer, authentication and game gates on that phone remain unverified pending user operation. See handoff.md.
 
 Real Meizu0.1.0 error is now reproduced and classified as the public root movie CORS failure (HTTP200 missing ACAO), with flashready0 and no game metadata. See reproduction.md and architecture.md for evidence and the exact0.1.1 exception boundary. Node adapter/privacy tests5 pass; local JVM/lint/APK build passes; CI and physical-device retest pending.
+
+0.1.1 actual follow-up: QR interaction is possible, but user reports incomplete homepage animation and the same Flash error after scanning. Read-only evidence confirms `/preloader.swf` on the homepage and `/main.swf` in the official web2 frame are independently CORS-blocked. This is not proof of successful game login.0.1.2 adds those exact public assets with separate source-origin constraints; no game acceptance gate is passed by this source change alone.

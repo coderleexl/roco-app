@@ -10,6 +10,8 @@ Kotlin + GeckoView + 内置 Ruffle 的**验证工具**，不是腾讯官方客�
 
 针对真机根 SWF 跨域读取失败的 0.1.1 已通过本地构建、测试及校验，并获授权覆盖安装到魅族 21。当前专项本地调试，不等待云端检查；等待用户刷新后确认适配效果，见 [交接记录](docs/handoff.md)。此前通过的自检不代表该修复或完整游戏已验证。
 
+最新0.1.2已完成本地测试和打包，待授权安装：补充真机确认被跨域拦截的主页preloader和扫码后main两份公开SWF。0.1.1可显示扫码页，但主页动画不全、扫码后仍报Flash错误；官方登录及完整游戏流程尚未通过。详细证据和下一步见交接记录。
+
 ## 不装 SDK，直接下载 APK
 
 1. 打开 [GitHub Actions](https://github.com/coderleexl/roco-app/actions/workflows/android.yml)。

@@ -29,3 +29,11 @@ The CI `public-entry.json` observes only unauthenticated HTTP availability/redir
 - Cached PageError specifically attributes `ROCO-Z8.swf` on res.17roco.qq.com to CORS missing Access-Control-Allow-Origin, HTTP200. Resource timing reports status0/0 transferable bytes; those timing fields alone would not identify the cause.
 - Independent unauthenticated public HEAD to the exact SWF returns200, Flash MIME and Content-Length92627, with no ACAO. No credentials, Cookie values, tickets, full token-bearing URLs or raw console dumps were recorded.
 - Initial fix0.1.1 adds an exact public-resource response-header adapter; real-device retest awaits approved update installation and user refresh. No authentication result is implied.
+
+## Meizu0.1.1 post-scan reproduction — 2026-10-18
+
+- Authorized in-place installation returnedSuccess; package inspection confirmed0.1.1/code2. User reports partial homepage animation, QR page opens, and the Flash error returns after scanning. Earlier informal “works” feedback is not a passed login gate.
+- Read-only debugger frame walk shows homepage player loading `/preloader.swf`, and an official web2.17roco.qq.com frame player loading `/main.swf`; both state0/no metadata/error overlay, no panic observed. Authenticated document paths and queries are redacted; no account state or Cookie values inspected.
+- Cached PageError explicitly identifies each exact res.17roco.qq.com asset as missingACAO/HTTP200. Public unauthenticated HEAD independently returns Flash MIME, lengths9721/54455 respectively, and noACAO. Third-party advertising errors are separate and not adapted.
+- Version0.1.2 adds only these observed movie/source pairs. Its new regression fails on0.1.1 and passes after the change. Main's source is exact HTTPS web2 origin; the post-auth path is not guessed. Whether official authentication completed, game received valid login, or additional resource/socket issues remain is unknown until user retest.
+- No phone taps, screenshots, console argument dumps, request credentials, ticket URLs or response bodies were collected. Temporary ADB debug forward removed after inspection.

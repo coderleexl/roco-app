@@ -8,18 +8,23 @@
       asset = new URL(details.url);
       source = new URL(details.originUrl || details.documentUrl);
     } catch (_) { return; }
-    if (asset.origin !== 'https://res.17roco.qq.com' || asset.pathname !== '/swf/ROCO-Z8.swf' || asset.username || asset.password) return;
-    if (source.origin !== 'https://17roco.qq.com' || !['/', '/default.html'].includes(source.pathname) || source.username || source.password) return;
+    if (asset.origin !== 'https://res.17roco.qq.com' || asset.username || asset.password || source.username || source.password) return;
+    const homeMovie = ['/swf/ROCO-Z8.swf', '/preloader.swf'].includes(asset.pathname)
+      && source.origin === 'https://17roco.qq.com' && ['/', '/default.html'].includes(source.pathname);
+    // Post-auth document paths may vary. Only this exact public movie is allowed
+    // from the observed official web2 origin; no authentication response changes.
+    const gameMovie = asset.pathname === '/main.swf' && source.origin === 'https://web2.17roco.qq.com';
+    if (!homeMovie && !gameMovie) return;
     const headers = details.responseHeaders;
     if (headers.some(h => ['access-control-allow-origin', 'access-control-allow-credentials'].includes(h.name.toLowerCase()))) return;
     const type = headers.find(h => h.name.toLowerCase() === 'content-type');
     if (type?.value?.split(';')[0].trim().toLowerCase() !== 'application/x-shockwave-flash') return;
-    return {responseHeaders: [...headers, {name: 'Access-Control-Allow-Origin', value: 'https://17roco.qq.com'}]};
+    return {responseHeaders: [...headers, {name: 'Access-Control-Allow-Origin', value: source.origin}]};
   }
   if (typeof module !== 'undefined' && module.exports) module.exports = {adaptPublicSwfHeaders};
   if (root.browser?.webRequest) {
     root.browser.webRequest.onHeadersReceived.addListener(adaptPublicSwfHeaders,
-      {urls: ['https://res.17roco.qq.com/swf/ROCO-Z8.swf*'], types: ['xmlhttprequest']},
+      {urls: ['https://res.17roco.qq.com/swf/ROCO-Z8.swf*', 'https://res.17roco.qq.com/preloader.swf*', 'https://res.17roco.qq.com/main.swf*'], types: ['xmlhttprequest']},
       ['blocking', 'responseHeaders']);
   }
 })(globalThis);

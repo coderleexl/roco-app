@@ -39,3 +39,28 @@ test('existing server CORS policy is retained and documentUrl fallback is restri
   assert(adaptPublicSwfHeaders(request({originUrl:undefined,documentUrl:'https://17roco.qq.com/default.html'})));
   assert.equal(adaptPublicSwfHeaders(request({originUrl:undefined,documentUrl:'https://login.qq.com/'})),undefined);
 });
+
+test('observed homepage preloader and post-scan main movie allow only their official source',()=>{
+  for(const [path,originUrl,origin] of [
+    ['/preloader.swf','https://17roco.qq.com/','https://17roco.qq.com'],
+    ['/main.swf','https://web2.17roco.qq.com/official-callback','https://web2.17roco.qq.com']
+  ]) {
+    const input=request({url:'https://res.17roco.qq.com'+path,originUrl});
+    assert.deepEqual(adaptPublicSwfHeaders(input),{responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Origin',value:origin}]});
+    for(const extra of [
+      {originUrl:'https://evil.example/'},
+      {originUrl:'https://web2.17roco.qq.com.evil.example/'},
+      {originUrl:'http://web2.17roco.qq.com/'},
+      {originUrl:'https://web2.17roco.qq.com:8443/'},
+      {originUrl:'https://user:pass@web2.17roco.qq.com/'},
+      {url:'https://res.17roco.qq.com'+path+'.evil'},
+      {url:'https://res.17roco.qq.com/other.swf'},
+      {method:'POST'}, {statusCode:403}, {type:'image'},
+      {responseHeaders:[{name:'Content-Type',value:'text/html'}]},
+      {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Credentials',value:'true'}]},
+      {responseHeaders:[...input.responseHeaders,{name:'Access-Control-Allow-Origin',value:'*'}]}
+    ]) assert.equal(adaptPublicSwfHeaders({...input,...extra}),undefined);
+  }
+  assert.equal(adaptPublicSwfHeaders(request({url:'https://res.17roco.qq.com/main.swf'})),undefined);
+  assert.equal(adaptPublicSwfHeaders(request({url:'https://res.17roco.qq.com/preloader.swf',originUrl:'https://web2.17roco.qq.com/'})),undefined);
+});
