@@ -6,6 +6,16 @@ import org.junit.Test
 import org.mozilla.geckoview.GeckoSession.PermissionDelegate
 
 class PlaybackPolicyTest {
+    @Test fun loopbackIsLimitedToOfficialDocumentsAndNeverLocalNetwork() {
+        for (uri in listOf("https://17roco.qq.com/", "https://17roco.qq.com/default.html", "https://web2.17roco.qq.com/game")) {
+            assertTrue(PlaybackPolicy.allowsLoopback(uri, PermissionDelegate.PERMISSION_LOCAL_DEVICE_ACCESS))
+            assertFalse(PlaybackPolicy.allowsLoopback(uri, PermissionDelegate.PERMISSION_LOCAL_NETWORK_ACCESS))
+            assertFalse(PlaybackPolicy.allowsLoopback(uri, PermissionDelegate.PERMISSION_STORAGE_ACCESS))
+        }
+        for (uri in listOf("https://graph.qq.com/", "https://17roco.qq.com/other", "https://web2.17roco.qq.com:8443/", "http://web2.17roco.qq.com/", "https://u:p@web2.17roco.qq.com/")) {
+            assertFalse(PlaybackPolicy.allowsLoopback(uri, PermissionDelegate.PERMISSION_LOCAL_DEVICE_ACCESS))
+        }
+    }
     @Test fun allowsOnlyOfficialDocumentAudioPlayback() {
         for (uri in listOf("https://17roco.qq.com/", "https://17roco.qq.com/default.html?v=1", "https://web2.17roco.qq.com/game")) {
             assertTrue(PlaybackPolicy.allowsAutoplay(uri, PermissionDelegate.PERMISSION_AUTOPLAY_AUDIBLE))

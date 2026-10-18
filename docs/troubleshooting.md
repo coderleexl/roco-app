@@ -6,7 +6,9 @@
 python tools/read_device_diagnostics.py --adb 'D:\workspace\platform-tools-latest-windows\platform-tools\adb.exe' --serial 461QYGDN225SM
 ```
 
-输出仅at/kind/number。先确认app-version13，再看phase-login/phase-dir-requests、dir-ws-attempt/open/error、socket-open/connect-start/连接结果/first-send/first-receive。文件尚未产生或轮换前一份不存在会显示available:false；高频队列可能丢日志，缺一条不能单独证明某阶段从未执行。保留原文件以跨覆盖升级核对版本；不要收集原始HAR、全量logcat、网页trace或Cookie。用户0.1.11已确认浏览器/Flash两种试听可听，选服排障不要求重复试听。
+输出仅at/kind/number。0.1.13先确认app-version14，再看content-permission9/loopback-allowed9、phase-login/phase-dir-requests、dir-ws-attempt/open/error、socket-open/connect-start/连接结果/first-send/first-receive。文件尚未产生或轮换前一份不存在会显示available:false；高频队列可能丢日志，缺一条不能单独证明某阶段从未执行。保留原文件以跨覆盖升级核对版本；不要收集原始HAR、全量logcat、网页trace或Cookie。用户0.1.11已确认浏览器/Flash两种试听可听，选服排障不要求重复试听。
+
+- **0.1.12本地桥监听但浏览器WS失败**：本轮真机游戏帧loopback-network权限denied、顶层prompt，原生无9号权限回调，游戏未到socket-open。0.1.13补官方精确来源iframe委派与原生LOCAL_DEVICE_ACCESS授权。先查新版权限与连接日志；若仍denied，检查iframe的allow及父子来源，不凭构建通过宣告已恢复选服。不授予local-network、不改代理/TUN/系统设置。
 
 - **0.1.10 startup stays at preparing connection**: inspect fixed socket-config-request/socket-init-failed/socket-bridge-ready categories. Native configuration uses JSON text rather than a nested JSONObject response, which failed on the local Gecko158 run. Background request timeouts/retries are bounded. Never dump the capability/proxyUrl or fall back to an unconfigured official game silently.
 - **0.1.10 unmute still silent**: after the user's real tap, validate only numeric fields of __timeCasketAudioState (created/running/suspended/closed/attempts/rejected). Do not dump contexts or change system audio routing. WebAudio and native HTML-media autoplay decisions are separate; running state still does not prove audible physical output.

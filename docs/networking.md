@@ -1,5 +1,13 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.13：跨域游戏帧缺少回环委派
+
+0.1.12真机文件直接读回：phase-login1、dir-ws-attempt1/error1/close2，未见socket-open。播放器/全局配置与失败WS使用同一回环端口。ADB转发到该端口后用无效能力路径发出本地握手，服务正常拒绝并写socket-rejected；这是开发者本地探针记录，不是游戏连接遭拒，也未触发上游TCP。设备全局代理字段为空，连接元数据未发现HTTP代理，但未据此排除其他网络因素。
+
+切换调试器选中游戏帧（未导航页面）后读取到secureContext=true、loopback-network/local-network均denied；顶层官网两者prompt。符合[Mozilla本地网络权限文档](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Local_network_access)的跨域iframe默认self限制。游戏帧的本地WS及无效能力路径的本地HTTP探针均失败，原生桥未收到；不再把该失败当目录服务器回包问题。
+
+0.1.13在官网17roco来源的现有/动态iframe上，仅追加 `loopback-network https://17roco.qq.com https://web2.17roco.qq.com`，不改src/认证参数、不使用通配符、不给graph等第三方来源授权，已有显式loopback策略保留。原生只对官方首页/default或web2的LOCAL_DEVICE_ACCESS请求允许；不授予LOCAL_NETWORK_ACCESS，不禁用全局安全机制。需要用户重新进入使iframe按新配置加载，再按loopback-allowed→socket-open/connect/收发核对；修复此门槛不等于有效目录登录或完整游戏通过。
+
 ## 0.1.12分层连接日志
 
 0.1.11实测已经到Login.initialize，推荐/列表trace计数3；当前内存诊断有bridge-ready/game-frame-ready，但没有TCP连接结果记录，不能认定已连目录服。0.1.12只观察精确回环能力路径的dir/stat WebSocket构造及open/error/close计数，不输出URL、能力路径或异常正文。计数经已验证content port传给原生诊断。桥新增open/connect-start、DNS失败/非公网地址拒绝/超时/拒绝连接、首次发送/接收及结束总字节数；字节数不含数据内容。

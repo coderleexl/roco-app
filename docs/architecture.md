@@ -1,5 +1,9 @@
 # Architecture
 
+## 0.1.13官方帧回环授权
+
+loopback-delegation.js仅在精确HTTPS17roco来源运行，document_start观察iframe插入；不读取或修改认证src，只在没有显式loopback-network指令时追加两个官方来源的有限allowlist，清理pagehide观察器。跨域OAuth帧只有导航到被列出的官方来源后才获得该委派；不向graph等第三方来源或任意局域网授权。PlaybackPolicy新增独立allowsLoopback入口，只接收LOCAL_DEVICE_ACCESS并复用原有严格官方文档边界；NativeDelegate记录loopback-allowed/denied数字分类。已有浏览器自动播放规则不变，LOCAL_NETWORK_ACCESS仍不处理，桥的固定主机/端口/能力/DNS边界不变。
+
 ## 0.1.12私有日志与连接观测
 
 Debug下DiagnosticLog的独立观察器只收到校验后的类别和数字，不接收URL。DiagnosticFileStore异步单线程写入私有files/diagnostics/events.jsonl，单文件128KiB，轮换events.previous.jsonl，队列512、繁忙时可丢弃；写入失败不阻断游戏。每条只有at/kind/number，覆盖安装保留文件。原内存诊断仍保留既有脱敏URL，但这些URL不会进入新文件或固定TimeCasket logcat标签。读取工具再次验证字段类型，不输出未通过校验的行。

@@ -4,7 +4,16 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
-## 最新0.1.12：私有文件日志与选服连接分层诊断（2026-10-18）
+## 最新0.1.13：修复官方跨域游戏帧的回环权限（2026-10-18）
+
+- 0.1.12已安装并推送7b84f88。用户进入卡点后，真机私有文件直接读回成功：phase-login1，dir-ws-attempt1/error1/close2，无socket-open/TCP结果。当前失败在浏览器到本地桥，尚未到目录回包；声音两种试听此前已获用户确认有声，官网音乐仍未验收。
+- 主播放器/global配置与浏览器失败消息使用同一有效回环端口；ADB临时转发后本地无效能力握手被正确拒绝，原生写socket-rejected（仅开发者本地探针，不是游戏请求失败，不发上游TCP，转发均清理）。/proc/net/tcp6读取被拒；ss有限元数据显示该端口监听。全局代理字段为空且连接元数据未发现HTTP代理，不能据此概括所有VPN/TUN因素，设置未修改。
+- 根因证据：调试器选择游戏frame后只读查询，secureContext=true，loopback-network/local-network都denied；顶层官网则prompt。子帧本地WS和HTTP诊断均失败；无本机权限回调9，因为iframe默认未委派。MDN文档确认跨域默认self限制，详见networking.md。调试frame选择最后恢复顶层，无网页导航/刷新/登录/截图；探针不保留URL/能力/认证正文。
+- 0.1.13/code14、兼容扩展1.3.3新增loopback-delegation：仅官网17roco来源，在当前/新iframe上补两个精确官方来源的loopback-network指令；不改src或认证、不用通配符、不覆盖显式站点策略、不授权graph或local-network局域网权限。原生只为官方首页/default或web2的LOCAL_DEVICE_ACCESS请求返回ALLOW，桥的能力路径/Origin/目标/DNS策略不变。自动播放行为不改。
+- 已验证Node38项（含动态iframe、显式deny保留、受限来源及不修改其他allow）、JVM12项（含回环权限范围/拒绝局域网）、lint及主包/测试包完整构建54s。APK签名和完整官方Ruffle资源核对通过，SHA256 `03623c61af4833d4fa64ce44dc186077a4633171f6bc6e6d1cf8eb317b17b84e`。未重复上版本地固定样例模拟器测试，它们不能验证官网跨域帧权限。下一步由用户重新进入卡点，直接看loopback-allowed→socket-open→connect结果→首个收发，不能把权限修复当服务器列表或地图验收。
+- 已adb install -r覆盖安装Success，包查询确认0.1.13/code14，保留数据；未代用户打开官网/刷新/认证或点击游戏。已请求用户进入原卡点，等待本版实际权限和连接结果。
+
+## 历史0.1.12：私有文件日志与选服连接分层诊断（2026-10-18）
 
 - 用户0.1.11先报告浏览器试听有声/Flash未加载，随后再次点击确认Flash也有声音。只读本地样例readyState2/metadata/playing、无panic。因此基础浏览器/Flash声音已有人耳证据；**官网音乐、服务器列表/地图仍未通过**，不再一概按全局静音处理。用户要求继续加日志，并明确希望自动写目录，避免反复读弹窗。
 - 主游戏只读阶段：traceAttached1/traceMessages16/configsLoaded1/loginInitialized1/directoryRequests3/traceErrors0；资源与主播放器继续正常。用户手动打开诊断后用UI文字树读取固定原生类别（无截图/无文件保存原始UI），有socket-bridge-ready、compatibility-installed、game-frame-ready1，保留日志未见TCP成功/失败。首次无PTY读取未取得XML，改强制PTY后成功；后续改私有日志，不要求用户再打开弹窗。不能据GUI请求计数认定已发出TCP数据。

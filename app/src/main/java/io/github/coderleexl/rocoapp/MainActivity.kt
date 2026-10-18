@@ -139,6 +139,12 @@ class MainActivity : ComponentActivity() {
                 perm: GeckoSession.PermissionDelegate.ContentPermission
             ): GeckoResult<Int>? {
                 app.log.record("content-permission", number = perm.permission)
+                if (perm.permission == GeckoSession.PermissionDelegate.PERMISSION_LOCAL_DEVICE_ACCESS) {
+                    val allowed = PlaybackPolicy.allowsLoopback(perm.uri, perm.permission)
+                    app.log.record(if (allowed) "loopback-allowed" else "loopback-denied", number = perm.permission)
+                    return GeckoResult.fromValue(if (allowed) GeckoSession.PermissionDelegate.ContentPermission.VALUE_ALLOW
+                        else GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY)
+                }
                 if (perm.permission != GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_AUDIBLE &&
                     perm.permission != GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_INAUDIBLE) return null
                 val allowed = PlaybackPolicy.allowsAutoplay(perm.uri, perm.permission)
