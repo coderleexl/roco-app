@@ -8,6 +8,8 @@ Kotlin + GeckoView + 内置 Ruffle 的**验证工具**，不是腾讯官方客�
 
 本地构建也已成功，主 APK 已经用户授权安装到魅族 21；官网和游戏流程等待用户真机验证。继续开发先读 [开发交接](docs/handoff.md) 和 [协作约定](AGENTS.md)。
 
+当前正在修复真机发现的根 SWF 跨域读取失败，0.1.1 的精确资源适配见 [交接记录](docs/handoff.md)；此前通过的自检不代表该修复或完整游戏已验证。
+
 ## 不装 SDK，直接下载 APK
 
 1. 打开 [GitHub Actions](https://github.com/coderleexl/roco-app/actions/workflows/android.yml)。

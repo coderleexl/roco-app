@@ -99,15 +99,16 @@ class MainActivity : ComponentActivity() {
 
     private fun waitForExtension() {
         if (isDestroyed) return
-        status.text = app.ruffleState
-        if (app.ruffleReady) {
+        status.text = if (app.ruffleReady && !app.compatibilityReady) app.compatibilityState else app.ruffleState
+        if (app.ruffleReady && app.compatibilityReady) {
             if (BuildConfig.DEBUG && intent.getBooleanExtra("probe", false)) {
                 val path = intent.getStringExtra("probePath")
                 loadProbe(path.takeIf { it in setOf("/probe.html", "/seed.html", "/check.html") } ?: "/probe.html")
             }
             else current.loadUri(HOME)
-        } else if (app.ruffleState.contains("失败") || app.ruffleState.contains("损坏")) {
-            lastError = app.ruffleState
+        } else if (app.ruffleState.contains("失败") || app.ruffleState.contains("损坏") || app.compatibilityState.contains("失败")) {
+            lastError = if (app.compatibilityState.contains("失败")) app.compatibilityState else app.ruffleState
+            status.text = lastError
         } else handler.postDelayed({ waitForExtension() }, 200)
     }
 
@@ -243,7 +244,7 @@ class MainActivity : ComponentActivity() {
         current.loadUri(app.probe.baseUrl + path)
     }
     private fun showDiagnostics() {
-        val info = "${app.ruffleState}\n诊断扩展：${if (app.diagnosticReady) "已安装" else "未就绪"}\n窗口数：${windows.size}\n$lastError\n\n${app.log.text()}"
+        val info = "${app.ruffleState}\n资源兼容：${app.compatibilityState}\n诊断扩展：${if (app.diagnosticReady) "已安装" else "未就绪"}\n窗口数：${windows.size}\n$lastError\n\n${app.log.text()}"
         val content = TextView(this).apply { text = info; setPadding(20, 20, 20, 20); setTextIsSelectable(true) }
         AlertDialog.Builder(this).setTitle("脱敏诊断（未验证游戏兼容）").setView(ScrollView(this).apply { addView(content) })
             .setPositiveButton("关闭", null).show()

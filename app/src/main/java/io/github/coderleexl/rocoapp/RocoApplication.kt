@@ -15,6 +15,10 @@ class RocoApplication : Application() {
         private set
     var ruffleReady = false
         private set
+    var compatibilityReady = false
+        private set
+    var compatibilityState = "正在准备资源兼容扩展"
+        private set
     var diagnosticReady = false
         private set
     val probe by lazy { LocalProbeServer() }
@@ -26,6 +30,15 @@ class RocoApplication : Application() {
         runtime = GeckoRuntime.create(this, GeckoRuntimeSettings.Builder()
             .remoteDebuggingEnabled(BuildConfig.DEBUG)
             .consoleOutput(BuildConfig.DEBUG && probeMode).debugLogging(false).build())
+        runtime.webExtensionController.ensureBuiltIn("resource://android/assets/compatibility/", "compatibility@roco.local")
+            .accept({ extension ->
+                compatibilityReady = extension != null
+                compatibilityState = if (compatibilityReady) "公开 SWF 资源兼容已启用" else "资源兼容扩展安装失败"
+                log.record(if (compatibilityReady) "compatibility-installed" else "compatibility-install-failed")
+            }, { error ->
+                compatibilityState = "资源兼容扩展安装失败"
+                log.record("compatibility-install-failed", number = (error as? WebExtension.InstallException)?.code ?: 0)
+            })
         try {
             val build = JSONObject(assets.open("ruffle-build.json").bufferedReader().use { it.readText() })
             runtime.webExtensionController.ensureBuiltIn("resource://android/assets/ruffle/", build.getString("id"))

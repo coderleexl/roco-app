@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "Roco Public SWF Compatibility",
+  "version": "1.0.0",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "compatibility@roco.local"
+    }
+  },
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "https://17roco.qq.com/*",
+    "https://res.17roco.qq.com/swf/ROCO-Z8.swf*"
+  ],
+  "background": {
+    "scripts": [
+      "public-swf.js"
+    ]
+  }
+}

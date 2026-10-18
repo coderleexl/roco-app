@@ -32,7 +32,7 @@ class BrowserSmokeTest {
     @Test fun flashExecutesAndPopupRetainsOpenerAndCookie() {
         launch().use { scenario ->
             await(scenario, "Ruffle executes ActionScript FSCommand") { it.probeTitle == "ROCO:flash-executed" }
-            scenario.onActivity { assertTrue((it.application as RocoApplication).ruffleReady) }
+            scenario.onActivity { assertTrue((it.application as RocoApplication).ruffleReady); assertTrue((it.application as RocoApplication).compatibilityReady) }
             val instrumentation = InstrumentationRegistry.getInstrumentation()
             await(scenario, "app window focused before real touch") {
                 it.hasWindowFocus() && it.browser.hasWindowFocus() && it.browser.isShown && it.browser.width > 0 && it.browser.height > 0
