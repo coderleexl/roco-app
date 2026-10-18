@@ -88,9 +88,11 @@ test('fixed script error and missing-font categories are observed in both traces
   window.console.error('IOError Error #2032 SECRET');
   window.console.warn('Font SECRET not found');
   window.console.warn('Loading font SECRET');
+  window.console.error('AVM2 error RustError("Render backend does not support BitmapData.draw") SECRET');
   const state=window.__timeCasketEngineSignals;
   assert.equal(state.undefinedAccessErrors,1);assert.equal(state.nullObjectErrors,1);
   assert.equal(state.streamErrors,1);assert.equal(state.fontWarnings,1);
+  assert.equal(state.bitmapDrawErrors,1);
   api.traceObserver('Error #10101 SECRET');assert.equal(state.undefinedAccessErrors,1);
   assert(!JSON.stringify(state).includes('SECRET'));
 });

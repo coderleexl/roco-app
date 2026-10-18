@@ -36,10 +36,10 @@ test('game device text uses available system CJK fonts, preserving explicit choi
   assert.equal(run('https://web2.17roco.qq.com/game',existing,Canvas).RufflePlayer.config.deviceFontRenderer,'embedded');
 });
 
-test('scoped pages trial the simpler GPU backend while explicit renderer and quality choices remain intact',()=>{
+test('failed legacy backend experiment is removed; automatic and explicit renderer choices are preserved',()=>{
   for(const url of ['https://17roco.qq.com/','https://17roco.qq.com/default.html','https://web2.17roco.qq.com/game']) {
-    assert.equal(run(url).RufflePlayer.config.preferredRenderer,'webgl');
-    assert.equal(run(url,{config:{preferredRenderer:null}}).RufflePlayer.config.preferredRenderer,'webgl');
+    assert.equal(run(url).RufflePlayer.config.preferredRenderer,undefined);
+    assert.equal(run(url,{config:{preferredRenderer:null}}).RufflePlayer.config.preferredRenderer,null);
     const explicit={config:{preferredRenderer:'wgpu-webgl',quality:'high'}};
     const config=run(url,explicit).RufflePlayer.config;
     assert.equal(config.preferredRenderer,'wgpu-webgl');assert.equal(config.quality,'high');

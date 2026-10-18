@@ -5,13 +5,14 @@
   if (page.origin !== 'https://web2.17roco.qq.com' || page.username || page.password || window.__timeCasketEngineSignals) return;
   const state = {socketMentions: 0, missingSocketProxy: 0, scriptErrors: 0, unsupportedFeatures: 0, socketHosts: [], errorCodes: [],
     traceAttached: 0, traceMessages: 0, configsLoaded: 0, loginInitialized: 0, directoryRequests: 0, traceErrors: 0, ioErrors: 0, httpErrors: 0,
-    nullObjectErrors: 0, undefinedAccessErrors: 0, streamErrors: 0, fontWarnings: 0,
+    nullObjectErrors: 0, undefinedAccessErrors: 0, streamErrors: 0, fontWarnings: 0, bitmapDrawErrors: 0,
     dirWsAttempt: 0, dirWsOpen: 0, dirWsError: 0, dirWsClose: 0, statWsAttempt: 0, statWsOpen: 0, statWsError: 0, statWsClose: 0};
   window.__timeCasketEngineSignals = state;
   function bump(key) { state[key] = Math.min(1000, state[key] + 1); }
   function classifyIO(text) {
     if (/\bIOError(?:Event)?\b|ioError|加载文件出错/.test(text)) bump('ioErrors');
     if (/\bhttp code:[45]\d{2}\b/i.test(text)) bump('httpErrors');
+    if (text.includes('Render backend does not support BitmapData.draw')) bump('bitmapDrawErrors');
     for (const [code, key] of [[1009, 'nullObjectErrors'], [1010, 'undefinedAccessErrors'], [2032, 'streamErrors']]) {
       if (new RegExp('\\bError #' + code + '\\b').test(text)) bump(key);
     }

@@ -1,5 +1,7 @@
 # Test plan
 
+0.1.24：0.1.23真实官网验收失败，legacy webgl返回BitmapData.draw不支持，区服连接已双向收发。回退默认后端的Node用例改为验证undefined/null/显式值不被替换；bitmapDrawErrors精确分类与数字端口/隐私断言通过，合计Node64。JVM15/lint/两APK构建47s通过，签名/完整原版Ruffle及6个兼容文件逐字节一致通过。本轮不重复8个未改浏览器样例；本地中文样例显式webgl仅满足SwiftShader，不是官网位图能力证明。实际回退后进图、内存/稳定性仍需用户验收；SHA/安装见handoff.md。
+
 0.1.23：Node64/JVM15、lint与两APK初轮77s/最终增量52s通过；后端配置覆盖默认/null改为webgl、显式后端和quality保留。中文Flash样例由生产配置决定后端，六字非空/不同摘要7.838s、OK(1test)；最终shortcut/Flash/session5.947s、OK(1test)，其余6项未改样例未重跑。模拟器启动实际记录本包历史退出count6，确认API路径可用；只输出退出元数据数字。签名/完整原版Ruffle及6个兼容文件逐字节一致通过。实际GPU PSS、速度、图形效果和闪退尚无新版真机证据，未宣称省内存/修复崩溃；安装及SHA见handoff.md。
 
 0.1.22：Node63/JVM15、lint及两APK构建56s通过。新增断言三个实测游戏GET端点已覆盖、warehouse_security_code保留原请求；新增JVM验证网页alert只分类1009/1010/2032或0、IO类别，不记任意数字。签名/完整原版Ruffle/6个兼容文件包内一致性通过；本轮8个未改浏览器样例未重跑。实际活动、2032、战斗文字未通过验收，QQ快捷授权未实现；设备安装结果见handoff.md。

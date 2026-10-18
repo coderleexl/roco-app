@@ -1,6 +1,15 @@
 # 开发交接（2026-10-18）
 
-## 最新0.1.23：GPU高占用下试用传统WebGL；性能待实测（2026-10-18）
+## 最新0.1.24：撤回导致选服后卡住的WebGL试验（2026-10-18）
+
+- 用户0.1.23实际验收FAILED：“进服务器一直加载不动”，询问与改动是否有关。只读main ready2，configured/actual renderer均webgl，DPR2.73、canvas2618×1527、显示960×560。文件目录0和区服endpoint7均connected/first-send/first-receive，目录最终139/216B；无新增资源IO，scriptErrors1。因此不能归因区服未连上或代理。
+- 将缓存错误提取器从原只匹配Error#的盲区扩到不区分大小写AVM2/RustError，并用固定字面bool匹配确认`Render backend does not support BitmapData.draw`。上游0.7.1 render/webgl render_offscreen直接None，AVM2 BitmapData.draw对应返回此RustError。只输出固定flags，不保存原错误/堆栈/查询/票据。已向用户明确该渲染改动触发兼容性错误，应撤回；本地中文样例未覆盖游戏位图能力，不能当完整游戏验证。
+- 0.1.24/code25、兼容1.4.5删除0.1.23默认/null→webgl，恢复原自动选择并保留显式后端。保留canvas字体、11个活动GET与系统退出元数据。新增bitmapDrawErrors限额数字，主游戏端口/原生映射phase-bitmap-draw-errors；固定原文只用于分类，不导出。Node64通过：原后端用例改为自动/显式保留，分类与跨端口隐私断言覆盖新字段。
+- 本地文字样例恢复仅自身显式webgl（SwiftShader默认wgpu已有旧失败），不用它证明官方自动后端；本轮未重复8个未改浏览器样例，后端回退及数字telemetry由Node/JVM/构建验证，官网由用户验收。最终JVM15/lint/主及测试APK构建47s通过；签名/完整原版Ruffle及6个兼容文件包内逐字节一致通过。APK SHA256 `b075af15e23b2e7bf06a5ebcbd6797013607fa2f53328ece1ee352218c48b39a`；已adb install -r覆盖安装Success，包查询确认0.1.24/code25，保留数据。已请用户重新进入同一区服反馈地图/仍加载，先暂停切场景内存采样；官网恢复待验收。
+- 卡住时一次PSS快照总1717.9MiB、GPU482.5MiB、主要内容进程745.0MiB；阶段与之前不同且功能失败，不认定性能改善。新版启动历史reason10/1等为系统记录，未直接认定OOM；高内存、真实泄漏、卡顿、活动2032/1989/404、技能文字/音乐和QQ手机授权均继续待查。
+- 下一步安装回退版后用户重新进入同一区服，确认地图加载及bitmap错误消失，再在可玩的后端连续采样内存。不改系统网络、不清数据、不截图/自动官网登录或点击；未跟踪Gradle配置/work/辅助EXE不读/运行/提交。
+
+## 历史0.1.23：GPU高占用下试用传统WebGL；性能待实测（2026-10-18）
 
 - 0.1.22已提交推送9e6a8d5且覆盖安装Success/code23，用户随后报告“闪退、没打两下就卡”。不要丢失QQ授权需求：仅有可行性排查，未实现；本轮用户插入性能反馈后先处理稳定性，活动/2032/技能文字/音乐同样未完成。
 - 只读系统快照：本包各进程PSS合计2260.4MiB；GPU pid15997 PSS1404811KiB≈1371.9MiB，主进程272123KiB≈265.7MiB，另有多个内容进程。不能只报主进程内存，也不累加RSS当独占内存。最近15:48:42退出为PACKAGE UPDATED，对应覆盖升级；15:44:02后台importance400子进程LOW_MEMORY。crash buffer有15:25:50旧子进程SIGSEGV，模块libGLESv2_adreno.so，早于canvas字体版。不把这些合并成“刚才闪退已证实OOM”，未记录原始崩溃消息/包/认证，仅固定类别/时间/库名/数字。

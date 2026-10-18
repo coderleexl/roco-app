@@ -2,7 +2,8 @@
 <script src="/player-options.js"></script>
 <script>
 // Fixed local fixture: measure only its own generated glyph buffers. No screenshots.
-const scope = {location:{href:'https://web2.17roco.qq.com/'}, RufflePlayer:{config:{autoplay:'on'}}, OffscreenCanvas};
+// SwiftShader fixture needs legacy WebGL. This explicit local override is not a game policy.
+const scope = {location:{href:'https://web2.17roco.qq.com/'}, RufflePlayer:{config:{autoplay:'on',preferredRenderer:'webgl'}}, OffscreenCanvas};
 applyTimeCasketPlayerOptions(scope);
 window.RufflePlayer = scope.RufflePlayer;
 const ink = new Map(), expected = new Set('技能名称火花');

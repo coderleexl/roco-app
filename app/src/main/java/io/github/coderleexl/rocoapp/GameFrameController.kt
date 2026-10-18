@@ -114,6 +114,7 @@ class GameFrameController(private val log: DiagnosticLog) {
             "scriptErrors" to "phase-script-errors", "unsupportedFeatures" to "phase-unsupported",
             "nullObjectErrors" to "phase-null-object", "undefinedAccessErrors" to "phase-undefined-access",
             "streamErrors" to "phase-stream-errors", "fontWarnings" to "phase-font-warnings",
+            "bitmapDrawErrors" to "phase-bitmap-draw-errors",
             "httpBridgeAttempt" to "http-bridge-attempt", "httpBridgeComplete" to "http-bridge-complete",
             "httpBridgeFailed" to "http-bridge-failed", "httpBridgeUnavailable" to "http-bridge-unavailable",
             "dirWsAttempt" to "dir-ws-attempt", "dirWsOpen" to "dir-ws-open", "dirWsError" to "dir-ws-error", "dirWsClose" to "dir-ws-close",

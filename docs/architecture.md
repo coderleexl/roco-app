@@ -1,5 +1,13 @@
 # Architecture
 
+## 0.1.24：撤回传统WebGL默认选择
+
+用户0.1.23实际验收失败：选择服务器后一直加载。真机main ready2、实际renderer=webgl，目录endpoint0与区服endpoint7均connected/first-send/first-receive，目录最终139/216B；不是没有连上区服。cache一条AVM2脚本错误，通过固定字面匹配确认RustError中的`Render backend does not support BitmapData.draw`，与[Ruffle0.7.1 BitmapData.draw错误分支](https://github.com/ruffle-rs/ruffle/blob/v0.7.1/core/src/avm2/globals/flash/display/bitmap_data.rs)一致；不保存原文/堆栈/查询。不能用本地文字样例成功来覆盖真实游戏依赖的位图绘制能力。
+
+0.1.24删除0.1.23的默认/null→webgl设置，恢复Ruffle自动选择，并完整保留页面显式后端。字体canvas、11个游戏GET适配和退出原因日志保留；新增bitmapDrawErrors固定数字，经主游戏受限端口写phase-bitmap-draw-errors。它是观测计数，不是任意控制或原始消息导出。SwiftShader本地中文样例恢复显式webgl，仅为自身已知模拟器限制，不能当游戏渲染后端验收。
+
+本次卡住时GPU PSS482.5MiB、内容进程745.0MiB，总1717.9MiB，阶段与上次不同，且功能失败，不能据更低GPU数值认定优化有效。高内存/卡顿/潜在泄漏仍待用有完整游戏能力的后端定位。
+
 ## 0.1.23：显卡内存与渲染后端试验
 
 用户报告卡顿和闪退后，只读系统快照显示本包各进程PSS合计2260.4MiB，其中GPU进程1404811KiB（约1371.9MiB），主进程272123KiB；不能用主进程约266MiB代表整个应用，也不能简单累加RSS。最近15:48:42为PACKAGE UPDATED；15:44:02一后台子进程importance400因LOW_MEMORY退出；crash buffer另有15:25:50旧子进程SIGSEGV，栈为libGLESv2_adreno.so，早于canvas字体版本。这些不是“本次闪退一定OOM”的证明。
