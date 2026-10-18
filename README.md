@@ -2,9 +2,11 @@
 
 Kotlin + GeckoView + 内置 Ruffle 的**验证工具**，不是腾讯官方客户端，不承诺完整游戏兼容。保留完整官网环境和官方登录，不采集账号密码。
 
-2026-10-18：提交 `ec114ef` 已通过 [GitHub 构建与三项模拟器测试](https://github.com/coderleexl/roco-app/actions/runs/39090465122)，包含真实 Flash 回调、关联窗口和进程重启后的测试 Cookie 保留。自检使用普通 WebGL；官网默认渲染、账号登录与完整游戏仍待真机验证。
+2026-10-18：提交 `ba84be2` 已通过 [GitHub 构建与三项模拟器测试](https://github.com/coderleexl/roco-app/actions/runs/39091368510)，包含真实 Flash 回调、关联窗口和进程重启后的测试 Cookie 保留。自检使用普通 WebGL；官网默认渲染、账号登录与完整游戏仍待真机验证。
 
-已验证版本：[下载 Debug APK 压缩包](https://github.com/coderleexl/roco-app/actions/runs/39090465122/artifacts/12121968252)（需要登录 GitHub），解压安装 `debug/app-debug.apk`。
+已验证版本：[下载 Debug APK 压缩包](https://github.com/coderleexl/roco-app/actions/runs/39091368510/artifacts/12122389419)（需要登录 GitHub），解压安装 `debug/app-debug.apk`。
+
+本地构建也已成功，主 APK 已经用户授权安装到魅族 21；官网和游戏流程等待用户真机验证。继续开发先读 [开发交接](docs/handoff.md) 和 [协作约定](AGENTS.md)。
 
 ## 不装 SDK，直接下载 APK
 
