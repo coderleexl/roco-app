@@ -4,6 +4,15 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
+## 0.1.9真机复测与诊断盲区（2026-10-18）
+
+- 用户确认安装后仍无声音，进入时“取消静音”浮窗点击无效；随后报告服务器弹出“咒语连接失败”（按用户原话记录，未截屏核对文本），询问是否与代理有关。声音修复验收失败，服务器连接仍失败，地图未验证。
+- 当前页面只读检查：首页 `/preloadlist.xml`、`/ver.config` 均200（38/165ms）；深层web2主播放器的ver.config、Global.xml、Angel.config、两份基础类库、Effect均200（133/52/32/44/44/41ms）。首页这一对跨域修复已有真机证据；这不代表所有资源或游戏流程通过。
+- 主游戏播放器readyState2、metadata存在、playingtrue、volume1、autoplayon、无panic；主游戏取消静音遮罩隐藏，而首页另一播放器的取消静音遮罩仍可见。遮罩隐藏和playing不能证明AudioContext运行或有声。开启调试器PageError监听后才能取得缓存：本次26条PageError中12条匹配音频自动播放阻止，另6条匹配跨域但未提取到允许输出的res域静态路径；不能将其认定为剩余游戏资源失败。未输出原始错误文本。
+- 两个web2帧均有脱敏引擎状态，四项计数均0、官方Socket域名/错误码为空。但主播放器实际logLevel为error、socketProxy数组为空。固定Ruffle0.7.1上游 `web/src/navigator.rs` 的connect_socket在没有匹配桥时以 **warn** 记录Missing WebSocket proxy，并立即返回连接失败。因此当前日志级别会屏蔽这条关键证据，零计数不能排除Socket失败；空桥配置证明现有网页运行时存在TCP能力缺口，但尚未直接捕获本次游戏的具体Socket调用/目标。
+- 用户所说的网络代理与Ruffle配置中的WebSocket→TCP桥是不同层。没有对用户代理进行对照实验，不能把弹窗归因于代理，也不能承诺关闭代理即可恢复。未修改VPS/代理/TUN/系统网络设置，未试探游戏端口或发送协议/认证数据；未刷新、点击、登录、安装或截图。每次临时ADB调试转发均已移除。
+- 下一步先修正诊断可见性（注意warn级别原始日志的隐私边界），取得真实Socket调用/失败分类；再按networking.md比较受限本地桥与原生路线。音频另查固定Gecko158的WebAudio判定路径与实际AudioContext状态；0.1.9的媒体自动播放权限回调不能直接视为WebAudio已放行。本次仅补证据文档，未发新APK。
+
 ## 最新0.1.9：声音权限、首页预加载和选服诊断
 
 - 0.1.8真机只读证据：主播放器autoplayon/isPlayingtrue/volume1、Play和Unmute均隐藏，证明配置已生效但不是声音证明；PageError多次提示AudioContext被自动播放策略阻止。现有App没有PermissionDelegate；固定Gecko158源码确认自动播放权限/defaultPROMPT。0.1.9/code10新增PlaybackPolicy及session权限回调，仅处理两种autoplay权限，允许官网首页/default及web2精确HTTPS来源；不授权其他能力、不改系统设置。真实callback与声音仍待用户验证。

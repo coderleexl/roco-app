@@ -1,5 +1,13 @@
 # Reproduction record
 
+## Meizu0.1.9 retest — 2026-10-18
+
+- User still hears no sound after tapping the unmute floating overlay and reports a server connection failure dialog (exact displayed text not independently verified). These gates have not passed.
+- Current read-only homepage preloadlist.xml/ver.config return200; deep web2 main confirms version/global/config/base libraries/Effect200. Main readyState2/metadata/playing/volume1 and no panic do not establish sound or successful login.
+- After starting the PageError listener, cached diagnostics contain12 audio-policy matches. Root homepage still has a visible unmute overlay, while the main game overlay is hidden. Actual AudioContext state, native permission-callback decisions and physical output remain unverified.
+- Both web2 collectors exist with zero counters, but main loadedConfig uses logLevel=error and an empty socketProxy array. Pinned Ruffle0.7.1 emits missing-bridge failures at warn level: this evidence is suppressed by the current configuration. Concrete Socket attempts/targets are not yet observed; user proxy causality remains unknown. See networking.md.
+- No raw console/errors/auth URLs were output or saved; no phone screenshot, refresh, login, tap, installation or network-setting change occurred. Temporary ADB debugger forwarding was removed after each read.
+
 ## Meizu0.1.8 silent audio / no server list — 2026-10-18
 
 - User reports Unmute click fails and no server list. Read-only main: readyState2/autoplayon/isPlayingtrue/volume1; Play and Unmute displaynone. Browser PageErrors repeatedly state AudioContext blocked until gesture. Output routing/volume has not been tested or changed; overlay disappearance does not prove sound.

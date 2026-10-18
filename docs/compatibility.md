@@ -1,5 +1,7 @@
 # Compatibility gates
 
+0.1.9 physical retest (2026-10-18): user confirms silence/unmute-overlay failure and reports a server connection failure dialog. Homepage preloadlist.xml/ver.config now both return200; game bootstrap/config/base libraries/Effect remain200. Audio-policy warnings still occur. Main player's logLevel=error and socketProxy=[] expose a diagnostic blind spot: pinned Ruffle0.7.1 reports a missing Socket bridge at warn level, so zero collected Socket signals do not exclude this failure. Actual attempted Socket target and the effect of the user's network proxy remain unknown. No new APK or network/settings changes; see handoff.md and networking.md.
+
 0.1.9 work: actual0.1.8 confirms autoplay option and Effect/bootstrap HTTP200, but user still reports silence and no server selection. Browser audio-policy warnings and separate outer-homepage bootstrap CORS failures are observed. Scoped native autoplay permission handling, homepage config pairs and bounded child-frame engine diagnostics added; audio/permission-callback/Socket outcomes await user validation. Never classify Python's protocol implementation as proof of our runtime failure. Details innetworking.md and handoff.md.
 
 0.1.9/code10 delivery: Node18/JVM6 tests, lint, app/test APK builds pass locally. Final APK signature and complete upstream Ruffle assets verified, installed in place on Meizu21 (Success/version confirmed). No phone webpage operation performed; real audible output, server list and game gates remain pending. Cloud checks were not used as an installation prerequisite.
@@ -22,9 +24,9 @@ Build and fixture results must come from the matching GitHub commit/run, not fro
 | Ruffle installed and original fixture executes ActionScript | Passed: run39091368510, fixed local fixture requests legacy webgl; default wgpu remains unsupported on this emulator |
 | Associated popup opener, shared cookie and close callback | Passed: run39091368510, includes opener focus selecting main while child remains alive |
 | Fixture cookie survives process restart | Passed: run39091368510, separate seed/check instrumentation processes without reseeding |
-| Complete official game page | Meizu0.1.6 Global.xml, Angel.config and base libraries return200; loader still blocked before server selection by omitted plugins directory.0.1.7 typed-directory expansion awaits user retest |
+| Complete official game page | Meizu0.1.9 homepage bootstrap pair and game configs/base libraries/Effect return200; user reports a server connection failure dialog; complete game page remains unverified |
 | User authenticates and game receives valid login | Not verified |
-| Server list and selection | Not verified |
+| Server list and selection | Failed user retest on0.1.9: server connection dialog; successful list/selection not verified, exact Socket/network cause pending |
 | Map, character, resources | Not verified |
 | Movement, interface and one basic battle | Not verified |
 | 15-minute stability | Not verified |
