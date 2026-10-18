@@ -1,5 +1,7 @@
 # Test plan
 
+0.1.20：Node61（新增5项活动HTTP桥，含外realm Request、URL遮蔽拒绝、Response/流字节/403/abort/拒绝敏感端点/不重发）、JVM14、lint及两APK通过，首轮65s、最终增量37s。签名、完整原版Ruffle及包内兼容脚本一致性校验通过。新增本地HTTP两真实Gecko realm用例首轮5.686s、最终外realm Request输入5.343s，原快捷入口/Flash/session回归5.962s，均OK(1test)；HTTP样例验证游戏realm Response、原流内容和403保持，使用本地scope，不证明官方同源请求/礼包业务成功。本轮其余5个未改样例未重跑；CI增加此Node文件及第7个独立进程用例。已覆盖安装0.1.20/code21，最终兼容1.4.1；实际活动、404缺文件、音乐继续待验收，详见handoff.md。
+
 0.1.19：Node56/JVM14、lint及两APK最终构建48s通过（首轮75s），签名/完整原版Ruffle/包内兼容脚本一致性通过。新增两项视口回归先RED再GREEN：同目标无resize时重算，visualViewport尺寸/偏移与事件清理；IO/HTTP分类测试验证只保留限额数字。新本地真实Gecko布局用例7.176s、原快捷入口/Flash/session用例6.446s，均OK(1test)，CI增加至6项独立进程。新用例先因loadProbe第二处路径表漏加/view.html崩溃，修复并重跑通过；本轮其余4项未改样例不重跑。实际官网黑屏/触控仍待用户验收，活动IOError仍失败；详见handoff.md。
 
 0.1.18：Node53/JVM14通过，覆盖登录前仅展示mainiframe而非隐藏preloader、main就绪/重载目标切换、父链失败回退、无容器拒绝、子帧不竞争展示与首页不可刷新。JVM新增首页展示许可与web2刷新许可分离测试；首轮完整构建56s、最终增量构建42s，lint/主包及测试包通过。签名/完整Ruffle资源校验通过，包内兼容脚本与工作区一致。隔离模拟器仅重跑shortcut保留session/返回恢复用例，6.699s、OK(1test)，其余4个未改的本地样例本轮未重跑。真机已覆盖升级0.1.18/code19；官网裁切/触控/登录切换仍需用户验收，不能以模型测试替代。包SHA与设备结果见handoff.md。

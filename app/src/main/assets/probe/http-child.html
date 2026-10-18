@@ -1,0 +1,28 @@
+<!doctype html><title>HTTP child fixture</title>
+<script src="/game-http.js"></script>
+<script>
+(async function () {
+  'use strict';
+  try {
+    const HomeRequest = parent.Request;
+    const owner = {location:{href:'https://17roco.qq.com/'}, fetch:parent.fetch.bind(parent),
+      Request:class extends HomeRequest {
+        constructor(url, init) {
+          super(new URL(url.includes('/back_player_guide') ? '/http-failure' : '/http-echo', location.href), init);
+        }
+      }};
+    const scope = {location:{href:'https://web2.17roco.qq.com/game'}, top:owner,
+      fetch:window.fetch.bind(window), Request, Response};
+    // Only this local fixture supplies synthetic origin metadata. Production
+    // origin checks and the browser's actual two realms remain unchanged.
+    installTimeCasketGameHttpBridge(scope);
+    const response = await scope.fetch(new parent.Request('https://17roco.qq.com/cgi-bin/online_present?fixture=1'));
+    if (!(response instanceof Response) || response instanceof parent.Response || response.status !== 200 ||
+        await response.text() !== '<fixture>original bytes</fixture>') throw Error('realm or bytes');
+    const failure = await scope.fetch('https://17roco.qq.com/cgi-bin/back_player_guide');
+    if (!(failure instanceof Response) || failure.status !== 403 || failure.ok) throw Error('HTTP failure masked');
+    if (scope.__timeCasketHttpState.httpBridgeComplete !== 2 || scope.__timeCasketHttpState.httpBridgeFailed !== 0) throw Error('counters');
+    parent.document.title = 'ROCO:http-bridge-ok';
+  } catch (_) { parent.document.title = 'ROCO:http-bridge-failed'; }
+})();
+</script>

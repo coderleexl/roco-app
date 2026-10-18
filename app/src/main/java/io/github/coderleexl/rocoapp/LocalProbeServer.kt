@@ -52,6 +52,21 @@ class LocalProbeServer(
             "/audio.js" -> { payload = audioScript(); type = "application/javascript; charset=utf-8" }
             "/game-view.js" -> { payload = viewAsset("compatibility/game-view.js"); type = "application/javascript; charset=utf-8" }
             "/view.html" -> { payload = viewAsset("probe/view.html"); type = "text/html; charset=utf-8" }
+            "/game-http.js" -> { payload = viewAsset("compatibility/game-http.js"); type = "application/javascript; charset=utf-8" }
+            "/http-child.html" -> { payload = viewAsset("probe/http-child.html"); type = "text/html; charset=utf-8" }
+            "/http.html" -> {
+                payload = "<!doctype html><title>ROCO:http-loading</title><iframe src='/http-child.html'></iframe>".toByteArray()
+                type = "text/html; charset=utf-8"
+            }
+            "/http-echo", "/http-failure" -> {
+                val content = "<fixture>original bytes</fixture>".toByteArray()
+                val status = if (path == "/http-failure") "403 Forbidden" else "200 OK"
+                it.getOutputStream().apply {
+                    write("HTTP/1.1 $status\r\nContent-Type: text/xml\r\nContent-Length: ${content.size}\r\nConnection: close\r\n\r\n".toByteArray())
+                    write(content); flush()
+                }
+                return@use
+            }
             "/audio-event" -> {
                 val uri = android.net.Uri.parse("http://127.0.0.1" + route[1])
                 val event = uri.getQueryParameter("event")

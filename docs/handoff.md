@@ -1,6 +1,17 @@
 # 开发交接（2026-10-18）
 
-## 最新0.1.19：修复横屏后游戏窗口落到屏幕外（2026-10-18）
+## 最新0.1.20：活动CGI的同源传输与响应realm（2026-10-18）
+
+- 用户要求读“大量ioerror”日志并手动点了三个活动。0.1.19文件计数从4逐步增至12；目录/zone6（endpoint7）首收发成功，不能归因代理或连接断开。只读全屏几何已从旧y885修正到bbox约(149.8,0,1135.37,662.3)，位于1435×662.3可见区内；仍未据此宣称触控/声音通过。
+- 纠正上轮诊断遗漏：原CORS提取器只列res公共静态路径，忽略活动CGI。当前缓存79条CORS匹配提取到14次17roco game-cgi（随后增至15），包括online_present、mini_game_manage、vip_tab_state、star_tower_new、star_tower_exch_shop、ifrit_challenge、back_player_guide；另有保护流程类别，不作为本次转发目标。用户三次点击期间只读NetworkWatcher看到ui4292/ui3760/ui1931等304，旧NPC1989四次404。公共无认证HEAD验证活动CGI=200/text-xml，ACAO固定https://res.17roco.qq.com、ACAC=true，带web2或首页Origin均不变；游戏页面实际web2，来源不匹配。这比缺SWF更能解释活动UI加载后ioError，不再将全部礼包错误归因404或304。公开UI公共CGI错误处理会对ioError弹网络故障提示；所查UI4292配置ifrit_challenge、3760=back_player_guide、1931=zombie_coming。
+- 0.1.20/code21、最终兼容1.4.1：MAIN game-http只在web2为8个已核实活动GET接口使用可访问且精确HTTPS官网首页/default的原fetch与Request构造器，按URL字符串在首页realm构造新Request，mode=same-origin/redirect=error。保留游戏原URL、查询、headers、credentials/cache/signal，不解析/生成/存储认证字段，不改服务器既有CORS策略。失败不换通道重试；其他域、未知端点、POST、登录/隐私/防沉迷流程保留原行为。8项见game-http.js，不能称已支持所有游戏CGI。输入Request用原生getter作跨realm品牌检查，不信任自有url属性；构造后再次确认目标与GET，避免URL遮蔽或方法变化越界。
+- 原版Ruffle fetch返回值会在游戏realm做Response类型检查；转发后用游戏realm的Response包裹原始ReadableStream，保留状态/headers/url/type/redirected，不解析响应、不全量缓冲。403等失败状态不伪装200。四个限额数字httpBridgeAttempt/Complete/Failed/Unavailable经现有主游戏端口写文件；Complete仅表示返回Response包装，不是礼包/业务成功。未改Ruffle二进制、Socket、系统网络或现有浏览器数据。
+- 新Node5项覆盖8接口、实际/外realm Request输入、URL遮蔽拒绝、Response realm/原流内容/headers/abort、403保持、失败不重发、来源/端口/敏感路径/方法拒绝及幂等；最终61项与JVM14/lint/两APK通过（首轮65s、最终增量37s）。本地两真实Gecko realm测试最终用外realm Request输入，验证原始字节/本realmResponse/403保持，5.343s、OK(1test)；首轮同realm输入5.686s也通过。它使用本地测试scope和固定回环接口，不能证明官网同源请求已验收。CI纳入新Node文件及第7个独立进程用例。最终签名/完整原版Ruffle校验通过；APK SHA256 `03d9d5e9ee901a9fa49c4ef921d8e095b270ab0832b65f0b6d03a6be87fc57b0`。
+- 只读网络观察关闭请求/响应正文保存，只输出公共静态路径/状态/字节数；额外CGI观察仅固定类别/状态，未请求headers/Cookie/响应正文/WS包，未导出查询。观察器退出均移除临时forward。协议schema首个旧方法不可用，改用官方Watcher API；没有RDP页面展示注入/认证/游戏自动点击。未跟踪的Gradle配置、辅助EXE和新出现work/均不读取/运行/提交。
+- 原快捷入口/Flash/session回归5.962s、OK(1test)；与新HTTP样例共2项通过，本轮未重跑其余5个未改的本地样例。包内5个兼容脚本/清单与工作区逐字节一致。已adb install -r覆盖安装Success，包查询确认0.1.20/code21，保留数据；已请用户点原活动，尚无本版真实活动反馈。核对名称后关闭本次TimeCasketProbe模拟器。
+- 下一步用户再点原礼包/活动，直接核对http-bridge-*和IO计数变化；实际活动、剩余静态404、声音仍未完成。全屏仅有真机几何到位证据，不代替触控/视觉验收。
+
+## 历史0.1.19：修复横屏后游戏窗口落到屏幕外（2026-10-18）
 
 - 用户0.1.18明确验收失败：全屏黑屏，点击礼包/活动仍IOError。只读真机证明主main已运行、无panic/AVM2分类错误，目录和zone5（endpoint6）已连接并首收发，不能当连接故障。全屏ack=1只证明样式已设置，不证明可见；实际viewport1435×662，mainiframe bbox约(0,885,1435,837)，整个窗口落在屏幕下方。inline top884.958和scale1.49479可由早期1435×2607尺寸精确复现；后续尺寸变化未重算，同一target原来直接return。
 - 0.1.19/code20、兼容1.3.9：game-view优先使用顶层visualViewport宽高与偏移，监听其resize/scroll；每次同目标轮询也重算，补上旋转/系统栏/缩放异步变化未触发Window resize的路径。退出清理两类viewport监听并恢复旧样式。两项回归测试先RED，直接复现top884.958，再GREEN。无导航/重载/认证/系统设置变更。

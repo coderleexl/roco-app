@@ -54,6 +54,11 @@
           const value = raw[key];
           if (Number.isInteger(value) && value >= 0 && value <= 1000) values[key] = value;
         }
+        const http = (window.wrappedJSObject || window).__timeCasketHttpState;
+        for (const key of ['httpBridgeAttempt', 'httpBridgeComplete', 'httpBridgeFailed', 'httpBridgeUnavailable']) {
+          const value = http?.[key];
+          if (Number.isInteger(value) && value >= 0 && value <= 1000) values[key] = value;
+        }
         const signature = JSON.stringify(values);
         if (signature !== lastSignals) { lastSignals = signature; send({kind: 'signals', values}); }
       } catch (_) { /* Only validated counters cross into native diagnostics. */ }

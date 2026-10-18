@@ -111,6 +111,8 @@ class GameFrameController(private val log: DiagnosticLog) {
     companion object {
         private val signalLabels = mapOf("traceAttached" to "phase-trace", "configsLoaded" to "phase-configs", "loginInitialized" to "phase-login",
             "directoryRequests" to "phase-dir-requests", "traceErrors" to "phase-errors", "ioErrors" to "phase-io-errors", "httpErrors" to "phase-http-errors", "missingSocketProxy" to "phase-missing-socket",
+            "httpBridgeAttempt" to "http-bridge-attempt", "httpBridgeComplete" to "http-bridge-complete",
+            "httpBridgeFailed" to "http-bridge-failed", "httpBridgeUnavailable" to "http-bridge-unavailable",
             "dirWsAttempt" to "dir-ws-attempt", "dirWsOpen" to "dir-ws-open", "dirWsError" to "dir-ws-error", "dirWsClose" to "dir-ws-close",
             "statWsAttempt" to "stat-ws-attempt", "statWsOpen" to "stat-ws-open", "statWsError" to "stat-ws-error", "statWsClose" to "stat-ws-close")
         fun allowsPage(raw: String?): Boolean = try {

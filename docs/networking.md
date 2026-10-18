@@ -1,5 +1,13 @@
 # HTTP资源与TCP选服对照
 
+## 0.1.20：活动IOError主因转向CGI来源不匹配
+
+0.1.19实际IO计数至少12；用户点三个活动，NetworkWatcher记录ui4292/ui3760/ui1931均304，地图/NPC1989资源请求有四次404。只取元数据，关闭正文保存，未导出Cookie/headers/body/查询。304本身只是缓存校验，另一次静态观察可见非零contentSize，不能将304当空文件或批量坏缓存。旧3个静态404仍真实，但不能解释全部礼包IO。
+
+脱敏提取器扩展到“官网game-cgi”类别后发现14次（随后15次）CGI CORS；原提取器只列res路径造成盲区。公开无认证HEAD：ifrit_challenge/back_player_guide/online_present/star_tower_new/mini_game_manage/vip_tab_state均200/text-xml、ACAO固定https://res.17roco.qq.com、ACAC=true；附带web2或首页Origin不改变结果。游戏JS页面origin为web2，并非SWF资源res。公开活动UI的CGI.errorHandler对ioError事件弹网络故障，UI配置与观测的ifrit/back_player等对应；不是目录Socket故障。HTTP原状态在部分缓存CORS文字里未提取到，不冒充用户请求状态已逐项读取。
+
+新增同源传输的8个GET端点：online_present、mini_game_manage、vip_tab_state、star_tower_new、star_tower_exch_shop、ifrit_challenge、back_player_guide、zombie_coming（后者来自本次ui1931公开代码）。首页原fetch/Request发送原游戏URL，返回流包装为游戏realm Response。现有服务器CORS保留，认证/隐私/防沉迷接口及POST保持原路径；不扩大到所有cgi，不转发到任意主机。原文和查询不进日志，只计http-bridge-attempt/complete/failed/unavailable。跨域问题在此有证据，仍不能认定其余IOError全是跨域。
+
 ## 0.1.18实机活动复测与0.1.19诊断
 
 用户确认IOError在点击礼包/活动后出现。目录与zone5（endpoint6）连接并首发/首收；主游戏无panic/AVM2分类错误，不能归责代理或目录桥。ROCOLegendBook/SuperHand/LittleAngelofCivilization三个exbn资源实机performance条目均200、75/76/75ms，原相关CORS错误已消失。残留重复CORS路径仅activity/4271/s4271.swf、4291/s4291.swf；本次公开HEAD均404/text/html/564B。对应ui电影公开200、665976/1542587B，缓存ver.config也只列ui；ui4271包含roco_restaurant相关控制类，并非纯图片壳，但s入口契约未知，不作未经验证的重定向或假200。不是所有礼包错误的完整证明，仍需具体名称与新计数对应。

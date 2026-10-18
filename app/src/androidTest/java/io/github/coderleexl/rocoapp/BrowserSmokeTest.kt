@@ -135,4 +135,9 @@ class BrowserSmokeTest {
             await(scenario, "portrait restoration removes presentation styles") { it.probeTitle == "ROCO:view-restored" && !it.gameModeRequested }
         }
     }
+    @Test fun activityHttpBridgeReturnsLocalRealmAndPreservesFailureStatus() {
+        launch("/http.html").use { scenario ->
+            await(scenario, "two real Gecko realms preserve activity bytes and HTTP failure") { it.probeTitle == "ROCO:http-bridge-ok" }
+        }
+    }
 }

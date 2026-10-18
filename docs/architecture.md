@@ -1,5 +1,13 @@
 # Architecture
 
+## 0.1.20活动HTTP同源传输
+
+活动CGI虽然HTTP200，却固定允许https://res.17roco.qq.com，而实际JS/Wasm运行页面是web2，导致跨域失败。静态适配器原先只处理res资源，不能解决该层；不覆盖官网已有ACAO/ACAC。MAIN game-http对固定8个活动GET使用已经可访问的官网首页fetch。源必须HTTPSweb2；目标必须HTTPS17roco默认443、无userinfo、精确/cgi-bin/端点；父页面必须HTTPS17roco首页/default。未知目标或无法访问父页面保留原fetch。登录/防沉迷/隐私接口不在表内，POST不转发。
+
+用首页Request(URL字符串, init)构造请求，获得首页环境的同源来源，保留原headers/credentials/cache/signal与未经解析的游戏查询；mode=same-origin、redirect=error限定本次传输，防止活动转到认证后自动跟随。原生Request getter做跨realm品牌检查，忽略可伪造的自有url；构造后再次验证端点和GET。绝不在失败后再用另一通道发同一请求。此实现没有生成新票据或记录URL参数。实际官网请求结果仍需用户验收。
+
+原版[Ruffle0.7.1 navigator](https://github.com/ruffle-rs/ruffle/blob/v0.7.1/web/src/navigator.rs#L293)构造Request后fetch，并对返回值做游戏realm的Response检查。桥用游戏的Response构造器包装外realm ReadableStream，保留状态、头及url/redirected/type，避免foreign Response类型失败；不读body、不解析XML、不把403变200。仅四项限额数字落原生文件，Complete指传输包装完成，不表示服务器业务成功。固定本地HTTP样例在两个真实Gecko realm验证这些语义，测试scope不会放宽生产来源检查。
+
 ## 0.1.19移动端可见区域适配
 
 真机0.1.18黑屏不是main未执行：窗口inline top884.958对应早期1435×2607计算，实际可见区域随后变为1435×662；同target幂等分支直接return，漏掉旋转/原生隐藏工具栏后的异步尺寸变化。现在幂等分支也fit，优先顶层visualViewport的width/height和offsetLeft/offsetTop，无该API时才用innerWidth/innerHeight；监听Window resize与visualViewport resize/scroll并在exit全部移除。窗口轮询提供遗漏事件的恢复路径，不重建DOM或重载游戏。依据[MDN VisualViewport](https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport)的可见区域/固定定位偏移与事件定义。
