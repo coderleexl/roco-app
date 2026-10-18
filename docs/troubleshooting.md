@@ -11,3 +11,7 @@
 - **Session expires**: official browser cookies can expire; authenticate again normally. Browser persistence does not guarantee unlimited game login.
 
 Do not change VPS, proxy, TUN, IPv6, certificates or global browser safety settings to work around unexplained game failures.
+
+## Emulator Wasm unreachable / shader validation
+
+On the API35 SwiftShader emulator, default Ruffle0.7.1 wgpu initialization panicked in create_shape_pipeline with `GL_MAX_VERTEX_UNIFORM_VECTORS (256)` exceeded. The original SWF executed in isolated Windows Chrome; Android self-test passed after requesting upstream legacy `webgl`. The override is limited to the fixed local fixture, with reduced feature coverage. It does not fix or prove official game rendering on a phone. See compatibility.md for exact failed and passing runs. Do not treat this message as a login/network failure or change system proxies.
