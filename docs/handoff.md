@@ -4,6 +4,13 @@
 
 用户明确“安装可以允许你，不要问我了，结果我帮你验证”：后续本项目APK覆盖升级可直接执行，保留数据，不再逐次询问。系统设置、root、卸载/清数据不在此授权内。仍不截图、不自动代办网站验证；本地调试不等待云端检查。下文历史待授权描述以本条为准。
 
+## 0.1.5品牌更新：时光匣
+
+- 用户补充“时光匣也可以”，最终按「时光匣」落地，未采用先前候选「拾帧」。应用显示名由strings.xml提供；新增原创匣子/像素光点矢量Logo、自适应图标和Android33单色图标，源文件docs/brand/logo.svg，说明docs/branding.md。
+- applicationId/包名/签名不变，不迁移浏览器profile、不改变游戏适配、主页入口或网络设置。版本0.1.5/code6，lintDebug/assembleDebug本地通过47s；aapt确认名称时光匣、版本和打包图标。签名及完整Ruffle资源校验通过，APK SHA256 `1dba29a2eb2b244acb161aec39e12dfaa63dd1b27fa684b3ec3e2737c9eafaed`，输出app/build/outputs/apk/debug/app-debug.apk。已adb install -r覆盖安装Success，包查询确认0.1.5/code6，未启动或操作页面。
+- 名称未做完整商标近似清查，不承诺注册或无冲突。仓库尚无根LICENSE，发布前需维护者选择项目许可并核对依赖署名；本次不自动选择许可证或发布应用。
+- 用户负责桌面图标和应用视觉验证，不截图。此前0.1.4主页动画、0.1.3版本文件、游戏登录/选服/地图等未获新反馈的关卡仍待验证。
+
 ## 0.1.4主页动画修复
 
 - 用户在0.1.3报告主页黑屏、只有开始按钮。只读检查确认首页ROCO-Z8和preloader均执行，metadata存在、无panic；PageError定位动态动画 `/swf/ceils/ROCO-Z8_Ceil_3.swf` 缺少ACAO/HTTP200。公开HEAD证实Flash MIME/164312字节。此时无游戏main帧，不能确认ver.config修复效果。

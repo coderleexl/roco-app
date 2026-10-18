@@ -1,5 +1,9 @@
 # Compatibility gates
 
+Application brand is now 时光匣 (0.1.5/code6), with original vector/adaptive/themed launcher artwork. Package ID and browser/session/game behavior remain unchanged. Branding changes do not pass any game compatibility gate; see branding.md for source assets and remaining name/license review.
+
+0.1.5 local lint/APK build, signature and full Ruffle asset checks passed. aapt confirms label/icon resources and version; Meizu in-place installation returnedSuccess and version was confirmed. User visual check remains pending, no phone screenshots or automated game interaction performed.
+
 Build and fixture results must come from the matching GitHub commit/run, not from the existence of this source code. Current live results: [Actions](https://github.com/coderleexl/roco-app/actions/workflows/android.yml).
 
 | Gate | Status / evidence needed |

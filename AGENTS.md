@@ -1,5 +1,7 @@
 # 项目协作约定
 
+- 对外品牌为「时光匣」，Logo源文件见docs/brand/logo.svg和docs/branding.md；不要再使用早期候选「拾帧」。保留现有applicationId以维持覆盖升级和会话；名称尚未完成商标清查，开源许可发布准备尚未完成。
+
 - 开始工作先读 README.md、docs/handoff.md 和 docs/compatibility.md。
 - 每次代码、构建、CI 或行为变更，同步更新相应文档及 docs/handoff.md；记录验证证据、失败项、未验证项和下一步，不把构建成功当成完整游戏兼容。
 - 使用 git.exe。用户已授权直接向 main 提交并推送；每次完成更新后推送到 GitHub，报告提交号。除非用户另有指示，禁止强推或覆盖他人改动。

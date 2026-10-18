@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Original Time Casket mark: open box and escaping pixel light. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#F2C879" android:pathData="M37,41 L55,31 L73,41 L55,51 Z" />
+    <path android:fillColor="#FFF0CB" android:pathData="M42,41 L55,34 L68,41 L55,47 Z" />
+    <path android:fillColor="#8CE4CF" android:pathData="M33,52 L54,62 L54,79 L33,68 Z" />
+    <path android:fillColor="#42B9AD" android:pathData="M57,62 L77,52 L77,68 L57,79 Z" />
+    <path android:fillColor="#C8FFF0" android:pathData="M35,49 L55,40 L75,49 L55,59 Z" />
+    <path android:fillColor="#142332" android:pathData="M42,49 L55,43 L68,49 L55,55 Z" />
+    <path android:fillColor="#F2C879" android:pathData="M66,27 L72,27 L72,33 L78,33 L78,39 L72,39 L72,45 L66,45 L66,39 L60,39 L60,33 L66,33 Z" />
+    <path android:fillColor="#C8FFF0" android:pathData="M43,30 L47,30 L47,34 L43,34 Z M79,44 L82,44 L82,47 L79,47 Z" />
+</vector>
