@@ -14,6 +14,9 @@
     const player = window.RufflePlayer || (window.RufflePlayer = {});
     const config = player.config || (player.config = {});
     config.autoplay = 'on';
+    // The physical Adreno GPU process exceeded 1.3 GiB and has a native driver
+    // crash record. Trial the simpler backend; keep explicit page choices.
+    if (config.preferredRenderer == null) config.preferredRenderer = 'webgl';
     if (game && config.deviceFontRenderer === undefined && typeof window.OffscreenCanvas === 'function') {
       try {
         if (new window.OffscreenCanvas(1, 1).getContext('2d')) config.deviceFontRenderer = 'canvas';

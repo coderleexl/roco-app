@@ -35,6 +35,16 @@ test('game device text uses available system CJK fonts, preserving explicit choi
   const existing={config:{deviceFontRenderer:'embedded',preferredRenderer:'webgl'}};
   assert.equal(run('https://web2.17roco.qq.com/game',existing,Canvas).RufflePlayer.config.deviceFontRenderer,'embedded');
 });
+
+test('scoped pages trial the simpler GPU backend while explicit renderer and quality choices remain intact',()=>{
+  for(const url of ['https://17roco.qq.com/','https://17roco.qq.com/default.html','https://web2.17roco.qq.com/game']) {
+    assert.equal(run(url).RufflePlayer.config.preferredRenderer,'webgl');
+    assert.equal(run(url,{config:{preferredRenderer:null}}).RufflePlayer.config.preferredRenderer,'webgl');
+    const explicit={config:{preferredRenderer:'wgpu-webgl',quality:'high'}};
+    const config=run(url,explicit).RufflePlayer.config;
+    assert.equal(config.preferredRenderer,'wgpu-webgl');assert.equal(config.quality,'high');
+  }
+});
 test('unrelated pages, hosts, schemes, ports and userinfo remain untouched',()=>{
   for(const url of ['https://17roco.qq.com/unrelated.html','https://evil.example/','https://web2.17roco.qq.com.evil.example/','http://17roco.qq.com/','https://17roco.qq.com:8443/','https://web2.17roco.qq.com:8443/','https://user:pass@17roco.qq.com/','about:blank']) {
     assert.equal(run(url).RufflePlayer,undefined,url);

@@ -1,6 +1,15 @@
 # 开发交接（2026-10-18）
 
-## 最新0.1.22：补新活动接口及网页alert日志，QQ授权未实现（2026-10-18）
+## 最新0.1.23：GPU高占用下试用传统WebGL；性能待实测（2026-10-18）
+
+- 0.1.22已提交推送9e6a8d5且覆盖安装Success/code23，用户随后报告“闪退、没打两下就卡”。不要丢失QQ授权需求：仅有可行性排查，未实现；本轮用户插入性能反馈后先处理稳定性，活动/2032/技能文字/音乐同样未完成。
+- 只读系统快照：本包各进程PSS合计2260.4MiB；GPU pid15997 PSS1404811KiB≈1371.9MiB，主进程272123KiB≈265.7MiB，另有多个内容进程。不能只报主进程内存，也不累加RSS当独占内存。最近15:48:42退出为PACKAGE UPDATED，对应覆盖升级；15:44:02后台importance400子进程LOW_MEMORY。crash buffer有15:25:50旧子进程SIGSEGV，模块libGLESv2_adreno.so，早于canvas字体版。不把这些合并成“刚才闪退已证实OOM”，未记录原始崩溃消息/包/认证，仅固定类别/时间/库名/数字。
+- 只读官网首页Used renderer=wgpu-webgl，DPR2.73，仅1×1就绪预载与两个0尺寸未就绪电影；当前GPU高占用不是必须进入战斗才出现。0.1.23/code24、兼容1.4.4对原官方首页和web2范围，preferredRenderer缺失或null时试用传统webgl；显式后端保留，quality/字体canvas/连接/认证不变。上游说明webgl初始化较快但功能较少，仍使用同一GPU，不能承诺绕过Adreno驱动或降内存，位图/混合效果需用户验收。
+- Debug/API30+在主进程startBrowser、创建Gecko前读本包最近至多8条ApplicationExitInfo，记录exit-info-count与相对秒数/角色/原因/importance/RSS MiB数字；角色0主/1GPU/2内容/3其他。不读trace、description或processStateSummary、不留进程名；异常固定exit-info-unavailable，不阻止浏览器。初轮模拟器API返回空历史、没有明细，新补count区分空结果与未运行；最终模拟器启动记录exit-info-count=6，元数据路径实际运行。
+- Node64、JVM15及初轮lint/两APK通过77s；新增后端默认/null/显式保留/quality不变边界。原中文本地样例去掉硬编码webgl，让生产配置选择后端，六字非空/不同摘要验证7.838s、OK(1test)。不截图、不导出图像；这个不能证明实际游戏位图/性能。最终增量构建52s通过（JVM15/lint/主及测试包）；原shortcut/Flash/session回归5.947s、OK(1test)，其余6个未改浏览器用例本轮未重跑。签名/完整原版Ruffle和6个兼容文件包内逐字节一致通过。APK SHA256 `c252864d71132263a3caa112db19c3cf803fe019b345c322fb6ad478ca3668b3`，真机adb install -r覆盖安装Success，包查询确认0.1.23/code24，保留数据；已请用户正常进入并打几次后保持前台，读取新GPU内存/退出日志，等待反馈。
+- 下一步最终安装后由用户打开App并正常玩几次，先读GPU PSS和新退出元数据，再判断内存/卡顿；没有实测下降就不称已优化成功。读取QQ认证入口/授权确认仍只能用户操作，未放开外部scheme或接SDK。未跟踪Gradle配置/work/辅助EXE均保持原样且不读取/运行/提交。
+
+## 历史0.1.22：补新活动接口及网页alert日志，QQ授权未实现（2026-10-18）
 
 - 用户新增需求：登录时检测并唤起手机已登录QQ、由用户确认授权免扫码，已明确意图；期间继续报告2032 Stream Error，又明确刚点活动出现“哎呀出现了网络故障 ioerror”。保留两项工作，不把QQ问题当2032来源。真机0.1.21：main ready2、字体后端canvas实际加载，无message-overlay/panic；尚无技能文字改善反馈。文件IO0→3，HTTP bridge完成8次无失败增长；cache没有2032，计数0不能排除用户弹窗。
 - 当前CORS脱敏路径新增discovery/mend_shape/dawn_hymn；无认证HEAD三者均200/text-xml，ACAO固定https://res.17roco.qq.com、ACAC=true，与web2来源不符。0.1.22/code23、兼容1.4.3只追加这三项游戏GET，总11端点；原owner/Request品牌/realm/流与状态保持/失败不重发均不变。新增断言三项均在规则内并明确warehouse_security_code仍拒绝，登录/隐私/防沉迷均未纳入。静态s4271/s4291仍404，2032具体哪次请求及活动1989仍未知。

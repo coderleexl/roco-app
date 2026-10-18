@@ -1,5 +1,13 @@
 # Architecture
 
+## 0.1.23：显卡内存与渲染后端试验
+
+用户报告卡顿和闪退后，只读系统快照显示本包各进程PSS合计2260.4MiB，其中GPU进程1404811KiB（约1371.9MiB），主进程272123KiB；不能用主进程约266MiB代表整个应用，也不能简单累加RSS。最近15:48:42为PACKAGE UPDATED；15:44:02一后台子进程importance400因LOW_MEMORY退出；crash buffer另有15:25:50旧子进程SIGSEGV，栈为libGLESv2_adreno.so，早于canvas字体版本。这些不是“本次闪退一定OOM”的证明。
+
+只读官网首页播放器日志实际Used renderer=wgpu-webgl。0.1.23只在原有官方首页/游戏范围，preferredRenderer缺失或null（自动）时试用webgl，显式指定后端保留；字体canvas、quality、协议、资源规则均不变。依据原版[Ruffle0.7.1后端说明](https://github.com/ruffle-rs/ruffle/blob/v0.7.1/web/packages/core/src/public/config/load-options.ts#L125)：传统webgl初始化较快、功能较少。它仍使用GPU，不能承诺绕开同一驱动或降低真机内存；位图/混合等视觉兼容性和真实卡顿仍待验收。首页同样覆盖，因为仅首页阶段GPU已高占用；没有全局改浏览器/系统图形设置。
+
+主进程startBrowser在启动Gecko前读取本包最近8条ApplicationExitInfo元数据，Debug/API30+；只记退出相对秒数、固定进程角色0主/1GPU/2内容/3其他、reason、importance、RSS MiB，不读trace/description/processStateSummary，不保存进程名字。用于区分覆盖升级、后台回收和崩溃；历史RSS是采样值，不是完整峰值。使用[Android退出原因API](https://developer.android.com/reference/android/app/ApplicationExitInfo)，失败仅固定枚举、不阻止启动。
+
 ## 0.1.22：活动端点补充与网页alert数字诊断
 
 基于当前真机CORS路径和无认证公开HEAD，原game-http端点表追加discovery/mend_shape/dawn_hymn，总11项；方法、来源、同源owner、Response realm、重定向拒绝及失败不重发行为不变，warehouse_security_code继续拒绝转发。

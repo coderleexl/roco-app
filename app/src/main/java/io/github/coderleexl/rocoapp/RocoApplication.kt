@@ -41,6 +41,7 @@ class RocoApplication : Application() {
     fun startBrowser(probeMode: Boolean = false) {
         if (::runtime.isInitialized) return
         log.record("app-version", number = BuildConfig.VERSION_CODE)
+        ProcessExitDiagnostics.record(this, log)
         runtime = GeckoRuntime.create(this, GeckoRuntimeSettings.Builder()
             .remoteDebuggingEnabled(BuildConfig.DEBUG)
             .consoleOutput(BuildConfig.DEBUG && probeMode).debugLogging(false).build())

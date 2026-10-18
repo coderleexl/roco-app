@@ -1,5 +1,7 @@
 # Test plan
 
+0.1.23：Node64/JVM15、lint与两APK初轮77s/最终增量52s通过；后端配置覆盖默认/null改为webgl、显式后端和quality保留。中文Flash样例由生产配置决定后端，六字非空/不同摘要7.838s、OK(1test)；最终shortcut/Flash/session5.947s、OK(1test)，其余6项未改样例未重跑。模拟器启动实际记录本包历史退出count6，确认API路径可用；只输出退出元数据数字。签名/完整原版Ruffle及6个兼容文件逐字节一致通过。实际GPU PSS、速度、图形效果和闪退尚无新版真机证据，未宣称省内存/修复崩溃；安装及SHA见handoff.md。
+
 0.1.22：Node63/JVM15、lint及两APK构建56s通过。新增断言三个实测游戏GET端点已覆盖、warehouse_security_code保留原请求；新增JVM验证网页alert只分类1009/1010/2032或0、IO类别，不记任意数字。签名/完整原版Ruffle/6个兼容文件包内一致性通过；本轮8个未改浏览器样例未重跑。实际活动、2032、战斗文字未通过验收，QQ快捷授权未实现；设备安装结果见handoff.md。
 
 0.1.21：Node63/JVM14、lint与两APK通过，构建62s；签名/完整原版Ruffle及6个兼容文件包内一致性通过。新原创零字形设备字体中文Flash样例在真实Gecko/Ruffle生成六个非空、至少4种不同摘要的中文字形，5.660s、OK(1test)；未截图，未导出字形图像。原shortcut/Flash/session回归5.447s、OK(1test)，其他6个未改样例未重跑。CI加入第8个独立进程用例。设备字体选项边界及错误1009/1010/2032、缺字体数字分类/遥测隐私测试通过；已覆盖安装0.1.21/code22。真实战斗文字、首次IOError/活动错误/音乐仍待验收，详见handoff.md。
