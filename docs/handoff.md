@@ -1,5 +1,12 @@
 # 开发交接（2026-10-18）
 
+## 2026-11-17：iOS 实验移植与 GitHub 构建发布请求
+
+- 用户明确要求 iOS 包，在自己的 Mac 签名，并授权“推上去构建发布”。新增独立 ios/ 工程与 ios.yml；保持 Android tag/Release、版本及签名不变，不发布应用商店。
+- WKWebView 原型替代 GeckoView；加入受限匿名公开资源 fetch、包内 Wasm 读取、官方目录/数字区服原生 TCP 桥，复用页面脚本。引擎从固定 SHA256 的 v0.1.27 已发布 APK 无损提取，再跑原有 verify_runtime；不是重新构建或修改引擎。
+- 新增 7 项 Node 桥接回归通过，Python/Shell 语法检查通过。Linux 环境不能验证 UIKit/Network/WebKit 编译；macOS Actions 成功后才能发布独立 ios-v0.1.27-alpha.1 未签名 IPA。编译及包内资源验证作为发布前置条件。
+- iPhone 登录/选服/战斗/声音/活动/性能等均未验收，不能宣称已经可玩。没有操作用户手机、认证或网络设置。签名由用户本机完成，不提交秘密。详见 ios/README.md。
+
 ## 0.1.27云端构建与发布请求
 
 - 修复及README声明已推送main `da86ad4`。Actions `39115988079`的engine与build均成功，8项smoke正在运行；原版图片错误准确复现、补丁红→蓝→蓝/COMPLETE1/ok1通过。初次源码编译完成并保存cache，标准/MVP和JPEG XR保留。手机已于本轮adb install -r覆盖成功，包查询0.1.27/code28，保留数据；没有使用其他签名的云端APK覆盖。
