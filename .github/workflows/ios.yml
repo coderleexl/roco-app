@@ -25,17 +25,17 @@ jobs:
           node-version: '22'
       - run: node --test ios/scripts/bridge.test.cjs
       - run: brew install xcodegen
-      - name: Build device archive without signing
+      - name: Build device app without signing
         run: bash ios/scripts/build_unsigned.sh
       - name: Verify actual device binary and embedded runtime
         run: |
-          app=ios/build/TimeCasket.xcarchive/Products/Applications/TimeCasket.app
+          app=ios/build/DerivedData/Build/Products/Release-iphoneos/TimeCasket.app
           test -s "$app/TimeCasket"
           lipo -verify_arch arm64 "$app/TimeCasket"
           plutil -lint "$app/Info.plist"
           python3 - <<'PY'
           import hashlib,json,pathlib
-          app=pathlib.Path('ios/build/TimeCasket.xcarchive/Products/Applications/TimeCasket.app/Resources')
+          app=pathlib.Path('ios/build/DerivedData/Build/Products/Release-iphoneos/TimeCasket.app/Resources')
           source=pathlib.Path('ios/TimeCasket/Resources')
           for path in source.rglob('*'):
               if path.is_file():
