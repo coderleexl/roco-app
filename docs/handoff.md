@@ -2,6 +2,8 @@
 
 ## 2026-11-17：iOS 实验移植与 GitHub 构建发布请求
 
+- 修正 lipo 参数后的 run 44097071683 长时间等待 macOS runner，未执行也未发布。切换 macos-latest 并允许同分支新请求取消旧队列，避免等待旧队列后又重复构建；保留所有检查及不覆盖既有 Release 的行为。
+
 - Actions 44096697323 已 BUILD SUCCEEDED，设备版 App 元数据读回正确并生成未签名 IPA；后续验证步骤因 lipo 参数顺序写错而失败，未发布。已改为 lipo <binary> -verify_arch arm64，并保留完整资源比对前置条件。
 
 - 独立 plist 后仍在 Xcode unsigned archive 收尾失败；切换为标准 generic iOS Release build，先强校验输出 App 的 Bundle ID/Executable/PackageType、arm64 二进制和资源，再包装 Payload IPA。未跳过包元数据验证；是否成功以新 Actions 为准。
