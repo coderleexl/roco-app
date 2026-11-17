@@ -2,6 +2,9 @@
 
 ## 2026-11-17：iOS 实验移植与 GitHub 构建发布请求
 
+- 最终 Actions [44097792727](https://github.com/coderleexl/roco-app/actions/runs/44097792727) 的 build/release 均成功，发布源码提交 `e378f3353dccdd821e2ec3302a0e9b852d408dd9`。7 项桥接测试、iOS Release build、App 元数据、arm64、全部内嵌资源字节核对及附件上传通过。
+- 已实际发布 [ios-v0.1.27-alpha.1](https://github.com/coderleexl/roco-app/releases/tag/ios-v0.1.27-alpha.1)，非草稿/pre-release；4 个附件均 uploaded：未签名 IPA（10,514,614 字节）、源码 ZIP、README-ios.md、SHA256SUMS.txt。IPA SHA256 `4b077ba4e1d52a7bc40d3c15c5f5f1d9f9b986aeb2969efda2ca1fb5af45cc65`。用户在 Mac 自行签名，真机登录/游戏/声音/性能仍未验收。未覆盖既有 Android 发布。
+
 - 修正 lipo 参数后的 run 44097071683 长时间等待 macOS runner，未执行也未发布。切换 macos-latest 并允许同分支新请求取消旧队列，避免等待旧队列后又重复构建；保留所有检查及不覆盖既有 Release 的行为。
 
 - Actions 44096697323 已 BUILD SUCCEEDED，设备版 App 元数据读回正确并生成未签名 IPA；后续验证步骤因 lipo 参数顺序写错而失败，未发布。已改为 lipo <binary> -verify_arch arm64，并保留完整资源比对前置条件。
