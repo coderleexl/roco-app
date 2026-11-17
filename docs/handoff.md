@@ -2,6 +2,8 @@
 
 ## 2026-11-17：iOS 实验移植与 GitHub 构建发布请求
 
+- 首次 Actions 44095678448 的 7 项桥接测试、资源来源校验和 Swift/arm64 编译链接通过；archive 最后因 Info.plist 缺 CFBundleIdentifier 失败，未发布。已在 XcodeGen plist 模板显式补齐标准 bundle 元数据，等待下一次构建验证。
+
 - 用户明确要求 iOS 包，在自己的 Mac 签名，并授权“推上去构建发布”。新增独立 ios/ 工程与 ios.yml；保持 Android tag/Release、版本及签名不变，不发布应用商店。
 - WKWebView 原型替代 GeckoView；加入受限匿名公开资源 fetch、包内 Wasm 读取、官方目录/数字区服原生 TCP 桥，复用页面脚本。引擎从固定 SHA256 的 v0.1.27 已发布 APK 无损提取，再跑原有 verify_runtime；不是重新构建或修改引擎。
 - 新增 7 项 Node 桥接回归通过，Python/Shell 语法检查通过。Linux 环境不能验证 UIKit/Network/WebKit 编译；macOS Actions 成功后才能发布独立 ios-v0.1.27-alpha.1 未签名 IPA。编译及包内资源验证作为发布前置条件。
