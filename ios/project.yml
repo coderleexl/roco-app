@@ -21,19 +21,11 @@ targets:
       - path: TimeCasket/Resources
         type: folder
         buildPhase: resources
-    info:
-      path: Info.plist
-      properties:
-        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
-        CFBundleExecutable: $(EXECUTABLE_NAME)
-        CFBundleName: $(PRODUCT_NAME)
-        CFBundlePackageType: APPL
-        CFBundleShortVersionString: $(MARKETING_VERSION)
-        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
-        CFBundleDisplayName: 时光匣
-        UILaunchScreen: {}
-        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
-        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.coderleexl.rocoapp
+        INFOPLIST_FILE: Info.plist
+        GENERATE_INFOPLIST_FILE: NO
 schemes:
   TimeCasket:
     build:

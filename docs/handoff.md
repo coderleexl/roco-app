@@ -2,6 +2,8 @@
 
 ## 2026-11-17：iOS 实验移植与 GitHub 构建发布请求
 
+- 第二次归档仍报缺 Bundle ID，Swift 编译链接通过。改为提交独立 Info.plist、关闭自动生成并在 target 显式指定 INFOPLIST_FILE/PRODUCT_BUNDLE_IDENTIFIER；生成后先检查 plist，归档后读回 Bundle ID，不将失败构建称为已发布。
+
 - 首次 Actions 44095678448 的 7 项桥接测试、资源来源校验和 Swift/arm64 编译链接通过；archive 最后因 Info.plist 缺 CFBundleIdentifier 失败，未发布。已在 XcodeGen plist 模板显式补齐标准 bundle 元数据，等待下一次构建验证。
 
 - 用户明确要求 iOS 包，在自己的 Mac 签名，并授权“推上去构建发布”。新增独立 ios/ 工程与 ios.yml；保持 Android tag/Release、版本及签名不变，不发布应用商店。
