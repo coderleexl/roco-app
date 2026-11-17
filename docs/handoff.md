@@ -2,6 +2,8 @@
 
 ## 2026-11-17：iOS 实验移植与 GitHub 构建发布请求
 
+- Actions 44096697323 已 BUILD SUCCEEDED，设备版 App 元数据读回正确并生成未签名 IPA；后续验证步骤因 lipo 参数顺序写错而失败，未发布。已改为 lipo <binary> -verify_arch arm64，并保留完整资源比对前置条件。
+
 - 独立 plist 后仍在 Xcode unsigned archive 收尾失败；切换为标准 generic iOS Release build，先强校验输出 App 的 Bundle ID/Executable/PackageType、arm64 二进制和资源，再包装 Payload IPA。未跳过包元数据验证；是否成功以新 Actions 为准。
 
 - 第二次归档仍报缺 Bundle ID，Swift 编译链接通过。改为提交独立 Info.plist、关闭自动生成并在 target 显式指定 INFOPLIST_FILE/PRODUCT_BUNDLE_IDENTIFIER；生成后先检查 plist，归档后读回 Bundle ID，不将失败构建称为已发布。

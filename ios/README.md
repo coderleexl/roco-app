@@ -5,7 +5,7 @@
 
 ## GitHub 下载及签名
 
-Actions 的 `iOS unsigned IPA and experimental release` 流程会在 macOS 上编译 arm64 设备归档，
+Actions 的 `iOS unsigned IPA and experimental release` 流程会在 macOS 上编译 arm64 设备版 App，
 检查实际二进制、资源完整性及 plist，通过后创建 `ios-v0.1.27-alpha.1` 预发布版本。
 下载 `time-casket-ios-0.1.27-alpha.1-unsigned.ipa`，使用你的签名工具和开发者账号重签后安装。
 未签名 IPA 不能直接安装；不包含开发证书、描述文件、账号、密码或私钥。

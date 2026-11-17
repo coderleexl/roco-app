@@ -31,7 +31,7 @@ jobs:
         run: |
           app=ios/build/DerivedData/Build/Products/Release-iphoneos/TimeCasket.app
           test -s "$app/TimeCasket"
-          lipo -verify_arch arm64 "$app/TimeCasket"
+          lipo "$app/TimeCasket" -verify_arch arm64
           plutil -lint "$app/Info.plist"
           python3 - <<'PY'
           import hashlib,json,pathlib
