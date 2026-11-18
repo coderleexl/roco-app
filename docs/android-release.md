@@ -16,10 +16,12 @@
 4. Actions → Android signed Release APK → Run workflow，选择 main。
 
 GitHub 连接可推送代码，但当前不提供写入 Actions Secrets 的能力；不能用公开文件代替 Secret。
-如果云端尚未配置此项，流程会在预检阶段明确失败，不会生成临时密钥或用 Debug 签名冒充。
+如果云端尚未配置此项，流程仍会完成 Release 编译和验证，上传明确标注的未签名 APK artifact，但跳过签名和公开发行步骤。不会临时生成密钥或用 Debug 签名冒充。
 不要将 `github-secret.json` 当作公开附件上传。
 
 ## 自动流程
+
+修改签名工作流或签名脚本并推送 main 会自动触发；也可在 Actions 手动运行。构建 artifact 名称为 `time-casket-android-release`。未配置 Secret 时其中的 `*-unsigned.apk` 不能直接安装。
 
 - 从已发布 v0.1.27 APK 校验并恢复固定修复引擎，保留标准/MVP运行时。
 - Node/Python边界测试、JVM单元测试、lintRelease 和 assembleRelease。

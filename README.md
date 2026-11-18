@@ -8,7 +8,7 @@
 
 ## 安装
 
-[Android Release 签名与发布](docs/android-release.md)：2026-11-18新建长期签名，需先配置私有 Actions Secret，再手动运行签名发布流程。新签名无法直接覆盖旧签名安装。
+[Android Release 签名与发布](docs/android-release.md)：2026-11-18新建长期签名，GitHub Actions 自动编译 Release；配置私有 Actions Secret 后才会签名并公开发布。新签名无法直接覆盖旧签名安装。
 
 需要 Android 8.0 或更高版本。当前提供测试版 APK：
 

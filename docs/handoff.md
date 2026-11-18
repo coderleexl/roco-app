@@ -2,6 +2,7 @@
 
 ## 2026-11-18：Android 新长期签名
 
+- 用户再次明确要求必须在 GitHub 打包。此前提供的已签名 APK 为本环境签名，并非此新工作流产物。新增签名工作流 main 路径推送触发：无 Secret 时也执行云端 Release 编译、测试、资源/标志/对齐校验，并上传显式 unsigned artifact；只有配置同一长期密钥且签名验证通过才公开发行。实际运行结果待本次触发后记录。
 - 已使用本会话先前通过构建/测试/lint的 v0.1.27 Release 未签名产物完成实际长期密钥签名；apksigner verify、固定证书指纹、zipalign 16KB 与完整Ruffle资源字节核对通过。签名APK SHA256 `a62a2768ebf3406e109ed2b82f590fb483430fc77f47ff26db1840a639842882`。未安装到用户设备。
 - 用户明确“弄个新的”授权创建新密钥，替代此前沿用旧密钥的选择。生成 RSA-3072/JKS，证书 SHA256 `e93924f77e71d2703b86d3c9ed4f6a0b89db0d09f059abf9c586facced80c40c`。私钥、密码及含私钥的 github-secret.json 只在私有备份，不提交到 GitHub 或公开附件。
 - 新增手动触发 android-release.yml 及签名验证器；只接受 ANDROID_RELEASE_SIGNING_JSON，不在 CI 临时生成密钥。严格核对公开证书指纹、签名、16KB对齐、Release标志和完整Ruffle资源，再发布 android-v0.1.27-release.1。
