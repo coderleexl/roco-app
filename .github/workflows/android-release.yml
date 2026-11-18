@@ -1,0 +1,107 @@
+name: Android signed Release APK
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: android-signed-release
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Require the existing long-term signing secret
+        env:
+          ANDROID_RELEASE_SIGNING_JSON: ${{ secrets.ANDROID_RELEASE_SIGNING_JSON }}
+        run: |
+          python3 - <<'PY'
+          import os,json
+          raw=os.environ.get('ANDROID_RELEASE_SIGNING_JSON')
+          if not raw:
+              raise SystemExit('Set repository secret ANDROID_RELEASE_SIGNING_JSON using your private signing backup, then run this workflow again.')
+          item=json.loads(raw)
+          assert all(isinstance(item.get(k),str) and item[k] for k in ['keystore_base64','alias','store_password','key_password']), 'Signing secret has missing fields'
+          print('Signing secret is present; no private material is printed')
+          PY
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Restore and verify the pinned patched engine
+        run: |
+          python3 ios/scripts/prepare_resources.py
+          cp .cache/ios-verified-runtime.xpi .cache/ruffle-patched.xpi
+      - name: Install SDK packages
+        run: JAVA_HOME="$JAVA_HOME_21_X64" "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-37.2' 'build-tools;36.0.0'
+      - name: Regression tests
+        run: |
+          node --test tools/diagnostics.test.cjs tools/compatibility.test.cjs tools/player-options.test.cjs tools/engine-signals.test.cjs tools/audio-unlock.test.cjs tools/socket-config.test.cjs tools/game-control.test.cjs tools/game-view.test.cjs tools/game-http.test.cjs tools/audio-probe.test.cjs
+          python3 -m unittest discover -s tools -p test_ruffle_archive.py -v
+      - name: Build checked Release APK
+        run: ./gradlew --no-daemon testDebugUnitTest lintRelease assembleRelease
+      - name: Sign using the persistent release identity
+        env:
+          ANDROID_RELEASE_SIGNING_JSON: ${{ secrets.ANDROID_RELEASE_SIGNING_JSON }}
+        run: |
+          python3 tools/sign_android_release.py \
+            --tools "$ANDROID_HOME/build-tools/36.0.0" \
+            --input app/build/outputs/apk/release/app-release-unsigned.apk \
+            --output release-assets/time-casket-0.1.27-release.apk \
+            --expected-cert e93924f77e71d2703b86d3c9ed4f6a0b89db0d09f059abf9c586facced80c40c
+      - name: Verify packaged resources and Release flags
+        run: |
+          python3 tools/verify_ruffle_apk.py release-assets/time-casket-0.1.27-release.apk
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging release-assets/time-casket-0.1.27-release.apk > release-badging.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          assert 'application-debuggable' not in Path('release-badging.txt').read_text()
+          source=next(Path('app/build/generated/source/buildConfig/release').rglob('BuildConfig.java')).read_text()
+          assert 'DEBUG = false' in source
+          PY
+          cp docs/android-release-notes.md release-assets/README-android.md
+          mv release-assets/*.apk.sha256 release-assets/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: time-casket-android-signed-release
+          path: release-assets/
+          if-no-files-found: error
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: time-casket-android-signed-release
+          path: release-assets
+      - name: Publish checked signed Release APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=android-v0.1.27-release.1
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo 'Existing release will not be overwritten.'
+            exit 1
+          fi
+          gh release create "$tag" --target "$GITHUB_SHA" --prerelease \
+            --title '时光匣 Android 0.1.27（Release，新长期签名）' \
+            --notes-file docs/android-release-notes.md release-assets/*

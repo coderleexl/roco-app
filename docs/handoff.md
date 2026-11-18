@@ -1,5 +1,13 @@
 # 开发交接（2026-10-18）
 
+## 2026-11-18：Android 新长期签名
+
+- 已使用本会话先前通过构建/测试/lint的 v0.1.27 Release 未签名产物完成实际长期密钥签名；apksigner verify、固定证书指纹、zipalign 16KB 与完整Ruffle资源字节核对通过。签名APK SHA256 `a62a2768ebf3406e109ed2b82f590fb483430fc77f47ff26db1840a639842882`。未安装到用户设备。
+- 用户明确“弄个新的”授权创建新密钥，替代此前沿用旧密钥的选择。生成 RSA-3072/JKS，证书 SHA256 `e93924f77e71d2703b86d3c9ed4f6a0b89db0d09f059abf9c586facced80c40c`。私钥、密码及含私钥的 github-secret.json 只在私有备份，不提交到 GitHub 或公开附件。
+- 新增手动触发 android-release.yml 及签名验证器；只接受 ANDROID_RELEASE_SIGNING_JSON，不在 CI 临时生成密钥。严格核对公开证书指纹、签名、16KB对齐、Release标志和完整Ruffle资源，再发布 android-v0.1.27-release.1。
+- 当前 GitHub 连接无 Secrets 写入能力，云浏览器未登录，尚不能代填私有Secret；用户需将备份中 github-secret.json 完整内容添加为同名 Actions Secret，再运行流程。未将“流程已推送”等同于“已签名发布”。
+- 新签名无法直接覆盖旧签名版本，不卸载或清理用户数据。实际本地签名与最终结果另行记录。
+
 ## 2026-11-17：iOS 实验移植与 GitHub 构建发布请求
 
 - 最终 Actions [44097792727](https://github.com/coderleexl/roco-app/actions/runs/44097792727) 的 build/release 均成功，发布源码提交 `e378f3353dccdd821e2ec3302a0e9b852d408dd9`。7 项桥接测试、iOS Release build、App 元数据、arm64、全部内嵌资源字节核对及附件上传通过。

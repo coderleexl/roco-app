@@ -8,6 +8,8 @@
 
 ## 安装
 
+[Android Release 签名与发布](docs/android-release.md)：2026-11-18新建长期签名，需先配置私有 Actions Secret，再手动运行签名发布流程。新签名无法直接覆盖旧签名安装。
+
 需要 Android 8.0 或更高版本。当前提供测试版 APK：
 
 1. 打开 [版本下载页](https://github.com/coderleexl/roco-app/releases)，选择所需测试版。
