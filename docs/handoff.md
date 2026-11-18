@@ -2,6 +2,9 @@
 
 ## 2026-11-18：Android 新长期签名
 
+- 最终 GitHub Actions [44228135438](https://github.com/coderleexl/roco-app/actions/runs/44228135438) 的 build 已 success；源码提交 `e593d2cfd1b5b2b87a3416a299f27d846c824301`。云端执行完整 Release 编译、JVM/Node/Python测试、lintRelease、Ruffle字节核对、DEBUG=false检查和16KB对齐，artifact 上传成功。
+- 实测仓库没有签名 Secret：签名步骤 skipped，publish job skipped，并非已发行可安装的签名包。云端 artifact `time-casket-android-release`（ID 14394680073，191,219,180 字节）包含显式未签名 APK 与说明/校验文件，ZIP digest `9885a9a2b0ead3b670eb59d78e15b9983c87a50054d5658058befe03116693cc`。未公开密钥，不用本地已签名APK冒充云端产物；添加原有私有备份 Secret 后可重跑签名发布。
+
 - 用户再次明确要求必须在 GitHub 打包。此前提供的已签名 APK 为本环境签名，并非此新工作流产物。新增签名工作流 main 路径推送触发：无 Secret 时也执行云端 Release 编译、测试、资源/标志/对齐校验，并上传显式 unsigned artifact；只有配置同一长期密钥且签名验证通过才公开发行。实际运行结果待本次触发后记录。
 - 已使用本会话先前通过构建/测试/lint的 v0.1.27 Release 未签名产物完成实际长期密钥签名；apksigner verify、固定证书指纹、zipalign 16KB 与完整Ruffle资源字节核对通过。签名APK SHA256 `a62a2768ebf3406e109ed2b82f590fb483430fc77f47ff26db1840a639842882`。未安装到用户设备。
 - 用户明确“弄个新的”授权创建新密钥，替代此前沿用旧密钥的选择。生成 RSA-3072/JKS，证书 SHA256 `e93924f77e71d2703b86d3c9ed4f6a0b89db0d09f059abf9c586facced80c40c`。私钥、密码及含私钥的 github-secret.json 只在私有备份，不提交到 GitHub 或公开附件。
